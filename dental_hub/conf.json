@@ -1,0 +1,16 @@
+{
+    "dbDriverName": "mysql",
+    "dbConnectionString": "root:root@/dental?parseTime=true",
+    "dbConnectionStringCloud": "server=nvasilev.database.windows.net;database=Dental;user id=Nikolay;password=Manager123; connection timeout=30;",
+    "dbConnectionStringLoacal": "server=localhost;user id=sa;password=Manager123;database=Dental;connection timeout=30",
+    "jwtSecret": "L4ABYKebVk7ATSmeDQZ/EMaDRWULa9QB1gFeNM0MhUuPQJxCOiIcPpZOdpUvtC5ZwmDaLQX2Yf3jUetmMJmv/g==",
+    "smtp": {
+        "host": "smtp.gmail.com", 
+        "port": "465", 
+        "sender": "nikolay.vassilev78.test@gmail.com", 
+        "password": "Trynotuse1@"
+    },
+    "dentistProfileActivateURI": "http://localhost:4200/app/dentistProfile/activate",
+    "patientProfileActivateURI": "http://localhost:4200/app/patientProfile/activate",
+    "invitationActivateURI": "http://localhost:4200/app/invitation/activate"
+}

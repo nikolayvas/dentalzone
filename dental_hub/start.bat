@@ -1,0 +1,1 @@
+.\dental_go.exe --dbDriverName=mysql --dbConnectionString=root:root@/dental?parseTime=true --jwtSecret=L4ABYKebVk7ATSmeDQZ/EMaDRWULa9QB1gFeNM0MhUuPQJxCOiIcPpZOdpUvtC5ZwmDaLQX2Yf3jUetmMJmv/g==

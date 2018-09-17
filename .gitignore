@@ -1,2 +1,4 @@
+node_modules/
+dist/
 dental_hub/debug
 dental_hub/log.txt

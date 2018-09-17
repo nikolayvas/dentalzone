@@ -1,0 +1,60 @@
+<form (ngSubmit)="submit()" [formGroup]="patientProfileForm" class="form-horizontal">
+    <div class="col-md-7 col-lg-8">
+        <h1>Profile</h1>
+        <extended-control [control]="firstName"
+            [formsubmitted]="submitAttempt" [labeltext]="'First Name'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="firstName" name="firstName" formControlName="firstName"
+                type="text" class="form-control"/>
+        </extended-control>
+        <extended-control [control]="middleName"
+            [formsubmitted]="submitAttempt" [labeltext]="'Middle Name'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="middleName" name="middleName" formControlName="middleName"
+                type="text" class="form-control"/>
+        </extended-control>
+        <extended-control [control]="lastName"
+            [formsubmitted]="submitAttempt" [labeltext]="'Last Name'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="lastName" name="lastName" formControlName="lastName"
+                type="text" class="form-control"/>
+        </extended-control>
+        <extended-control [control]="email"
+            [formsubmitted]="submitAttempt" [labeltext]="'Email'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="email" name="email" formControlName="email"
+                type="text" class="form-control"/>
+        </extended-control>
+        <extended-control [control]="address"
+            [formsubmitted]="submitAttempt" [labeltext]="'Address'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="address" name="address" formControlName="address"
+                type="text" class="form-control"/>
+        </extended-control>
+        <extended-control [control]="phoneNumber"
+            [formsubmitted]="submitAttempt" [labeltext]="'Phone number(s)'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="phoneNumber" name="phoneNumber" formControlName="phoneNumber"
+                type="text" class="form-control"/>
+        </extended-control>
+        <extended-control [control]="generalInfo"
+            [formsubmitted]="submitAttempt" [labeltext]="'General Info'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="generalInfo" name="generalInfo" formControlName="generalInfo"
+                type="text" class="form-control"/>
+        </extended-control>
+        <extended-control [control]="registrationDate"
+            [formsubmitted]="submitAttempt" [labeltext]="'Registration Date'"
+            classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
+            <input id="registrationDate" name="registrationDate" formControlName="registrationDate"
+                type="text" class="form-control"/>
+        </extended-control>
+        
+        <div class="form-group">
+            <div class="col-md-offset-4 col-lg-offset-3 col-md-8 col-lg-9">
+                <button class="btn btn-primary" type="submit" [attr.disabled]="!patientProfileForm.valid || submitAttempt"><i class="icon-save icon-constant"></i><span class="btn-action">Save</span></button>
+                <button class="btn btn-default" type="button" (click)="back()"><i class="icon-step-backward icon-constant"></i><span class="btn-action">Back</span></button>
+            </div>
+        </div>
+    </div>
+</form>

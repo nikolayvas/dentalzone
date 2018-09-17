@@ -1,0 +1,67 @@
+<div id="page-wrapper" class="col-lg-6">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1>Tooth Status</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table width="100%">
+                    <tr *ngFor="let item of toothStatuses">
+                        <ng-container *ngFor="let tooth of item">
+                            <td *ngIf="tooth.toothNo !== 0" style="padding-bottom: 10px; text-align: center">
+                                <button *ngIf="tooth.toothNo === currentTooth" [ngClass]="'btn btn-warning btn-xs'" style="margin : 0px; text-align: center" (click)="toothClick(tooth.toothNo)">
+                                    {{tooth.toothNo}}
+                                </button>
+                                <button *ngIf="tooth.toothNo !== currentTooth" 
+                                    [ngClass]="toothMap[tooth.toothNo].status ? 'btn btn-info btn-xs' : 'btn btn-xs'"
+                                    style="margin : 0px; text-align: center" (click)="toothClick(tooth.toothNo)">
+                                    {{tooth.toothNo}}
+                                </button>
+                            </td>    
+                            <td *ngIf="tooth.toothNo == 0" style="padding-left: 10px;">
+
+                            </td>   
+                        </ng-container>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h4>Diagnosis</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <tooth-action [actionName]="'Diagnosis'" [actionsList]="diagnosisList" [toothActions]="toothDiagnosis" [currentToothNo]="currentToothNo"
+                    (onAdd)="addDiagnosis($event)" (onRemove)="removeDiagnosis($event)" >
+                </tooth-action>
+            </div>
+        </div> 
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h4>Manipulations</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <tooth-action [actionName]="'Manipulation'" [actionsList]="manipulationsList" [toothActions]="toothManipulations" [currentToothNo]="currentToothNo"
+                    (onAdd)="addManipulation($event)" (onRemove)="removeManipulation($event)" >
+                </tooth-action>
+            </div>
+        </div> 
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="btn btn-default" type="button" (click)="back()" style="margin-top: 20px">
+                <i class="icon-step-backward icon-constant"></i><span class="btn-action">Back</span>
+            </button>
+        </div>
+    </div>
+</div>

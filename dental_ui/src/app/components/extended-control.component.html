@@ -1,0 +1,7 @@
+<div class="form-group" [ngClass]="{'has-error':isDisplayed()}">
+    <label *ngIf="displayLabel" class="control-label {{classLabel}}" for="control">{{labeltext}}</label>
+    <div class="{{classValue}}">
+        <ng-content></ng-content>
+        <control-errors [control]="control" [formsubmitted]="formsubmitted"></control-errors>
+    </div>
+</div>

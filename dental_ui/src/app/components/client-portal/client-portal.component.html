@@ -1,0 +1,43 @@
+<header>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="navbar-brand">
+                    <span class="toggle-left-menu" (click)="toggleOpenCloseMenu()"><i class="icon-reorder"></i></span>
+                </div>
+            </div>
+            <div class="optional-items">
+                <div class="name-tag">Hello, {{userName$ | async}}</div>
+                <ul class="nav navbar-nav">
+                    <li *ngIf="isLogged$ | async">
+                        <a href="javascript:void(0)" (click)="logout()" [routerLink]="['../login']">
+                            <i class="icon-signout"></i>
+                            <span class="hidden-xxsmall">Log out</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </nav>
+</header>
+<div class="container-fluid">
+    <div class="sidebar" [ngClass]="{'menu-open' : menuOpen, 'menu-close': !menuOpen, 'sidebar-short': menuShort}" *ngIf="isLogged$ | async">
+        <div class="sidebar-menu">
+            <div class="sidebar-short-toggler" (click)="toggleShortWideMenu()">
+                <span class="fa" [ngClass]="{'fa-caret-left' : !menuShort, 'fa-caret-right': menuShort }"></span>
+            </div>
+            <app-menu></app-menu>
+        </div>
+    </div>
+    <div class="main" [ngClass]="{ 'sidebar-short': menuShort, 'menu-close': !menuOpen}">
+        <main>
+            <article>
+                <div class="row">
+                    <router-outlet (activate)="onActivate()"></router-outlet>
+                </div>
+            </article>
+        </main>
+    </div>
+</div>
+    

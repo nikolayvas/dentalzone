@@ -52,7 +52,7 @@
         
         <div class="form-group">
             <div class="col-md-offset-4 col-lg-offset-3 col-md-8 col-lg-9">
-                <button class="btn btn-primary" type="submit" [attr.disabled]="!patientProfileForm.valid"><i class="icon-save icon-constant"></i><span class="btn-action">Save</span></button>
+                <button class="btn btn-primary" type="submit" [disabled]="!patientProfileForm.valid"><i class="icon-save icon-constant"></i><span class="btn-action">Save</span></button>
                 <button class="btn btn-default" type="button" (click)="back()"><i class="icon-step-backward icon-constant"></i><span class="btn-action">Back</span></button>
             </div>
         </div>

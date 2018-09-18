@@ -14,7 +14,7 @@ import { Utils } from '../../services/utils'
 export class PatientsListComponent implements OnInit, OnDestroy {
 
     patients$: Observable<IPatientData[]>;
-    private searchFor: string;
+    searchFor: string;
 
     constructor(
         private router: Router,

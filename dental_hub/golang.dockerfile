@@ -17,3 +17,6 @@ WORKDIR /dental_hub
 CMD ["./main"]
 
 EXPOSE 4001
+
+# docker build -t golang_dentalzone -f golang.dockerfile .
+# docker run -p 4001:4001 golang_dentalzone

@@ -9,11 +9,11 @@ import { AuthService } from '../../auth/auth.service';
 })
 
 export class ClientPortalComponent implements OnInit, OnDestroy {
-    private isLogged$: Observable<boolean>;
-    private userName$: Observable<string>;
+    isLogged$: Observable<boolean>;
+    userName$: Observable<string>;
 
-    private menuOpen: boolean = false;
-    private menuShort: boolean = false;
+    menuOpen: boolean = false;
+    menuShort: boolean = false;
 
     constructor(private auth: AuthService
     ) {
@@ -33,7 +33,7 @@ export class ClientPortalComponent implements OnInit, OnDestroy {
         this.auth.logout();
     }
  
-    private onActivate() {
+    onActivate() {
         // a workaround to scroll to top when a navigation occurs
         //window.scrollTo(0, 0)
     }

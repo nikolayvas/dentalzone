@@ -26,21 +26,21 @@ export class ToothStatusComponent implements OnInit {
     private subscriptions: Subscription = new Subscription();
 
     private patientId: string;
-    private currentToothNo: string;
+    currentToothNo: string;
 
     private teeth: number[][] = [
         [18, 17, 16, 15, 14, 13, 12, 11, 0, 21, 22, 23, 24, 25, 26, 27, 28],
         [48, 47, 46, 45 ,44, 43, 42, 41, 0, 31, 32, 33, 34, 35, 36, 37, 38]
     ]
 
-    private toothStatuses: IToothStatus[][] = [];
+    toothStatuses: IToothStatus[][] = [];
     private toothMap: { [tooth: number] : IToothStatus} = [];
 
-    private manipulationsList: ManipulationModel[];
-    private diagnosisList: DiagnosisModel[];
+    manipulationsList: ManipulationModel[];
+    diagnosisList: DiagnosisModel[];
 
-    private toothManipulations: ToothActionModel[] = [];
-    private toothDiagnosis: ToothActionModel[] = []
+    toothManipulations: ToothActionModel[] = [];
+    toothDiagnosis: ToothActionModel[] = []
 
     private selectedManipulation: ManipulationModel;
     private selectedDiagnosis: DiagnosisModel;

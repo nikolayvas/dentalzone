@@ -13,7 +13,7 @@ export class ExtendedControlComponent {
     @Input() classLabel: string;
     @Input() classValue: string;
 
-    private get displayLabel(): boolean {
+    get displayLabel(): boolean {
         return this.labeltext && this.labeltext.trim() !== '';
     }
 

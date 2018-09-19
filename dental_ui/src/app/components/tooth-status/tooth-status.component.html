@@ -5,18 +5,20 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-xs-12">
             <div class="table-responsive">
                 <table width="100%">
                     <tr *ngFor="let item of toothStatuses">
                         <ng-container *ngFor="let tooth of item">
                             <td *ngIf="tooth.toothNo !== 0" style="padding-bottom: 10px; text-align: center">
-                                <button *ngIf="tooth.toothNo === currentTooth" [ngClass]="'btn btn-warning btn-xs'" style="margin : 0px; text-align: center" (click)="toothClick(tooth.toothNo)">
+                                <button *ngIf="tooth.toothNo === currentToothNo" 
+                                    [ngClass]="'btn btn-warning btn-xxs'" 
+                                    style="margin : 0px;" (click)="toothClick(tooth.toothNo)">
                                     {{tooth.toothNo}}
                                 </button>
-                                <button *ngIf="tooth.toothNo !== currentTooth" 
-                                    [ngClass]="toothMap[tooth.toothNo].status ? 'btn btn-info btn-xs' : 'btn btn-xs'"
-                                    style="margin : 0px; text-align: center" (click)="toothClick(tooth.toothNo)">
+                                <button *ngIf="tooth.toothNo !== currentToothNo" 
+                                    [ngClass]="toothMap[tooth.toothNo].status ? 'btn btn-info btn-xxs' : 'btn btn-xxs'"
+                                    style="margin : 0px;" (click)="toothClick(tooth.toothNo)">
                                     {{tooth.toothNo}}
                                 </button>
                             </td>    

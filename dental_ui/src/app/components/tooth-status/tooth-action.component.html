@@ -1,10 +1,10 @@
 <p-table [value]="toothActions" tableStyleClass="table table-list table-no-vert-border table-hover">
     <ng-template pTemplate="header">
         <tr>
-            <th class="col-md-1">Tooth No</th>
-            <th class="col-md-8">{{actionName}}</th>
-            <th class="col-md-2" >Date</th>
-            <th class="col-md-1"></th>
+            <th class="col-xs-1 col-md-1">Tooth No</th>
+            <th class="col-xs-3 col-md-8">{{actionName}}</th>
+            <th class="col-xs-2 col-md-2" >Date</th>
+            <th class="col-xs-1 col-md-1"></th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-action>
@@ -25,7 +25,7 @@
                 {{currentToothNo}}
             </td>
             <td>
-                <p-dropdown appendTo="body" [options]="actionsList" [(ngModel)]="selectedAction" 
+                <p-dropdown appendTo="body" [options]="actionsList" [(ngModel)]="selectedAction"
                     placeholder="Select" [autoWidth]="false" [style]="{'width':'100%'}" optionLabel="name">
                 </p-dropdown>
             </td>

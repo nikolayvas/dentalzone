@@ -1,14 +1,15 @@
 import { combineReducers, ActionReducerMap } from '@ngrx/store';
 
-import { ClientPortalSeedActions } from '../store/seed-actions';
 import { patientReducer, IPatientsStoreState } from './patient-reducer';
 import { metaDataReducer, IMetaDataState } from './seed-reducer';
 import { teethDataReducer, ITeethDataState } from './teeth-data.reducer';
+import { IUIStoreState, uiReducer } from './ui-reducer';
 
 /**
  * Client Portal combined state.
  */
 export interface IClientPortalStoreState {
+    uiState: IUIStoreState,
     patientsState: IPatientsStoreState,
     metaData: IMetaDataState,
     teethDataState: ITeethDataState
@@ -18,6 +19,7 @@ export interface IClientPortalStoreState {
  * Client Portal combined reducer.
  */
 export const clientPortalStoreReducer = combineReducers({
+    uiState: uiReducer,
     patientsState: patientReducer,
     metaData: metaDataReducer,
     teethDataState: teethDataReducer

@@ -10,8 +10,8 @@
         </div>
         <h1>Patients List</h1>
         
-        <div class="table-responsive">
-            <p-table [value]="(patients$ | async)| filter: searchFor" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="false" [responsive]="true" tableStyleClass="table table-list table-no-vert-border table-hover">
+        <div>
+            <p-table [value]="(patients$ | async)| filter: searchFor" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="false" [responsive]="true" tableStyleClass="table table-list table-no-vert-border table-hover">
                 <ng-template pTemplate="header">
                     <tr>
                         <th>First Name</th>

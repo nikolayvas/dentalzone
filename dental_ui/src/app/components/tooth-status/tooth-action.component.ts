@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { IActionTypeModel } from '../../models/action-type.model'
 import { ToothActionModel} from '../../models/tooth-action.model'
 import { Utils } from '../../services/utils'
+import { ConfirmationService } from 'primeng/primeng';
 
 @Component({
     selector: 'tooth-action',
@@ -30,7 +31,7 @@ export class ToothActionComponent implements OnInit {
     private selectedAction: IActionTypeModel
 
     constructor(
-       
+        private confirmationService: ConfirmationService
     ) {
            
     }
@@ -48,7 +49,14 @@ export class ToothActionComponent implements OnInit {
     }
 
     removeAction(id: string): void {
-        this.onRemove.emit({toothActionid: id});
+        this.confirmationService.confirm({
+            header: 'Remove action',
+            message: 'Are you sure you want to remove that item?',
+            icon: 'fa fa-question-circle',
+            accept: () => {
+                this.onRemove.emit({toothActionid: id});
+            }
+        });
     }
 
     get allowAddAction(): boolean {

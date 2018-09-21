@@ -6,7 +6,7 @@ import { Utils } from '../../services/utils'
 
 import { InputValidators } from '../../validation/input-validators'
 import { PatientService } from '../../services/patient.service'
-import { IPatientData, PatientDto } from '../../models/patient.dto';
+import { IPatientData } from '../../models/patient.dto';
 
 
 @Component({

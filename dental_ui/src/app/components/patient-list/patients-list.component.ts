@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 
 import { IPatientData } from '../../models/patient.dto';
 import { PatientService } from '../../services/patient.service'
+import { ConfirmationService } from 'primeng/primeng';
+
 import { Utils } from '../../services/utils'
 
 @Component({
@@ -13,14 +14,16 @@ import { Utils } from '../../services/utils'
 
 export class PatientsListComponent implements OnInit, OnDestroy {
 
+    private subscriptions: Subscription = new Subscription();
     patients$: Observable<IPatientData[]>;
     searchFor: string;
 
     constructor(
-        private router: Router,
-        private service: PatientService 
+        private service: PatientService ,
+        private confirmationService: ConfirmationService,
     ) {
         this.patients$ = this.service.patients$;
+        this.subscriptions.add(this.service.patientSearchFilterChanged$.subscribe(n=>this.searchFor = n));
     }
 
     ngOnInit() {
@@ -28,14 +31,22 @@ export class PatientsListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        
+        Utils.unsubscribe(this.subscriptions);
     }
 
     inputChange(control) {
-        this.searchFor = control.target.value;
+        const filter = control.target.value;
+        this.service.changeSearchFilter(filter);
     }
 
     remove(patient : IPatientData) {
-        this.service.removePatient(patient.id);
+        this.confirmationService.confirm({
+            header: 'Remove patient',
+            message: 'Are you sure you want to remove that patient?',
+            icon: 'fa fa-question-circle',
+            accept: () => {
+                this.service.removePatient(patient.id);
+            }
+        });
     }
 }

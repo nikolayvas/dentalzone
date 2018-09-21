@@ -219,7 +219,7 @@ func (r Repository) GetPatients(dentistID *string) ([]m.Patient, error) {
 			[PhoneNumber],
 			[GeneralInfo],
 			[RegistrationDate]
-		 from patientinfo where dentistId = ? and (IsDeleted = 0 OR IsDeleted is NULL)`, dentistID)
+		 from patientinfo where dentistId = ? and (IsDeleted = 0 OR IsDeleted is NULL) Order by [FirstName]`, dentistID)
 
 	if err != nil {
 		return nil, err

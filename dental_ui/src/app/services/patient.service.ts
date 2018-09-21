@@ -7,6 +7,7 @@ import { IPatientData } from '../models/patient.dto';
 import { StoreService } from './store.service'
 import { GuidService } from './guid.service'
 import * as actions from '../store/patient-actions';
+import * as uiActions from '../store/ui-actions';
 import { AuthService} from '../auth/auth.service'
 
 @Injectable()
@@ -14,6 +15,10 @@ export class PatientService {
 
     get patients$() : Observable<IPatientData[]> {
         return this.store.select(n => n.data.clientPortalStore.patientsState.patients);
+    }
+
+    get patientSearchFilterChanged$(): Observable<string> {
+        return this.store.select(n=>n.data.clientPortalStore.uiState.patients_filter);
     }
 
      constructor(
@@ -26,6 +31,10 @@ export class PatientService {
                 this.seedPatientsList()
             }
         })
+    }
+
+    changeSearchFilter(filter: string): void {
+        this.store.dispatch({ type: uiActions.UIActions.SET_PATIENTS_FILTER, payload: filter });
     }
 
     seedPatientsList(): void {

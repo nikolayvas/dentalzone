@@ -1,57 +1,58 @@
-<div id="page-wrapper">
-
-    <div class="col-sm-12">
-        <div class="inner-addon left-addon position-relative navbar-form pull-right p-null">
-            <i class="fa fa-search"></i>
-            <input class="form-control" #filterValue
-                 name="query" placeholder="Search" type="text"
-                 (input)="inputChange($event)"
-                 autocomplete="off" />
-        </div>
-        <h1>Patients List</h1>
-        
-        <div>
-            <p-table [value]="(patients$ | async)| filter: searchFor" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="false" [responsive]="true" tableStyleClass="table table-list table-no-vert-border table-hover">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Phone Number(s)</th>
-                        <th>Tooth status</th>
-                        <th></th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-item>
-                    <tr>
-                        <td>{{item.firstName}}</td>
-                        <td>{{item.lastName}}</td>
-                        <td>{{item.phoneNumber}}</td>
-                        <td>
-                            <div class="btn-group btn-group-xs" role="group" >
-                                <button class="btn btn-primary btn-xs" [routerLink]="['tooth-status', item.id]" style="margin-right : 0px">
-                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-xs" role="group" >
-                                <button class="btn btn-primary btn-xs" [routerLink]="['edit-patient-profile', item.id]" style="margin-right : 0px">
-                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit</button>
-                                <button class="btn btn-default btn-xs" (click)="remove(item)" style="margin-right : 0px">
-                                    <i class="fa fa-trash-o" aria-hidden="true"></i>Remove
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="footer" let-columns>
-                    <tr>
-                        <td colspan="5">
-                            <button class="btn btn-primary btn-xs m-b-xs" [routerLink]="['add-patient-profile']"><i class="icon-plus icon-constant"></i>Add a patient</button>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
+<form [formGroup]="form">
+    <div id="page-wrapper">
+        <div class="col-sm-12">
+            <div class="inner-addon left-addon position-relative navbar-form pull-right p-null">
+                <i class="fa fa-search"></i>
+                <input id="search" name="search" formControlName="search"
+                        name="query" placeholder="Search" type="text"
+                        autocomplete="off" />
+            </div>
+            <h1>Patients List</h1>
+            
+            <div>
+                <p-table [value]="(patients$ | async)| filter: searchFor" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="false" [responsive]="true" tableStyleClass="table table-list table-no-vert-border table-hover">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Phone Number(s)</th>
+                            <th>Tooth status</th>
+                            <th></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td>{{item.firstName}}</td>
+                            <td>{{item.lastName}}</td>
+                            <td>{{item.phoneNumber}}</td>
+                            <td>
+                                <div class="btn-group btn-group-xs" role="group" >
+                                    <button class="btn btn-primary btn-xs" [routerLink]="['tooth-status', item.id]" style="margin-right : 0px">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-xs" role="group" >
+                                    <button class="btn btn-primary btn-xs" [routerLink]="['edit-patient-profile', item.id]" style="margin-right : 0px">
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit</button>
+                                    <button class="btn btn-default btn-xs" (click)="remove(item)" style="margin-right : 0px">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>Remove
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="footer" let-columns>
+                        <tr>
+                            <td colspan="5">
+                                <button class="btn btn-primary btn-xs m-b-xs" [routerLink]="['add-patient-profile']"><i class="icon-plus icon-constant"></i>Add a patient</button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
         </div>
     </div>
-</div>
+</form>
+

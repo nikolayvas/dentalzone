@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
+import { FormGroup, FormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
 import { IPatientData } from '../../models/patient.dto';
@@ -12,7 +13,11 @@ import { Utils } from '../../services/utils'
     templateUrl: './patients-list.component.html'
 })
 
-export class PatientsListComponent implements OnInit, OnDestroy {
+export class PatientsListComponent implements OnDestroy {
+
+    form: FormGroup;
+
+    search: FormControl;
 
     private subscriptions: Subscription = new Subscription();
     patients$: Observable<IPatientData[]>;
@@ -22,21 +27,17 @@ export class PatientsListComponent implements OnInit, OnDestroy {
         private service: PatientService ,
         private confirmationService: ConfirmationService,
     ) {
-        this.patients$ = this.service.patients$;
-        this.subscriptions.add(this.service.patientSearchFilterChanged$.subscribe(n=>this.searchFor = n));
-    }
+        this.form = new FormGroup({
+            search: this.search = new FormControl('')
+        });
 
-    ngOnInit() {
-       
+        this.patients$ = this.service.patients$;
+
+        this.initDataSubscriptions();
     }
 
     ngOnDestroy() {
         Utils.unsubscribe(this.subscriptions);
-    }
-
-    inputChange(control) {
-        const filter = control.target.value;
-        this.service.changeSearchFilter(filter);
     }
 
     remove(patient : IPatientData) {
@@ -48,5 +49,16 @@ export class PatientsListComponent implements OnInit, OnDestroy {
                 this.service.removePatient(patient.id);
             }
         });
+    }
+
+    private initDataSubscriptions() {
+        this.subscriptions.add(this.search.valueChanges.subscribe(n=> {
+            this.service.changeSearchFilter(n);
+        }));
+
+        this.subscriptions.add(this.service.patientSearchFilterChanged$.subscribe(n=>{
+            this.search.patchValue(n, { emitEvent: false });
+            this.searchFor = n;
+        }));
     }
 }

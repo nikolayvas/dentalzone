@@ -17,14 +17,14 @@ export class FilterPatientsListPipe implements PipeTransform {
 
     filter(item: IPatientData, query: string): boolean {
         if (!!item) {
-            return item.firstName.toLowerCase().includes(query) ||
-            item.firstName.toLowerCase().includes(query) ||
-            item.middleName.toLowerCase().includes(query) ||
-            item.lastName.toLowerCase().includes(query) ||
-            item.address.toLowerCase().includes(query) ||
-            item.email.toLowerCase().includes(query) ||
-            item.phoneNumber.toLowerCase().includes(query) || 
-            item.generalInfo.toLowerCase().includes(query)
+            return (item.firstName && item.firstName.toLowerCase().includes(query)) ||
+            (item.firstName && item.firstName.toLowerCase().includes(query)) ||
+            (item.middleName && item.middleName.toLowerCase().includes(query)) ||
+            (item.lastName && item.lastName.toLowerCase().includes(query)) ||
+            (item.address && item.address.toLowerCase().includes(query)) ||
+            (item.email && item.email.toLowerCase().includes(query)) ||
+            (item.phoneNumber && item.phoneNumber.toLowerCase().includes(query)) || 
+            (item.generalInfo && item.generalInfo.toLowerCase().includes(query))
         }
 
         return false;

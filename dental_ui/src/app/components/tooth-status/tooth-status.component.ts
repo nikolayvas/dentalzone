@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MetaDataService } from '../../services/meta-data.service'
+import { PatientService } from '../../services/patient.service'
 
 import { ManipulationModel } from '../../models/manipulation.model';
 import { DiagnosisModel } from '../../models/diagnosis.mode';
@@ -11,6 +12,7 @@ import { Utils } from '../../services/utils'
 
 import { ToothStatusService } from '../../services/tooth-status.service'
 import { ToothActionModel } from '../../models/tooth-action.model';
+import { IPatientData } from '../../models/patient.dto';
 
 export interface IToothStatus {
     toothNo: number,
@@ -22,6 +24,8 @@ export interface IToothStatus {
   templateUrl: './tooth-status.component.html'
 })
 export class ToothStatusComponent implements OnInit {
+
+    private _patient: IPatientData;
 
     private subscriptions: Subscription = new Subscription();
 
@@ -53,11 +57,16 @@ export class ToothStatusComponent implements OnInit {
         return this.selectedManipulation && !Utils.isBlankOrEmpty(this.currentToothNo);
     }
 
+    get patientName(): string {
+        return `( ${ this._patient.firstName || "" } ${this._patient.lastName || ""} )`;
+    }
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private metaDataService: MetaDataService,
-        private toothService: ToothStatusService
+        private toothService: ToothStatusService,
+        private facade: PatientService
       ) {
             this.patientId = this.route.snapshot.params['id'];
 
@@ -74,6 +83,12 @@ export class ToothStatusComponent implements OnInit {
     }
         
     ngOnInit() {
+
+        this.subscriptions.add(this.facade.getPatient$(this.patientId).subscribe(patient => {
+            if (!!patient) {
+                this._patient = patient;
+            }
+        }));
 
         const manipulationsSubscription: Subscription = this.metaDataService.manipulations$().subscribe(n => {
             this.manipulationsList = n;

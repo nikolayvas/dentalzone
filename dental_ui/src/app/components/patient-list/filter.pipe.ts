@@ -17,6 +17,24 @@ export class FilterPatientsListPipe implements PipeTransform {
 
     filter(item: IPatientData, query: string): boolean {
         if (!!item) {
+
+            const parts = query.split(" ");
+
+            for (var i = 0; i < parts.length; i++) {
+               if(!this.hasMatch(item, parts[i] )) {
+                   return false;
+               }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    hasMatch(item: IPatientData, query: string): boolean {
+        if (!!item) {
+
             return (item.firstName && item.firstName.toLowerCase().includes(query)) ||
             (item.firstName && item.firstName.toLowerCase().includes(query)) ||
             (item.middleName && item.middleName.toLowerCase().includes(query)) ||
@@ -26,7 +44,5 @@ export class FilterPatientsListPipe implements PipeTransform {
             (item.phoneNumber && item.phoneNumber.toLowerCase().includes(query)) || 
             (item.generalInfo && item.generalInfo.toLowerCase().includes(query))
         }
-
-        return false;
     }
 }

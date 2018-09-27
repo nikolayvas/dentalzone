@@ -51,6 +51,14 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "bg": {
+              "aot": true,
+              "outputPath": "dist",
+              "i18nFile": "src/locale/messages.bg.xlf",
+              "i18nFormat": "xlf",
+              "i18nLocale": "bg",
+              "i18nMissingTranslation": "error"
             }
           }
         },
@@ -62,6 +70,9 @@
           "configurations": {
             "production": {
               "browserTarget": "dental-app2:build:production"
+            },
+            "bg": {
+              "browserTarget": "dental-app2:build:bg"
             }
           }
         },

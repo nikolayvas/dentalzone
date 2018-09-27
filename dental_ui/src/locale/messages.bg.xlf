@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="joinDentalZoneToday" datatype="html">
+        <source>Join Dental Zone today.</source>
+        <target>Добре дошли в дентална зона</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/home/home.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="signUp" datatype="html">
+        <source>Sign Up</source>
+        <target>Регистрация</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/home/home.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="logiIn" datatype="html">
+        <source>Log In</source>
+        <target>Вход</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/home/home.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/login/login.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/login/login.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="email" datatype="html">
+        <source>Email</source>
+        <target>Имейл адрес</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/login/login.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <note priority="1" from="description">Email placeholder</note>
+      </trans-unit>
+      <trans-unit id="password" datatype="html">
+        <source>Password</source>
+        <target>Парола</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/login/login.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forgotPassword" datatype="html">
+        <source>Forgot password?</source>
+        <target>Забравена парола?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/login/login.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="findYourDentalZoneAccount" datatype="html">
+        <source>Find your Dental Zone account</source>
+        <target>Открий cвоя потребител</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/login/forgot-password.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="searchForAccount" datatype="html">
+        <source>Search</source>
+        <target>Търсене</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/login/forgot-password.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="logout" datatype="html">
+        <source>Log out</source>
+        <target>Изход</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/client-portal/client-portal.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="patientsList" datatype="html">
+        <source>Patients List</source>
+        <target>Пациенти</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/components/patient-list/patients-list.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword" datatype="html">
+        <source>Reset your password</source>
+        <target>Промени паролата си</target>
+      </trans-unit>
+       <trans-unit id="enterYourEmail" datatype="html">
+        <source>Enter your Email</source>
+        <target>Въведи имейл адрес</target>
+      </trans-unit>
+      <trans-unit id="newPassword" datatype="html">
+        <source>New password</source>
+        <target>Нова парола</target>
+      </trans-unit>
+      <trans-unit id="confirmPassword" datatype="html">
+        <source>Confirm password</source>
+        <target>Потвърди паролата</target>
+      </trans-unit>
+      <trans-unit id="confirmResetCode" datatype="html">
+        <source>Confirmation reset Code</source>
+        <target>Потвърди кода за подновяване</target>
+      </trans-unit>
+      <trans-unit id="code" datatype="html">
+        <source>Code</source>
+        <target>Код</target>
+      </trans-unit>
+      <trans-unit id="reset" datatype="html">
+        <source>Reset</source>
+        <target>Поднови</target>
+      </trans-unit>
+      <trans-unit id="cancel" datatype="html">
+        <source>Cancel</source>
+        <target>Отказ</target>
+      </trans-unit>
+      <trans-unit id="firstName" datatype="html">
+        <source>First Name</source>
+        <target>Име</target>
+      </trans-unit>
+      <trans-unit id="middleName" datatype="html">
+        <source>Middle Name</source>
+        <target>Бащино име</target>
+      </trans-unit>
+      <trans-unit id="lastName" datatype="html">
+        <source>Last Name</source>
+        <target>Фамилия</target>
+      </trans-unit>
+      <trans-unit id="address" datatype="html">
+        <source>Address</source>
+        <target>Адрес</target>
+      </trans-unit>
+      <trans-unit id="phoneNumber" datatype="html">
+        <source>Phone number(s)</source>
+        <target>Телефон</target>
+      </trans-unit>
+      <trans-unit id="generalInfo" datatype="html">
+        <source>General Info</source>
+        <target>Обща информация</target>
+      </trans-unit>
+      <trans-unit id="registrationDate" datatype="html">
+        <source>Registration Date</source>
+        <target>Дата на регистрация</target>
+      </trans-unit>
+      <trans-unit id="save" datatype="html">
+        <source>Save</source>
+        <target>Запази</target>
+      </trans-unit>
+      <trans-unit id="back" datatype="html">
+        <source>Back</source>
+        <target>Върни се</target>
+      </trans-unit>
+      <trans-unit id="toothStatus" datatype="html">
+        <source>Tooth status</source>
+        <target>Зъбен статус</target>
+      </trans-unit>
+      <trans-unit id="edit" datatype="html">
+        <source>Edit</source>
+        <target>Редактирай</target>
+      </trans-unit>
+       <trans-unit id="remove" datatype="html">
+        <source>Remove</source>
+        <target>Изтрий</target>
+      </trans-unit>
+      <trans-unit id="toothNo" datatype="html">
+        <source>Tooth No</source>
+        <target>Номер</target>
+      </trans-unit>
+       <trans-unit id="diagnosis" datatype="html">
+        <source>Diagnosis</source>
+        <target>Диагноза</target>
+      </trans-unit>
+      <trans-unit id="manipulation" datatype="html">
+        <source>Manipulation</source>
+        <target>Манипулация</target>
+      </trans-unit>
+      <trans-unit id="date" datatype="html">
+        <source>Date</source>
+        <target>Дата</target>
+      </trans-unit>
+      <trans-unit id="addPatient" datatype="html">
+        <source>Add a patient</source>
+        <target>Добави пациент</target>
+      </trans-unit>
+      <trans-unit id="name" datatype="html">
+        <source>Name</source>
+        <target>Име</target>
+      </trans-unit>
+
+      
+
+      
+    </body>
+  </file>
+</xliff>

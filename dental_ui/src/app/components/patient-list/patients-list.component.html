@@ -7,16 +7,16 @@
                         name="query" placeholder="Search" type="text"
                         autocomplete="off" />
             </div>
-            <h1>Patients List</h1>
+            <h1 i18n="@@patientsList">Patients List</h1>
             
             <div>
                 <p-table [value]="(patients$ | async)| filter: searchFor" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="false" [responsive]="true" tableStyleClass="table table-list table-no-vert-border table-hover">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Phone Number(s)</th>
-                            <th>Tooth status</th>
+                            <th i18n="@@firstName">First Name</th>
+                            <th i18n="@@lastName">Last Name</th>
+                            <th i18n="@@phoneNumber">Phone Number(s)</th>
+                            <th i18n="@@toothStatus">Tooth status</th>
                             <th></th>
                         </tr>
                     </ng-template>
@@ -35,9 +35,10 @@
                             <td>
                                 <div class="btn-group btn-group-xs" role="group" >
                                     <button class="btn btn-primary btn-xs" [routerLink]="['edit-patient-profile', item.id]" style="margin-right : 0px">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit</button>
-                                    <button class="btn btn-default btn-xs" (click)="remove(item)" style="margin-right : 0px">
-                                        <i class="fa fa-trash-o" aria-hidden="true"></i>Remove
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i><ng-container i18n="@@edit">Edit</ng-container>
+                                    </button>
+                                    <button class="btn btn-default btn-xs" (click)="remove(item)" style="margin-right : 0px" >
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i><ng-container i18n="@@remove">Remove</ng-container>
                                     </button>
                                 </div>
                             </td>
@@ -46,7 +47,9 @@
                     <ng-template pTemplate="footer" let-columns>
                         <tr>
                             <td colspan="5">
-                                <button class="btn btn-primary btn-xs m-b-xs" [routerLink]="['add-patient-profile']"><i class="icon-plus icon-constant"></i>Add a patient</button>
+                                <button class="btn btn-primary btn-xs m-b-xs" [routerLink]="['add-patient-profile']">
+                                    <i class="icon-plus icon-constant"></i><ng-container i18n="@@addPatient">Add a patient</ng-container>
+                                </button>
                             </td>
                         </tr>
                     </ng-template>

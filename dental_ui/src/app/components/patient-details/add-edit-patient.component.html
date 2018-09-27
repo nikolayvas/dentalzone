@@ -2,49 +2,49 @@
     <div class="col-md-7 col-lg-8">
         <h1>Profile</h1>
         <extended-control [control]="firstName"
-            [labeltext]="'First Name'"
+            labeltext="First Name" i18n-labeltext="First Name|@@firstName"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="firstName" name="firstName" formControlName="firstName"
                 type="text" class="form-control"/>
         </extended-control>
         <extended-control [control]="middleName"
-            [labeltext]="'Middle Name'"
+            labeltext="Middle Name" i18n-labeltext="Middle Name|@@middleName"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="middleName" name="middleName" formControlName="middleName"
                 type="text" class="form-control"/>
         </extended-control>
         <extended-control [control]="lastName"
-            [labeltext]="'Last Name'"
+            labeltext="Last Name" i18n-labeltext="Last Name|@@lastName"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="lastName" name="lastName" formControlName="lastName"
                 type="text" class="form-control"/>
         </extended-control>
         <extended-control [control]="email"
-            [labeltext]="'Email'"
+            labeltext="Email" i18n-labeltext="Email|@@email"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="email" name="email" formControlName="email"
                 type="text" class="form-control"/>
         </extended-control>
         <extended-control [control]="address"
-            [labeltext]="'Address'"
+            labeltext="Address" i18n-labeltext="Address|@@address"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="address" name="address" formControlName="address"
                 type="text" class="form-control"/>
         </extended-control>
         <extended-control [control]="phoneNumber"
-            [labeltext]="'Phone number(s)'"
+            labeltext="Phone number(s)" i18n-labeltext="Phone number|@@phoneNumber"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="phoneNumber" name="phoneNumber" formControlName="phoneNumber"
                 type="text" class="form-control"/>
         </extended-control>
         <extended-control [control]="generalInfo"
-            [labeltext]="'General Info'"
+            labeltext="General Info" i18n-labeltext="General Info|@@generalInfo"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="generalInfo" name="generalInfo" formControlName="generalInfo"
                 type="text" class="form-control"/>
         </extended-control>
         <extended-control [control]="registrationDate"
-            [labeltext]="'Registration Date'"
+            labeltext="Registration Date" i18n-labeltext="Registration Date|@@registrationDate"
             classLabel="col-md-4 col-lg-3" classValue="col-md-8 col-lg-9">
             <input id="registrationDate" name="registrationDate" formControlName="registrationDate"
                 type="text" class="form-control"/>
@@ -52,8 +52,8 @@
         
         <div class="form-group">
             <div class="col-md-offset-4 col-lg-offset-3 col-md-8 col-lg-9">
-                <button class="btn btn-primary" type="submit" [disabled]="!patientProfileForm.valid"><i class="icon-save icon-constant"></i><span class="btn-action">Save</span></button>
-                <button class="btn btn-default" type="button" (click)="back()"><i class="icon-step-backward icon-constant"></i><span class="btn-action">Back</span></button>
+                <button class="btn btn-primary" type="submit" [disabled]="!patientProfileForm.valid"><i class="icon-save icon-constant"></i><span class="btn-action" i18n="@@save">Save</span></button>
+                <button class="btn btn-default" type="button" (click)="back()"><i class="icon-step-backward icon-constant"></i><span class="btn-action" i18n="@@back">Back</span></button>
             </div>
         </div>
     </div>

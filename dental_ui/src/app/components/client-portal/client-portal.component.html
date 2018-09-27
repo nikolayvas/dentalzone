@@ -7,12 +7,12 @@
                 </div>
             </div>
             <div class="optional-items">
-                <div class="name-tag">Hello, {{userName$ | async}}</div>
+                <div class="name-tag">{{userName$ | async}}</div>
                 <ul class="nav navbar-nav">
                     <li *ngIf="isLogged$ | async">
                         <a href="javascript:void(0)" (click)="logout()" [routerLink]="['../login']">
                             <i class="icon-signout"></i>
-                            <span class="hidden-xxsmall">Log out</span>
+                            <span class="hidden-xxsmall" i18n="@@logout">Log out</span>
                         </a>
                     </li>
                 </ul>

@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component'
@@ -15,7 +16,7 @@ import { MenuComponent } from './components/menu/menu.component';
 import { PatientsListComponent } from "./components/patient-list/patients-list.component";
 import { PatientProfileComponent} from "./components/patient-details/add-edit-patient.component"
 
-import { HttpClientModule, HttpRequest, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CustomHttpInterceptor } from './services/http-interceptor.service'
 import { NotificationsManager } from './services/notifications-manager'
 import { AuthService } from './auth/auth.service'
@@ -83,6 +84,7 @@ import {TableModule} from 'primeng/table';
     ToastModule
   ],
   providers: [
+    DatePipe,
     { provide: HTTP_INTERCEPTORS, useClass: CustomHttpInterceptor, multi: true },   
     ConfirmationService,
     AuthService,

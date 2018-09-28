@@ -7,6 +7,7 @@ import { Utils } from '../../services/utils'
 import { InputValidators } from '../../validation/input-validators'
 import { PatientService } from '../../services/patient.service'
 import { IPatientData } from '../../models/patient.dto';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -34,7 +35,8 @@ export class PatientProfileComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private facade: PatientService
+        private facade: PatientService,
+        private datePipe: DatePipe
     ) {
 
     }
@@ -65,7 +67,8 @@ export class PatientProfileComponent implements OnInit, OnDestroy {
         if (!this.isNew) {
             this.subscriptions.add(this.facade.getPatient$(this.patientId).subscribe(patient => {
                 if (!!patient) {
-                    this.patientProfileForm.patchValue(patient);
+                    const formatted = Object.assign({}, patient, {registrationDate: this.datePipe.transform(patient.registrationDate,"dd-MM-yyyy")});
+                    this.patientProfileForm.patchValue(formatted);
                 }
             }));
         }

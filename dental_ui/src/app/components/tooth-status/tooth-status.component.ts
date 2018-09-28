@@ -29,8 +29,8 @@ export class ToothStatusComponent implements OnInit {
 
     private subscriptions: Subscription = new Subscription();
 
-    private patientId: string;
-    currentToothNo: string;
+    private patientId: string = undefined;
+    currentToothNo: string = undefined;
 
     private teeth: number[][] = [
         [18, 17, 16, 15, 14, 13, 12, 11, 0, 21, 22, 23, 24, 25, 26, 27, 28],
@@ -58,7 +58,11 @@ export class ToothStatusComponent implements OnInit {
     }
 
     get patientName(): string {
-        return `( ${ this._patient.firstName || "" } ${this._patient.lastName || ""} )`;
+        if(!this._patient) {
+            return "";
+        }
+
+        return `${ this._patient.firstName || "" } ${this._patient.lastName || ""}`;
     }
 
     constructor(
@@ -132,6 +136,10 @@ export class ToothStatusComponent implements OnInit {
     }
 
     getToothData(toothNo?: string): void {
+        if(!toothNo) {
+            this.currentToothNo = undefined;
+        }
+
         this.toothService.toothDiagnosisData$(toothNo).pipe(take(1)).subscribe(n=>{
             this.toothDiagnosis = n
         });

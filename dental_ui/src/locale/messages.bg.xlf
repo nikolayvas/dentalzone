@@ -195,10 +195,22 @@
         <source>Name</source>
         <target>Име</target>
       </trans-unit>
-
-      
-
-      
+      <trans-unit id="diagnosises" datatype="html">
+        <source>Diagnosis</source>
+        <target>Диагнози</target>
+      </trans-unit>
+      <trans-unit id="manipulations" datatype="html">
+        <source>Manipulations</source>
+        <target>Манипулации</target>
+      </trans-unit>
+      <trans-unit id="profile" datatype="html">
+        <source>Profile</source>
+        <target>Информация за пациента</target>
+      </trans-unit>
+      <trans-unit id="search" datatype="html">
+        <source>Search</source>
+        <target>Търси</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

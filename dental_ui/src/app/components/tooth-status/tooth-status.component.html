@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-sm-12">
             <h1> 
-                <a href="javascript:void(0);" (click)="getToothData();">Tooth status</a> [{{patientName}}]
+                <a href="javascript:void(0);" (click)="getToothData();" i18n="@@toothStatus"><span>Tooth status</span></a><span style="float:right">{{patientName}}</span>
             </h1>
         </div>
     </div>
@@ -35,13 +35,13 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            <h4>Diagnosis</h4>
+            <h4 i18n="@@diagnosises">Diagnosis</h4>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-12">
             <div class="table-responsive">
-                <tooth-action [actionName]="'Diagnosis'" [actionsList]="diagnosisList" [toothActions]="toothDiagnosis" [currentToothNo]="currentToothNo"
+                <tooth-action actionName="Diagnosis" i18n-actionName="Diagnosis|@@diagnosis" [actionsList]="diagnosisList" [toothActions]="toothDiagnosis" [currentToothNo]="currentToothNo"
                     (onAdd)="addDiagnosis($event)" (onRemove)="removeDiagnosis($event)" >
                 </tooth-action>
             </div>
@@ -49,13 +49,13 @@
     </div>
     <div class="row">
         <div class="col-sm-12">
-            <h4>Manipulations</h4>
+            <h4 i18n="@@manipulations">Manipulations</h4>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-12">
             <div class="table-responsive">
-                <tooth-action [actionName]="'Manipulation'" [actionsList]="manipulationsList" [toothActions]="toothManipulations" [currentToothNo]="currentToothNo"
+                <tooth-action actionName="Manipulation" i18n-actionName="Manipulation|@@manipulation" [actionsList]="manipulationsList" [toothActions]="toothManipulations" [currentToothNo]="currentToothNo"
                     (onAdd)="addManipulation($event)" (onRemove)="removeManipulation($event)" >
                 </tooth-action>
             </div>
@@ -64,7 +64,7 @@
     <div class="row">
         <div class="col-sm-12">
             <button class="btn btn-default" type="button" (click)="back()" style="margin-top: 20px">
-                <i class="icon-step-backward icon-constant"></i><span class="btn-action">Back</span>
+                <i class="icon-step-backward icon-constant"></i><span class="btn-action" i18n="@@back">Back</span>
             </button>
         </div>
     </div>

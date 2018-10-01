@@ -59,6 +59,28 @@
               "i18nFormat": "xlf",
               "i18nLocale": "bg",
               "i18nMissingTranslation": "error"
+            },
+            "bg-prod": {
+              "aot": true,
+              "outputPath": "dist",
+              "i18nFile": "src/locale/messages.bg.xlf",
+              "i18nFormat": "xlf",
+              "i18nLocale": "bg",
+              "i18nMissingTranslation": "error",
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             }
           }
         },

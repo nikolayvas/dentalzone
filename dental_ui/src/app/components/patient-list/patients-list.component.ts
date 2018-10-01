@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, ViewChild } from "@angular/core";
 import { FormGroup, FormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
@@ -7,6 +7,7 @@ import { PatientService } from '../../services/patient.service'
 import { ConfirmationService } from 'primeng/primeng';
 
 import { Utils } from '../../services/utils'
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'patients-list',
@@ -22,6 +23,8 @@ export class PatientsListComponent implements OnDestroy {
     private subscriptions: Subscription = new Subscription();
     patients$: Observable<IPatientData[]>;
     searchFor: string;
+
+    @ViewChild('dt') table: Table;
 
     constructor(
         private service: PatientService ,
@@ -59,6 +62,10 @@ export class PatientsListComponent implements OnDestroy {
         this.subscriptions.add(this.service.patientSearchFilterChanged$.subscribe(n=>{
             this.search.patchValue(n, { emitEvent: false });
             this.searchFor = n;
+
+            if(this.table) {
+                this.table.first=0;
+            }
         }));
     }
 }

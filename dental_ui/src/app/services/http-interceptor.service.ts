@@ -44,13 +44,15 @@ export class CustomHttpInterceptor implements HttpInterceptor {
         return next.handle(req).pipe(
             catchError((response: any)=> {
                 if (response instanceof HttpErrorResponse) {
+
                     const notification = this.injector.get(NotificationsManager);
-
-                    console.log('response in the catch: ', response);
-                    notification.ServerError(response);
-
                     if(response.status == 401) {
+                        notification.WarningNotification("Your session has been expired! You need to login again.");
                         this.injector.get(Router).navigate(['app/login']);
+                    } 
+                    else {
+                        console.log('response in the catch: ', response);
+                        notification.ServerError(response);
                     }
                 }
         

@@ -51,7 +51,7 @@ export class SignUpComponent implements OnInit {
         resposne => {
           if(resposne){
               this.router.navigate(['app/login']);
-              this.notificationsManager.ServerSuccess("You have successfully signed up.");
+              this.notificationsManager.ServerSuccess("You have successfully signed up. Check your email please and follow the verification prosess.");
           } else {
               this.notificationsManager.WarningNotification("There is already registered user with such email !");
           }

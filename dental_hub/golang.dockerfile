@@ -18,5 +18,6 @@ CMD ["./main"]
 
 EXPOSE 4001
 
-# docker build -t golang_dentalzone -f golang.dockerfile .
+# docker build -t nikolyvas/golang_dentalzone:1.0.1 -f golang.dockerfile .
+# docker push nikolyvas/golang_dentalzone:1.0.1
 # docker run -p 4001:4001 golang_dentalzone

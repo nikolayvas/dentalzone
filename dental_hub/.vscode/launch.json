@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "remotePath": "",
+            "port": 2345,
+            "host": "127.0.0.1",
+            "program": "${workspaceRoot}",
+            "env": {},
+            "args": ["--dbDriverName=mssql",
+                "--dbConnectionString=server=localhost;user id=sa;password=Manager123;database=Dental;connection timeout=30", 
+                "--jwtSecret=L4ABYKebVk7ATSmeDQZ/EMaDRWULa9QB1gFeNM0MhUuPQJxCOiIcPpZOdpUvtC5ZwmDaLQX2Yf3jUetmMJmv/g=="],
+            "showLog": true
+        }
+    ]
+}

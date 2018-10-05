@@ -13,6 +13,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"dental_hub/core"
+
+	i "dental_hub/infrastructure"
 )
 
 // ForgotPasswordViewModel model
@@ -111,7 +113,19 @@ func SendPasswordResetConfirmationCode(w http.ResponseWriter, r *http.Request) e
 		return err
 	}
 
-	//TODO Send email with the code
+	body := "Your confirmation code is: " + code
+
+	mail := &i.Mail{
+		To:      []string{model.Email},
+		Subject: "DentalZone password reset confirmation code",
+		Body:    body}
+
+	err = i.SendMail(mail)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

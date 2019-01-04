@@ -299,7 +299,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID *string
 }
 
 // RemovePatientProfile updates patient
-func (r Repository) RemovePatientProfile(patientID *string) error {
+func (r Repository) RemovePatientProfile(patientID *string, dentistID *string) error {
 	sql := `UPDATE PatientInfo SET 
 				IsDeleted = 1
 			WHERE Id= ?`
@@ -387,8 +387,8 @@ func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 }
 
 // RemoveToothManipulation removes manipulation
-func (r Repository) RemoveToothManipulation(manipulationID string) error {
-	_, err := r.Connection.Exec("call remove_tooth_manipulation(?)", manipulationID)
+func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
+	_, err := r.Connection.Exec("call remove_tooth_manipulation(?)", manipulation.ID)
 
 	if err != nil {
 		return err
@@ -413,8 +413,8 @@ func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 }
 
 // RemoveToothDiagnosis removes diagnosis
-func (r Repository) RemoveToothDiagnosis(diagnosisID string) error {
-	_, err := r.Connection.Exec("call remove_tooth_diagnosis(?)", diagnosisID)
+func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
+	_, err := r.Connection.Exec("call remove_tooth_diagnosis(?)", diagnosis.ID)
 
 	if err != nil {
 		return err

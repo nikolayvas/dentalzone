@@ -5,6 +5,7 @@ import (
 	m "dental_hub/models"
 	mssql "dental_hub/repository/mssql"
 	mysql "dental_hub/repository/mysql"
+	nosql "dental_hub/repository/nosql"
 
 	config "dental_hub/configuration"
 )
@@ -32,15 +33,15 @@ type IRepository interface {
 	GetPatients(*string) ([]m.Patient, error)
 	CreatePatientProfile(m.Patient, *string) error
 	UpdatePatientProfile(m.Patient) error
-	RemovePatientProfile(*string) error
+	RemovePatientProfile(*string, *string) error
 
 	GetTeethData(string) (*m.TeethData, error)
 
 	AddToothManipulation(m.ToothAction) error
-	RemoveToothManipulation(string) error
+	RemoveToothManipulation(m.ToothAction) error
 
 	AddToothDiagnosis(m.ToothAction) error
-	RemoveToothDiagnosis(string) error
+	RemoveToothDiagnosis(m.ToothAction) error
 
 	// patient
 	RegisterPatient(string, string, []byte) (*string, error)
@@ -63,7 +64,9 @@ func repository() IRepository {
 
 	if config.GetInstance().DbDriverName == "mssql" {
 		return mssql.Repository{Connection: database.DBCon}
+	} else if config.GetInstance().DbDriverName == "mysql" {
+		return mysql.Repository{Connection: database.DBCon}
 	}
 
-	return mysql.Repository{Connection: database.DBCon}
+	return nosql.Repository{Client: database.Client}
 }

@@ -1,31 +1,34 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // Dentist model
 type Dentist struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password []byte `json:"password"`
 }
 
 // Diagnosis model
 type Diagnosis struct {
-	ID           *string `json:"id"`
-	Name         *string `json:"name"`
+	ID           *int    `json:"id"`
+	Name         *string `json:"name" bson:"diagnosisName"`
 	ChangeStatus *int    `json:"changeStatus"`
 }
 
 // Manipulation model
 type Manipulation struct {
-	ID           *string `json:"id"`
-	Name         *string `json:"name"`
+	ID           *int    `json:"id"`
+	Name         *string `json:"name" bson:"manipulationName"`
 	ChangeStatus *int    `json:"changeStatus"`
 }
 
 // ToothStatus model
 type ToothStatus struct {
-	ID   *string `json:"id"`
-	Name *string `json:"name"`
+	ID   *int    `json:"id"`
+	Name *string `json:"name" bson:"status"`
 }
 
 // Login model

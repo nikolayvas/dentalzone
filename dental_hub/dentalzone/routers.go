@@ -143,7 +143,7 @@ var routes = Routes{
 	},
 	Route{
 		"RemoveToothManipulation",
-		"DELETE",
+		"POST",
 		"/api/toothStatus/removeToothManipulation",
 		d.RemoveToothManipulation,
 		true,
@@ -158,7 +158,7 @@ var routes = Routes{
 	},
 	Route{
 		"RemoveToothDiagnosis",
-		"DELETE",
+		"POST",
 		"/api/toothStatus/removeToothDiagnosis",
 		d.RemoveToothDiagnosis,
 		true,

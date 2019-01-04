@@ -115,7 +115,6 @@ func (r Repository) ResetPassword(hashedPassword []byte, email string, code stri
 	}
 
 	return nil
-
 }
 
 // SeedDiagnosis seeds diagnosis
@@ -309,7 +308,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID *string
 }
 
 // RemovePatientProfile updates patient
-func (r Repository) RemovePatientProfile(patientID *string) error {
+func (r Repository) RemovePatientProfile(patientID *string, dentistID *string) error {
 	sql := `UPDATE PatientInfo SET 
 				IsDeleted = 1
 			WHERE Id= $1`
@@ -397,8 +396,8 @@ func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 }
 
 // RemoveToothManipulation removes manipulation
-func (r Repository) RemoveToothManipulation(manipulationID string) error {
-	_, err := r.Connection.Exec("exec [RemoveToothManipulation] ?", manipulationID)
+func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
+	_, err := r.Connection.Exec("exec [RemoveToothManipulation] ?", manipulation.ID)
 
 	if err != nil {
 		return err
@@ -423,8 +422,8 @@ func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 }
 
 // RemoveToothDiagnosis removes diagnosis
-func (r Repository) RemoveToothDiagnosis(diagnosisID string) error {
-	_, err := r.Connection.Exec("exec [RemoveToothDiagnosis] ?", diagnosisID)
+func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
+	_, err := r.Connection.Exec("exec [RemoveToothDiagnosis] ?", diagnosis.ID)
 
 	if err != nil {
 		return err

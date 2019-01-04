@@ -8,6 +8,8 @@ RUN go get -v -u github.com/go-sql-driver/mysql
 RUN go get -v -u github.com/gorilla/handlers
 RUN go get -v -u github.com/gorilla/mux
 RUN go get -v -u gopkg.in/gomail.v2
+RUN go get -v -u github.com/mongodb/mongo-go-driver/mongo
+RUN go get -v -u github.com/satori/go.uuid
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
 

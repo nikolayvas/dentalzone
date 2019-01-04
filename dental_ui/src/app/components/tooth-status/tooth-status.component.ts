@@ -159,7 +159,7 @@ export class ToothStatusComponent implements OnInit {
     }
 
     removeDiagnosis(data: {toothActionid: string}): void {
-        this.toothService.removeDiagnosis(data.toothActionid);
+        this.toothService.removeDiagnosis(data.toothActionid, String(this.currentToothNo), this.patientId);
     }
 
     addManipulation(data: {actionTypeId: number}) {
@@ -167,7 +167,7 @@ export class ToothStatusComponent implements OnInit {
     }
 
     removeManipulation(data: {toothActionid: string}): void {
-        this.toothService.removeManupulation(data.toothActionid);
+        this.toothService.removeManupulation(data.toothActionid, String(this.currentToothNo), this.patientId);
     }
 
     back() {

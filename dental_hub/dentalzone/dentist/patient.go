@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"dental_hub/core"
 	m "dental_hub/models"
@@ -79,6 +80,7 @@ func CreatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
+	newParient.RegistrationDate = time.Now()
 	err = repo.CreatePatientProfile(newParient, dentistID)
 
 	if err != nil {
@@ -91,10 +93,15 @@ func CreatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 //RemovePatientProfile endpoint
 func RemovePatientProfile(w http.ResponseWriter, r *http.Request) error {
 
-	idParam := r.URL.Query().Get("id")
+	patientID := r.URL.Query().Get("id")
+
+	dentistID, err := core.ExtractJwtClaim(r, "dentistId")
+	if err != nil {
+		return err
+	}
 
 	repo := repository.Repository
-	err := repo.RemovePatientProfile(&idParam)
+	err = repo.RemovePatientProfile(&patientID, dentistID)
 
 	if err != nil {
 		return err

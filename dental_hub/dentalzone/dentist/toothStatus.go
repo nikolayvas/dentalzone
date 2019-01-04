@@ -53,9 +53,16 @@ func AddToothManipulation(w http.ResponseWriter, r *http.Request) error {
 
 // RemoveToothManipulation endpoint
 func RemoveToothManipulation(w http.ResponseWriter, r *http.Request) error {
-	idParam := r.URL.Query().Get("id")
 
-	err := repo.RemoveToothManipulation(idParam)
+	decoder := json.NewDecoder(r.Body)
+
+	var manipulation m.ToothAction
+	err := decoder.Decode(&manipulation)
+	if err != nil {
+		return err
+	}
+
+	err = repo.RemoveToothManipulation(manipulation)
 
 	if err != nil {
 		return err
@@ -92,9 +99,15 @@ func AddToothDiagnosis(w http.ResponseWriter, r *http.Request) error {
 
 // RemoveToothDiagnosis endpoint
 func RemoveToothDiagnosis(w http.ResponseWriter, r *http.Request) error {
-	idParam := r.URL.Query().Get("id")
+	decoder := json.NewDecoder(r.Body)
 
-	err := repo.RemoveToothDiagnosis(idParam)
+	var diagnosis m.ToothAction
+	err := decoder.Decode(&diagnosis)
+	if err != nil {
+		return err
+	}
+
+	err = repo.RemoveToothDiagnosis(diagnosis)
 
 	if err != nil {
 		return err

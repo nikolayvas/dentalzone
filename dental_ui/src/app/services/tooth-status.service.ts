@@ -71,18 +71,24 @@ export class ToothStatusService {
         this.http.post('/api/toothStatus/addToothDiagnosis', diagnosis).pipe(
             take(1))
             .subscribe(
-                data=> {
+                _=> {
                     this.store.dispatch({ type: actions.TeethDataActions.ADD_DIAGNOSIS, payload: diagnosis });
                 },
                 err => console.log(err));
     }
 
-    removeDiagnosis(diagnosisId: string) : void {
+    removeDiagnosis(diagnosisId: string, toothNo: string, patientId: string) : void {
         
-        this.http.delete('/api/toothStatus/removeToothDiagnosis', { params: { "id": diagnosisId } }).pipe(
+        var diagnosis = <IToothActionData>{
+            id: diagnosisId,
+            patientId: patientId, 
+            toothNo: toothNo, 
+        }
+
+        this.http.post('/api/toothStatus/removeToothDiagnosis', diagnosis).pipe(
             take(1))
             .subscribe(
-                data=> {
+                _=> {
                     this.store.dispatch({ type: actions.TeethDataActions.REMOVE_DIAGNOSIS, payload: diagnosisId });
                 },
                 err => console.log(err));
@@ -101,18 +107,23 @@ export class ToothStatusService {
         this.http.post('/api/toothStatus/addToothManipulation', manupulation).pipe(
             take(1))
             .subscribe(
-                data=> {
+                _=> {
                     this.store.dispatch({ type: actions.TeethDataActions.ADD_MANIPULATION, payload: manupulation });
                 },
                 err => console.log(err));
     }
 
-    removeManupulation(manipulationId: string) : void {
-        
-        this.http.delete('/api/toothStatus/removeToothManipulation', { params: { "id": manipulationId } }).pipe(
+    removeManupulation(manipulationId: string, toothNo: string, patientId: string) : void {
+        var manipulation = <IToothActionData>{
+            id: manipulationId,
+            patientId: patientId, 
+            toothNo: toothNo, 
+        }
+
+        this.http.post('/api/toothStatus/removeToothManipulation', manipulation).pipe(
             take(1))
             .subscribe(
-                data=> {
+                _=> {
                     this.store.dispatch({ type: actions.TeethDataActions.REMOVE_MANIPULATION, payload: manipulationId });
                 },
                 err => console.log(err));

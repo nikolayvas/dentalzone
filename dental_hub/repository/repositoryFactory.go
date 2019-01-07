@@ -17,23 +17,23 @@ var Repository = repository()
 type IRepository interface {
 
 	// dentist
-	RegisterDentist(string, string, []byte) (*string, error)
+	RegisterDentist(string, string, []byte) (string, error)
 	ActivateDentist(string) error
 
 	Login(string) (*m.Login, error)
 	AddPasswordResetConfirmationCode(string, string) error
 	ResetPassword([]byte, string, string) error
 
-	GetDentist(*string) (*m.Dentist, error)
+	GetDentist(string) (*m.Dentist, error)
 
-	SeedDiagnosis() ([]m.Diagnosis, error)
-	SeedManipulations() ([]m.Manipulation, error)
-	SeedToothStatuses() ([]m.ToothStatus, error)
+	SeedDiagnosis() (*[]m.Diagnosis, error)
+	SeedManipulations() (*[]m.Manipulation, error)
+	SeedToothStatuses() (*[]m.ToothStatus, error)
 
-	GetPatients(*string) ([]m.Patient, error)
-	CreatePatientProfile(m.Patient, *string) error
+	GetPatients(string) (*[]m.Patient, error)
+	CreatePatientProfile(m.Patient, string) error
 	UpdatePatientProfile(m.Patient) error
-	RemovePatientProfile(*string, *string) error
+	RemovePatientProfile(string, string) error
 
 	GetTeethData(string) (*m.TeethData, error)
 
@@ -44,7 +44,7 @@ type IRepository interface {
 	RemoveToothDiagnosis(m.ToothAction) error
 
 	// patient
-	RegisterPatient(string, string, []byte) (*string, error)
+	RegisterPatient(string, string, []byte) (string, error)
 	ActivatePatient(string) error
 
 	LoginPatient(string) (*m.Login, error)
@@ -52,7 +52,7 @@ type IRepository interface {
 	ResetPatientPassword([]byte, string, string) error
 
 	// invitation
-	InvitePatient(string, string) (*string, error)
+	InvitePatient(string, string) (string, error)
 	ActivateInvitation(string) error
 }
 

@@ -76,7 +76,7 @@ type ResetPassword struct {
 }
 
 // RegisterDentist registers new user and returns verification code
-func (r Repository) RegisterDentist(email string, userName string, password []byte) (*string, error) {
+func (r Repository) RegisterDentist(email string, userName string, password []byte) (string, error) {
 	dentist := Dentist{}
 
 	dentistsCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
@@ -91,9 +91,9 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 	case err == mongo.ErrNoDocuments:
 		// Do nothing, the email is available for next registration
 	case err != nil:
-		return nil, err
+		return "", err
 	default:
-		return nil, ex.ErrAlreadyExists
+		return "", ex.ErrAlreadyExists
 	}
 
 	// if already have unprocessed requests for registration with such email, remove them
@@ -101,14 +101,14 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 	_, err = signUpCollection.DeleteMany(ctx, filter)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	var verificationID uuid.UUID
 	verificationID, err = uuid.NewV4()
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	verificationIDToString := verificationID.String()
@@ -125,10 +125,10 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 	_, err = signUpCollection.InsertOne(ctx, doc)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return &verificationIDToString, nil
+	return verificationIDToString, nil
 }
 
 // ActivateDentist activates alredy registered user
@@ -280,7 +280,7 @@ func (r Repository) ResetPassword(hashedPassword []byte, email string, code stri
 }
 
 // SeedDiagnosis seeds diagnosis
-func (r Repository) SeedDiagnosis() ([]m.Diagnosis, error) {
+func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 
 	ctx, cancel := contextWithTimeout(10)
 	defer cancel()
@@ -424,11 +424,11 @@ func (r Repository) SeedDiagnosis() ([]m.Diagnosis, error) {
 			})
 	*/
 
-	return diagnosisList, nil
+	return &diagnosisList, nil
 }
 
 // SeedManipulations seeds manipulations
-func (r Repository) SeedManipulations() ([]m.Manipulation, error) {
+func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
 	ctx, cancel := contextWithTimeout(10)
 	defer cancel()
 
@@ -556,11 +556,11 @@ func (r Repository) SeedManipulations() ([]m.Manipulation, error) {
 		manipulationList = append(manipulationList, manipilation)
 	}
 
-	return manipulationList, nil
+	return &manipulationList, nil
 }
 
 // SeedToothStatuses seeds tooth statuses
-func (r Repository) SeedToothStatuses() ([]m.ToothStatus, error) {
+func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 	ctx := context.Background()
 
 	coll := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.ToothStatusesCollection)
@@ -632,11 +632,11 @@ func (r Repository) SeedToothStatuses() ([]m.ToothStatus, error) {
 		statusesList = append(statusesList, status)
 	}
 
-	return statusesList, nil
+	return &statusesList, nil
 }
 
 // CreatePatientProfile updates patient
-func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID *string) error {
+func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) error {
 
 	dentist := Dentist{}
 
@@ -645,7 +645,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID *string
 
 	dentistsCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
 
-	hex, err := primitive.ObjectIDFromHex(*dentistID)
+	hex, err := primitive.ObjectIDFromHex(dentistID)
 	dentistFilter := bson.M{"_id": hex}
 
 	err = dentistsCollection.FindOne(ctx, dentistFilter).Decode(&dentist)
@@ -655,14 +655,14 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID *string
 	}
 
 	patientDoc := Patient{
-		Address:          *newParient.Address,
+		Address:          newParient.Address,
 		Dentists:         []primitive.ObjectID{hex},
-		Email:            *newParient.Email,
-		FirstName:        *newParient.FirstName,
-		MiddleName:       *newParient.MiddleName,
-		GeneralInfo:      *newParient.GeneralInfo,
-		LastName:         *newParient.LastName,
-		PhoneNumber:      *newParient.PhoneNumber,
+		Email:            newParient.Email,
+		FirstName:        newParient.FirstName,
+		MiddleName:       newParient.MiddleName,
+		GeneralInfo:      newParient.GeneralInfo,
+		LastName:         newParient.LastName,
+		PhoneNumber:      newParient.PhoneNumber,
 		RegistrationDate: newParient.RegistrationDate,
 	}
 
@@ -694,33 +694,33 @@ func (r Repository) UpdatePatientProfile(patient m.Patient) error {
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
-	hex, err := primitive.ObjectIDFromHex(*patient.ID)
+	hex, err := primitive.ObjectIDFromHex(patient.ID)
 
 	if err != nil {
 		return err
 	}
 
 	_, err = patientCollection.UpdateOne(ctx, bson.M{"_id": hex}, bson.M{"$set": bson.M{
-		"address":     *patient.Address,
-		"firstName":   *patient.FirstName,
-		"middleName":  *patient.MiddleName,
-		"lastName":    *patient.LastName,
-		"phoneNumber": *patient.PhoneNumber,
-		"generalInfo": *patient.GeneralInfo,
+		"address":     patient.Address,
+		"firstName":   patient.FirstName,
+		"middleName":  patient.MiddleName,
+		"lastName":    patient.LastName,
+		"phoneNumber": patient.PhoneNumber,
+		"generalInfo": patient.GeneralInfo,
 	}})
 
 	return err
 }
 
 // GetPatients returns patients
-func (r Repository) GetPatients(dentistID *string) ([]m.Patient, error) {
+func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 
 	dentist := Dentist{}
 	ctx := context.Background()
 
 	dentistsCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
 
-	hex, err := primitive.ObjectIDFromHex(*dentistID)
+	hex, err := primitive.ObjectIDFromHex(dentistID)
 
 	if err != nil {
 		return nil, err
@@ -758,30 +758,30 @@ func (r Repository) GetPatients(dentistID *string) ([]m.Patient, error) {
 
 		mongoID := patient.ID.Hex()
 		patients = append(patients, m.Patient{
-			ID:               &mongoID,
-			Address:          &patient.Address,
-			Email:            &patient.Email,
-			FirstName:        &patient.FirstName,
-			MiddleName:       &patient.MiddleName,
-			LastName:         &patient.LastName,
-			GeneralInfo:      &patient.GeneralInfo,
-			PhoneNumber:      &patient.PhoneNumber,
+			ID:               mongoID,
+			Address:          patient.Address,
+			Email:            patient.Email,
+			FirstName:        patient.FirstName,
+			MiddleName:       patient.MiddleName,
+			LastName:         patient.LastName,
+			GeneralInfo:      patient.GeneralInfo,
+			PhoneNumber:      patient.PhoneNumber,
 			RegistrationDate: patient.RegistrationDate,
 		})
 	}
 
-	return patients, nil
+	return &patients, nil
 }
 
 // RemovePatientProfile removes the patient from the list of patients for the dentist
-func (r Repository) RemovePatientProfile(patientID *string, dentistID *string) error {
+func (r Repository) RemovePatientProfile(patientID string, dentistID string) error {
 	patient := Patient{}
 
 	ctx, cancel := contextWithTimeout(10)
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
-	hex, err := primitive.ObjectIDFromHex(*patientID)
+	hex, err := primitive.ObjectIDFromHex(patientID)
 	patientFilter := bson.M{"_id": hex}
 
 	err = patientCollection.FindOne(ctx, patientFilter).Decode(&patient)
@@ -807,7 +807,7 @@ func (r Repository) RemovePatientProfile(patientID *string, dentistID *string) e
 		}
 
 		for i, id := range dentist.Patients {
-			if id.Hex() == *patientID {
+			if id.Hex() == patientID {
 				newPatientsByDentist = append(dentist.Patients[:i], dentist.Patients[i+1:]...)
 				break
 			}
@@ -1052,9 +1052,9 @@ func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 }
 
 // InvitePatient resets patient password
-func (r Repository) InvitePatient(dentistID string, patientEmail string) (*string, error) {
+func (r Repository) InvitePatient(dentistID string, patientEmail string) (string, error) {
 
-	return nil, nil
+	return "", nil
 
 	//TODO what if already assigned
 }
@@ -1065,7 +1065,7 @@ func (r Repository) ActivateInvitation(activationID string) error {
 }
 
 // GetDentist returns dentist data
-func (r Repository) GetDentist(dentistID *string) (*m.Dentist, error) {
+func (r Repository) GetDentist(dentistID string) (*m.Dentist, error) {
 
 	dentist := Dentist{}
 
@@ -1073,7 +1073,7 @@ func (r Repository) GetDentist(dentistID *string) (*m.Dentist, error) {
 	defer cancel()
 
 	dentistCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
-	hex, err := primitive.ObjectIDFromHex(*dentistID)
+	hex, err := primitive.ObjectIDFromHex(dentistID)
 
 	if err != nil {
 		return nil, err

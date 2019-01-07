@@ -8,7 +8,7 @@ import (
 )
 
 // RegisterPatient registers new patient
-func (r Repository) RegisterPatient(email string, userName string, password []byte) (*string, error) {
+func (r Repository) RegisterPatient(email string, userName string, password []byte) (string, error) {
 
 	var id string
 	err := r.Connection.QueryRow("select Id from Patient where email=?", email).Scan(&id)
@@ -17,15 +17,15 @@ func (r Repository) RegisterPatient(email string, userName string, password []by
 	case err == sql.ErrNoRows:
 		//Do nothing, it is expected
 	case err != nil:
-		return nil, err
+		return "", err
 	default:
-		return nil, ex.ErrAlreadyExists
+		return "", ex.ErrAlreadyExists
 	}
 
 	rows, err := r.Connection.Query("call signup_patient_register(?, ?, ?)", email, userName, password)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	defer rows.Close()
@@ -36,11 +36,11 @@ func (r Repository) RegisterPatient(email string, userName string, password []by
 		err := rows.Scan(&verificationID)
 
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	}
 
-	return &verificationID, nil
+	return verificationID, nil
 }
 
 // ActivatePatient activates alredy registered patient

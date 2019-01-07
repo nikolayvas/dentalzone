@@ -32,7 +32,7 @@ func InvitePatient(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	invitationID, err := repo.InvitePatient(*dentistID, model.Email)
+	invitationID, err := repo.InvitePatient(dentistID, model.Email)
 
 	if err != nil {
 		switch {
@@ -44,7 +44,7 @@ func InvitePatient(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	hyperlink := fmt.Sprintf("%s?id=%s", config.GetInstance().InvitationActivateURI, *invitationID)
+	hyperlink := fmt.Sprintf("%s?id=%s", config.GetInstance().InvitationActivateURI, invitationID)
 	body := "Your have been invited from ******. Please click over the link to accept invitation if you want: \r\n" +
 		fmt.Sprintf("<a href=\"%s\">%s</a>", hyperlink, hyperlink)
 

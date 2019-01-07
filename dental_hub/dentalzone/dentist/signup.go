@@ -53,7 +53,7 @@ func SignUpRegister(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	hyperlink := fmt.Sprintf("%s?id=%s", config.GetInstance().DentistProfileActivateURI, *verificationID)
+	hyperlink := fmt.Sprintf("%s?id=%s", config.GetInstance().DentistProfileActivateURI, verificationID)
 	body := "Your registration is almost ready. Please click over the link to activate your profile: \r\n" +
 		fmt.Sprintf("<a href=\"%s\">%s</a>", hyperlink, hyperlink)
 

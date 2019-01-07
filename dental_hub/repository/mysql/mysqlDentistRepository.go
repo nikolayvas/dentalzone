@@ -10,7 +10,7 @@ import (
 )
 
 // RegisterDentist registers new user
-func (r Repository) RegisterDentist(email string, userName string, password []byte) (*string, error) {
+func (r Repository) RegisterDentist(email string, userName string, password []byte) (string, error) {
 
 	var id string
 	err := r.Connection.QueryRow("select Id from Dentist where email=?", email).Scan(&id)
@@ -19,15 +19,15 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 	case err == sql.ErrNoRows:
 		//Do nothing, it is expected
 	case err != nil:
-		return nil, err
+		return "", err
 	default:
-		return nil, ex.ErrAlreadyExists
+		return "", ex.ErrAlreadyExists
 	}
 
 	rows, err := r.Connection.Query("call signup_register(?, ?, ?)", email, userName, password)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	defer rows.Close()
@@ -38,11 +38,11 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 		err := rows.Scan(&verificationID)
 
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	}
 
-	return &verificationID, nil
+	return verificationID, nil
 }
 
 // ActivateDentist activates alredy registered user
@@ -109,7 +109,7 @@ func (r Repository) ResetPassword(hashedPassword []byte, email string, code stri
 }
 
 // SeedDiagnosis seeds diagnosis
-func (r Repository) SeedDiagnosis() ([]m.Diagnosis, error) {
+func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 	rows, err := r.Connection.Query(`select * from Diagnosis`)
 	if err != nil {
 		return nil, err
@@ -133,11 +133,11 @@ func (r Repository) SeedDiagnosis() ([]m.Diagnosis, error) {
 		diagnosisList = append(diagnosisList, diagnosis)
 	}
 
-	return diagnosisList, nil
+	return &diagnosisList, nil
 }
 
 // SeedManipulations seeds manipulations
-func (r Repository) SeedManipulations() ([]m.Manipulation, error) {
+func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
 
 	rows, err := r.Connection.Query(`select * from Manipulations`)
 	if err != nil {
@@ -162,11 +162,11 @@ func (r Repository) SeedManipulations() ([]m.Manipulation, error) {
 		manipulationList = append(manipulationList, manipilation)
 	}
 
-	return manipulationList, nil
+	return &manipulationList, nil
 }
 
 // SeedToothStatuses seeds tooth statuses
-func (r Repository) SeedToothStatuses() ([]m.ToothStatus, error) {
+func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 
 	rows, err := r.Connection.Query(`select * from ToothStatus`)
 	if err != nil {
@@ -190,11 +190,11 @@ func (r Repository) SeedToothStatuses() ([]m.ToothStatus, error) {
 		statusesList = append(statusesList, status)
 	}
 
-	return statusesList, nil
+	return &statusesList, nil
 }
 
 // GetPatients returns patients
-func (r Repository) GetPatients(dentistID *string) ([]m.Patient, error) {
+func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 
 	patients := make([]m.Patient, 0)
 
@@ -243,7 +243,7 @@ func (r Repository) GetPatients(dentistID *string) ([]m.Patient, error) {
 	default:
 	}
 
-	return patients, nil
+	return &patients, nil
 }
 
 // UpdatePatientProfile updates patient
@@ -276,7 +276,7 @@ func (r Repository) UpdatePatientProfile(patient m.Patient) error {
 }
 
 // CreatePatientProfile updates patient
-func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID *string) error {
+func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) error {
 	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 			Values(?,?,?,?,?,?,?,?,?)`
 
@@ -299,7 +299,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID *string
 }
 
 // RemovePatientProfile updates patient
-func (r Repository) RemovePatientProfile(patientID *string, dentistID *string) error {
+func (r Repository) RemovePatientProfile(patientID string, dentistID string) error {
 	sql := `UPDATE PatientInfo SET 
 				IsDeleted = 1
 			WHERE Id= ?`
@@ -424,28 +424,28 @@ func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 }
 
 // InvitePatient resets patient password
-func (r Repository) InvitePatient(dentistID string, patientEmail string) (*string, error) {
+func (r Repository) InvitePatient(dentistID string, patientEmail string) (string, error) {
 
 	rows, err := r.Connection.Query("call invite_patient(?, ?)", dentistID, patientEmail)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	defer rows.Close()
 
-	var invitationID *string
+	var invitationID string
 
 	for rows.Next() {
 		err := rows.Scan(
 			&invitationID)
 
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	}
 
-	if invitationID == nil {
-		return nil, ex.ErrNotSuch
+	if invitationID == "" {
+		return "", ex.ErrNotSuch
 	}
 
 	return invitationID, nil
@@ -471,7 +471,7 @@ func (r Repository) ActivateInvitation(activationID string) error {
 }
 
 // GetDentist returns dentist data
-func (r Repository) GetDentist(id *string) (*m.Dentist, error) {
+func (r Repository) GetDentist(id string) (*m.Dentist, error) {
 	var dentist m.Dentist
 
 	err := r.Connection.QueryRow("select UserName, Email from Dentist where id=?",

@@ -34,21 +34,21 @@ func GenerateJwt(dentistID string) (*string, error) {
 }
 
 // ExtractJwtClaim extracts claim from authentication token
-func ExtractJwtClaim(r *http.Request, claim string) (*string, error) {
+func ExtractJwtClaim(r *http.Request, claim string) (string, error) {
 	tokenString, err := JwtMiddleware.Options.Extractor(r)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	token, err := jwt.Parse(tokenString, JwtMiddleware.Options.ValidationKeyGetter)
 
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
 
 	p := claims[claim].(string)
-	return &p, nil
+	return p, nil
 }

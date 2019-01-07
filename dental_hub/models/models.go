@@ -13,22 +13,22 @@ type Dentist struct {
 
 // Diagnosis model
 type Diagnosis struct {
-	ID           *int    `json:"id"`
-	Name         *string `json:"name" bson:"diagnosisName"`
-	ChangeStatus *int    `json:"changeStatus"`
+	ID           int    `json:"id"`
+	Name         string `json:"name" bson:"diagnosisName"`
+	ChangeStatus int    `json:"changeStatus"`
 }
 
 // Manipulation model
 type Manipulation struct {
-	ID           *int    `json:"id"`
-	Name         *string `json:"name" bson:"manipulationName"`
-	ChangeStatus *int    `json:"changeStatus"`
+	ID           int    `json:"id"`
+	Name         string `json:"name" bson:"manipulationName"`
+	ChangeStatus int    `json:"changeStatus"`
 }
 
 // ToothStatus model
 type ToothStatus struct {
-	ID   *int    `json:"id"`
-	Name *string `json:"name" bson:"status"`
+	ID   int    `json:"id"`
+	Name string `json:"name" bson:"status"`
 }
 
 // Login model
@@ -41,14 +41,14 @@ type Login struct {
 
 // Patient model
 type Patient struct {
-	ID               *string   `json:"id"`
-	FirstName        *string   `json:"firstName"`
-	MiddleName       *string   `json:"middleName"`
-	LastName         *string   `json:"lastName"`
-	Email            *string   `json:"email"`
-	Address          *string   `json:"address"`
-	PhoneNumber      *string   `json:"phoneNumber"`
-	GeneralInfo      *string   `json:"generalInfo"`
+	ID               string    `json:"id"`
+	FirstName        string    `json:"firstName"`
+	MiddleName       string    `json:"middleName"`
+	LastName         string    `json:"lastName"`
+	Email            string    `json:"email"`
+	Address          string    `json:"address"`
+	PhoneNumber      string    `json:"phoneNumber"`
+	GeneralInfo      string    `json:"generalInfo"`
 	RegistrationDate time.Time `json:"registrationDate"`
 }
 

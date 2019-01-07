@@ -5,9 +5,9 @@ import (
 )
 
 // RegisterPatient registers new patient
-func (r Repository) RegisterPatient(email string, userName string, password []byte) (*string, error) {
+func (r Repository) RegisterPatient(email string, userName string, password []byte) (string, error) {
 
-	return nil, nil
+	return "", nil
 }
 
 // ActivatePatient activates alredy registered patient

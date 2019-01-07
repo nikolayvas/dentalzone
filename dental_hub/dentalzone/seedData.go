@@ -37,7 +37,7 @@ func SeedData(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	data := SeedDataViewModel{Diagnosises: diagnosis, Manipulations: manipulations, ToothStatuses: toothStatuses}
+	data := SeedDataViewModel{Diagnosises: *diagnosis, Manipulations: *manipulations, ToothStatuses: *toothStatuses}
 	output, _ := json.Marshal(data)
 	fmt.Fprintf(w, string(output))
 

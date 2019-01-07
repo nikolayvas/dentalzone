@@ -101,7 +101,7 @@ func RemovePatientProfile(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	repo := repository.Repository
-	err = repo.RemovePatientProfile(&patientID, dentistID)
+	err = repo.RemovePatientProfile(patientID, dentistID)
 
 	if err != nil {
 		return err

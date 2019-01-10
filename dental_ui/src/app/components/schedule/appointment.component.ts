@@ -15,17 +15,11 @@ const APPOINTMENT_CONTROL_VALUE_ACCESSOR = {
 @Component({
     selector: 'appointment',
     templateUrl: './appointment.component.html',
-    providers: [APPOINTMENT_CONTROL_VALUE_ACCESSOR]
+    providers: [APPOINTMENT_CONTROL_VALUE_ACCESSOR],
+    styleUrls: ['appointment.component.scss']
 })
 export class AppointmentComponent implements ControlValueAccessor {
     private _onChangeCallback: (_: any) => void = Utils.noop;
-
-    /*
-    @Input()
-    set appointment(value: IAppointmentModel) {
-        this.writeValue(value);
-    }
-    */
 
     @Output()
     onAdd = new EventEmitter<IAppointmentModel>();
@@ -63,7 +57,6 @@ export class AppointmentComponent implements ControlValueAccessor {
     registerOnTouched(fn: any): void {
     }
 
-
     clickUp() {
         this.hasPrev.patchValue(true);
         this.emitValueChange();
@@ -76,7 +69,6 @@ export class AppointmentComponent implements ControlValueAccessor {
 
     addItem($event) {
         this.onAdd.next(this.form.value)
-        //this.onAdd.next($event) 
     }
 
     removeItem() {
@@ -85,6 +77,5 @@ export class AppointmentComponent implements ControlValueAccessor {
 
     private emitValueChange() {
         this._onChangeCallback(this.form.value);
-        //this.onChange.next(this.form.value);
     }
 }

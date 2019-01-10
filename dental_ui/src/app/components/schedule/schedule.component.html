@@ -20,7 +20,7 @@
                 <tr>
                     <td>{{row.time}}</td>
                     <ng-container *ngFor="let col of cols; let i = index;">
-                        <td>
+                        <td [ngStyle]="{'background-color': (i == 5 || i == 6) ? 'beige' : 'default'}"> 
                             <appointment formControlName="{{j*cols.length + i}}" (onAdd)="appointmentAdded($event);" (onRemove)="appointmentRemoved($event)"></appointment>
                         </td>
                     </ng-container>

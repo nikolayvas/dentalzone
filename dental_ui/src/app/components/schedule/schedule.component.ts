@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 import { IScheduleRowModel, IDayOfWeekModel, IPaginatorModel, DayOrWeekMode, IAppointmentModel } from './schedule.models'
-
-import * as moment from 'moment';
-import { Utils } from '../../services/utils'
 import { IPatientData } from '../../models/patient.dto';
 import { DialogService } from 'primeng/api';
 import { ChoosePatientComponent } from './choose-patient.component';
-import { take } from 'rxjs/operators';
+import { Utils } from '../../services/utils'
+
+import * as moment from 'moment';
 
 @Component({
     selector: 'schedule',
@@ -80,11 +80,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     }
 
     appointmentRemoved(appointment: IAppointmentModel) {
-        this.form.controls
-    }
-
-    private getContrloByPos(x: number, y: number): AbstractControl {
-        return this.form.controls[(y*this.columnsCount + x).toString()];
+        this.getContrloByPos(appointment.x, appointment.y).patchValue({"patientID": undefined, "patientName": undefined})
     }
 
     private initHeaders(): void {
@@ -92,13 +88,13 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
         if(this._currentMode.pageMode == DayOrWeekMode.Week) {
             for (let i = 1; i <= this._daysInWeek; i++) {
-                const local = this._currentMode.currentDate.clone().weekday(i);
-                this.cols.push( this.getColumnHeaderDate(local));
+                const dayOfWeek = this._currentMode.currentDate.clone().weekday(i);
+                this.cols.push( this.getColumnHeaderDate(dayOfWeek));
             }
         }
         else {
-            const local = this._currentMode.currentDate.clone();
-            this.cols.push( this.getColumnHeaderDate(local));
+            const singleDay = this._currentMode.currentDate.clone();
+            this.cols.push( this.getColumnHeaderDate(singleDay));
         }
     }
     
@@ -122,7 +118,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
                 const appointmentData = <IAppointmentModel>{x: i, y: rowIndex, }
                 
                 const control = new FormControl(appointmentData);
-                this.form.addControl((rowIndex*this.columnsCount + i).toString(), control)
+                this.form.addControl(this.getControlNameByPos(i, rowIndex), control)
                 
                 this._subscription.add(control.valueChanges.subscribe(n=>{
                     this.appointmentChanged(n);
@@ -136,6 +132,14 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         }
 
         this.rows = newRows;
+    }
+
+    private getContrloByPos(x: number, y: number): AbstractControl {
+        return this.form.controls[this.getControlNameByPos(x, y)];
+    }
+
+    private getControlNameByPos(x: number, y: number): string {
+        return (y*this.columnsCount + x).toString();
     }
 
     private removeFormControls() {

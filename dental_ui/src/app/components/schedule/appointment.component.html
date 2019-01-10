@@ -6,12 +6,19 @@
     <input type="hidden" formControlName="patientID">
     <input type="hidden" formControlName="patientName">
 
-    <button *ngIf="patientID.value && !hasPrev.value" (click)="clickUp()" class="btn btn-info btn-xs"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
+    <button *ngIf="patientID.value && !hasPrev.value" 
+        pButton (click)="clickUp()"  class="ui-button-info circle-button" icon="fa fa-angle-up">
+    </button>
 
-    <label *ngIf="patientName.value">{{patientName.value}}</label>
+    <div *ngIf="patientName.value" class="borrower-selected">
+        <i class="fa fa-user"></i> {{patientName.value}}
+        <button pButton type="button" class="borrower-selected-remove ui-button-danger" icon="fa fa-times" (click)="removeItem()"></button>
+    </div>
 
-    <button *ngIf="patientID.value && !hasNext.value"(click)="clickDown()" class="btn btn-info btn-xs" style="float: right; margin-right: 0"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-    
-    <button *ngIf="!patientID.value" (click)="addItem($event)" class="btn btn-success btn-xs" style="float: right; margin-right: 0"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
-    <button *ngIf="patientID.value" (click)="removeItem()" class="btn btn-danger btn-xs" style="float: right; margin-right: 0"><i class="fa fa-minus-circle" aria-hidden="true"></i></button>
+    <button *ngIf="patientID.value && !hasNext.value"(click)="clickDown()" 
+        pButton class="ui-button-info circle-button" icon="fa fa-angle-down" style="float: right">
+    </button>
+    <button *ngIf="!patientID.value" (click)="addItem($event)" 
+        pButton class="ui-button-secondary circle-button" style="float: right;" icon="fa fa-plus-circle">
+    </button>
 </div>

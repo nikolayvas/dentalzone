@@ -1,0 +1,9 @@
+<div [formGroup]="form" class="space-15" style="text-align: center">
+    <button pButton type="button" label="Prev" class="ui-button-info" icon="pi pi-arrow-left" style="margin-right : 0px" (click)="prev()"></button>
+    <button pButton type="button" label="Today" class="ui-button-secondary" style="margin-right : 0px" (click)="today()"></button>
+    <button pButton type="button" label="Next" class="ui-button-info" icon="pi pi-arrow-right" iconPos="right" (click)="next()"></button>
+
+    <span style="font-size: large; margin-right: 25px; margin-left: 25px;">{{selectedPeriod}}</span>
+
+    <p-selectButton [options]="dayAndWeek" formControlName="mode"></p-selectButton>
+</div>

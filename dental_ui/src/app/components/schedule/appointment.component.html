@@ -1,0 +1,17 @@
+<div [formGroup]="form">
+    <input type="hidden" formControlName="x">
+    <input type="hidden" formControlName="y">
+    <input type="hidden" formControlName="hasPrev">
+    <input type="hidden" formControlName="hasNext">
+    <input type="hidden" formControlName="patientID">
+    <input type="hidden" formControlName="patientName">
+
+    <button *ngIf="patientID.value && !hasPrev.value" (click)="clickUp()" class="btn btn-info btn-xs"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
+
+    <label *ngIf="patientName.value">{{patientName.value}}</label>
+
+    <button *ngIf="patientID.value && !hasNext.value"(click)="clickDown()" class="btn btn-info btn-xs" style="float: right; margin-right: 0"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
+    
+    <button *ngIf="!patientID.value" (click)="addItem($event)" class="btn btn-success btn-xs" style="float: right; margin-right: 0"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>
+    <button *ngIf="patientID.value" (click)="removeItem()" class="btn btn-danger btn-xs" style="float: right; margin-right: 0"><i class="fa fa-minus-circle" aria-hidden="true"></i></button>
+</div>

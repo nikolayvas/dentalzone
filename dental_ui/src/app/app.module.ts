@@ -31,10 +31,14 @@ import { appRouting } from './app.routes';
 import { StoreModule } from '@ngrx/store';
 import { rootReducer } from './store/root-reducer';
 import { ExtendedControlComponent } from './components/extended-control.component';
-import { ControlErrorsComponent } from './components/control-errors.component'
-import { FilterPatientsListPipe } from './components/patient-list/filter.pipe'
-import { ToothStatusComponent } from './components/tooth-status/tooth-status.component'
-import { ToothActionComponent } from './components/tooth-status/tooth-action.component'
+import { ControlErrorsComponent } from './components/control-errors.component';
+import { FilterPatientsListPipe } from './components/patient-list/filter.pipe';
+import { ToothStatusComponent } from './components/tooth-status/tooth-status.component';
+import { ToothActionComponent } from './components/tooth-status/tooth-action.component';
+import { ScheduleComponent } from './components/schedule/schedule.component';
+import { PaginatorComponent } from './components/schedule/paginator.component';
+import { AppointmentComponent } from './components/schedule/appointment.component';
+import { ChoosePatientComponent } from './components/schedule/choose-patient.component'
 
 //prime ng
 import {
@@ -45,8 +49,12 @@ import {
   PanelMenuModule,
 } from 'primeng/primeng';
 
+import {ButtonModule} from 'primeng/button';
+import {SelectButtonModule} from 'primeng/selectbutton';
 import {ToastModule} from 'primeng/toast';
 import {TableModule} from 'primeng/table';
+import {DynamicDialogModule} from 'primeng/dynamicdialog';
+import {InputTextModule} from 'primeng/inputtext';
 
 @NgModule({
   declarations: [
@@ -65,7 +73,14 @@ import {TableModule} from 'primeng/table';
     ControlErrorsComponent,
     ToothStatusComponent,
     ToothActionComponent,
-    FilterPatientsListPipe
+    FilterPatientsListPipe,
+    ScheduleComponent,
+    PaginatorComponent,
+    AppointmentComponent,
+    ChoosePatientComponent,
+  ],
+  entryComponents: [
+    ChoosePatientComponent
   ],
   imports: [
     BrowserModule,
@@ -76,12 +91,16 @@ import {TableModule} from 'primeng/table';
     StoreModule.forRoot(rootReducer),
     appRouting,
     //primeng
+    ButtonModule,
     ConfirmDialogModule, 
     DropdownModule,
     GrowlModule, 
     TableModule,
     PanelMenuModule,
-    ToastModule
+    SelectButtonModule,
+    ToastModule,
+    DynamicDialogModule,
+    InputTextModule,
   ],
   providers: [
     DatePipe,

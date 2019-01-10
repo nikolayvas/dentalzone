@@ -1,10 +1,9 @@
 
-import {throwError as observableThrowError} from 'rxjs';
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 
 import {catchError} from 'rxjs/operators';
 import { Injectable, Injector } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpInterceptor, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment'
 import { Router } from '@angular/router';
 

@@ -1,0 +1,46 @@
+<form [formGroup]="form">
+    <div style="margin-bottom: 10px;">
+        <input type="text" pInputText id="search" name="search" formControlName="search"
+                name="query" placeholder="Search" i18n-placeholder="Search|@@search" type="text"
+                autocomplete="off" />
+    </div>
+    <div>
+        <p-table #dt [value]="(patients$ | async)| filter: searchFor" 
+            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="true" 
+            [responsive]="true">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th i18n="@@firstName">First Name</th>
+                    <th i18n="@@lastName">Last Name</th>
+                    <th i18n="@@phoneNumber">Phone Number(s)</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td>
+                        <div class="btn-group btn-group-xs" role="group" >
+                            <button class="btn btn-primary btn-xs" (click)="select(item)" style="margin-right : 0px">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i><ng-container i18n="@@edit">Select</ng-container>
+                            </button>
+                        </div>
+                    </td>
+                    <td>{{item.firstName}}</td>
+                    <td>{{item.lastName}}</td>
+                    <td>{{item.phoneNumber}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td colspan="4">
+                        <button class="btn btn-primary btn-xs m-b-xs" (click)="cancel()">
+                            <i class="fa fa-close"></i><ng-container i18n="@@cancel">Cancel</ng-container>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</form>
+    
+    

@@ -22,7 +22,9 @@ export class MenuComponent implements OnInit {
 
     ngOnInit() {
         this.items = [
-            { label: 'Patients', icon: 'icon-dashboard', routerLink: 'patients', command: (event) => {} /*this.disableAllBut(event.item)*/ },
+            { label: 'Patients', icon: 'icon-user', routerLink: 'patients', command: (event) => {} /*this.disableAllBut(event.item)*/ },
+            { label: 'Schedule', icon: 'icon-calendar', routerLink: 'schedule', command: (event) => {} /*this.disableAllBut(event.item)*/ },
+            
         ];
     }
 

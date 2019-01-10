@@ -1,6 +1,8 @@
 import { Subscription } from 'rxjs';
 
 export class Utils {
+    static noop = () => { };
+    
     static isBlank(obj: any): boolean {
         return obj === undefined || obj === null;
     }

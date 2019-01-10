@@ -1,10 +1,9 @@
 
-import {throwError as observableThrowError, of as observableOf} from 'rxjs';
+import {throwError as observableThrowError, of as observableOf,  Observable, BehaviorSubject} from 'rxjs';
 
 import {catchError, map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { Observable, BehaviorSubject} from 'rxjs';
 import { AuthUserModel } from './auth-user.model';
 import { TokenStorageService } from './token-storage.service';
 

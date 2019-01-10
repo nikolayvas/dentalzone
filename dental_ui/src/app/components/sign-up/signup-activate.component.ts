@@ -2,11 +2,10 @@
 import {take} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, ReactiveFormsModule, FormBuilder, Validators, FormControl } from "@angular/forms";
 
 import { AuthService } from '../../auth/auth.service';
 import { NotificationsManager} from "../../services/notifications-manager";
-import { InputValidators } from '../../validation/input-validators'
+
 
 @Component({
   selector: 'sign-up-activate',
@@ -21,7 +20,6 @@ export class SignUpActivateComponent implements OnInit {
     private authService: AuthService,
     private notificationsManager: NotificationsManager
   ) {
-
   }
 
   ngOnInit() {

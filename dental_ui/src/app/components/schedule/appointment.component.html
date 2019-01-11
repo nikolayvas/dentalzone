@@ -1,24 +1,24 @@
-<div [formGroup]="form">
-    <input type="hidden" formControlName="x">
-    <input type="hidden" formControlName="y">
-    <input type="hidden" formControlName="hasPrev">
-    <input type="hidden" formControlName="hasNext">
-    <input type="hidden" formControlName="patientID">
-    <input type="hidden" formControlName="patientName">
-
-    <button *ngIf="patientID.value && !hasPrev.value" 
-        pButton (click)="clickUp()"  class="ui-button-info circle-button" icon="fa fa-angle-up">
-    </button>
-
-    <div *ngIf="patientName.value" class="borrower-selected">
-        <i class="fa fa-user"></i> {{patientName.value}}
-        <button pButton type="button" class="borrower-selected-remove ui-button-danger" icon="fa fa-times" (click)="removeItem()"></button>
+<div [formGroup]="form"  style="margin:0px;">
+    <div [style.background-color]="color.value">
+        <input type="hidden" formControlName="x">
+        <input type="hidden" formControlName="y">
+        <input type="hidden" formControlName="hasPrev">
+        <input type="hidden" formControlName="hasNext">
+        <input type="hidden" formControlName="patientID">
+        <input type="hidden" formControlName="patientName">
+    
+        <div *ngIf="patientID.value" class="borrower-selected">
+            <i class="fa fa-user"></i> {{patientName.value}}
+            <button pButton type="button" class="borrower-selected-remove ui-button-danger" icon="fa fa-times" (click)="removeItem()" style="float: right;"></button>
+        </div>
+    
+        <div>
+            <button *ngIf="patientID.value && !hasNext.value"(click)="clickDown()" 
+                pButton class="ui-button-secondary circle-button" icon="fa fa-angle-down" >
+            </button>
+            <button *ngIf="!patientID.value" (click)="addItem($event)" 
+                pButton class="ui-button-secondary circle-button" style="float: right;" icon="fa fa-plus-circle">
+            </button>
+        </div>
     </div>
-
-    <button *ngIf="patientID.value && !hasNext.value"(click)="clickDown()" 
-        pButton class="ui-button-info circle-button" icon="fa fa-angle-down" style="float: right">
-    </button>
-    <button *ngIf="!patientID.value" (click)="addItem($event)" 
-        pButton class="ui-button-secondary circle-button" style="float: right;" icon="fa fa-plus-circle">
-    </button>
 </div>

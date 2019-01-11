@@ -3,7 +3,7 @@
     border: 1px solid #c0c0c0;
     padding: 5px 5px 5px 5px;
     border-radius: 30px;
-    //font-size: 14px;
+    font-size: 14px;
     font-weight: bold;
 
     &::after {
@@ -12,8 +12,8 @@
     }
 
     .borrower-selected-remove {
-        width: 3rem;
-        height: 3rem;
+        width: 22px;
+        height: 22px;
         border-radius: 50%;
         .ui-button-text {
             padding: .1rem;
@@ -23,15 +23,14 @@
 
 .circle-button {
     width: 3rem;
-        height: 3rem;
-        border-radius: 50%;
-        .ui-button-text {
-            padding: .1rem;
-        }
+    height: 3rem;
+    border-radius: 50%;
+    .ui-button-text {
+        padding: .1rem;
+    }
 }
 
 div.ui-inputgroup {
-
     .btn {
         margin-right: 0;
         border-bottom-right-radius: 0;

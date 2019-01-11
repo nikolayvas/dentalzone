@@ -55,14 +55,17 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         this.initGridRows();
     }
 
-    appointmentChanged(appointment: IAppointmentModel)
+    appointmentExtended(appointment: IAppointmentModel)
     {
-        if(!appointment.hasPrev) {
-            var upControlId = (appointment.y-1)*this._daysInWeek + appointment.x;
-            var ctrl = this.form.controls[upControlId.toString()];
+        var controlBelow = this.getContrloByPos(appointment.x, appointment.y+1);
+        controlBelow.patchValue({"hasPrev": true,
+            patientID: appointment.patientID,
+            patientName: appointment.patientName,
+            color: appointment.color
+        });
 
-            ctrl.patchValue(Object.assign({}, ctrl.value, {hasPrev: true}));
-        }
+        var control = this.getContrloByPos(appointment.x, appointment.y);
+        control.patchValue({"hasNext": true})
     }
 
     appointmentAdded(appointment: IAppointmentModel) {
@@ -74,13 +77,28 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
         ref.onClose.pipe(take(1)).subscribe((patient: IPatientData) => {
             if (patient) {
-                this.getContrloByPos(appointment.x, appointment.y).patchValue({"patientID": patient.id, "patientName": patient.firstName})
+                var controlBelow = this.getContrloByPos(appointment.x, appointment.y+1);
+                this.getContrloByPos(appointment.x, appointment.y).patchValue({
+                    "patientID": patient.id, 
+                    "patientName": patient.firstName,
+                    "hasNext": !!controlBelow && !Utils.isBlankOrEmpty((<IAppointmentModel>controlBelow.value).patientID),
+                });
+
+                var controlUp = this.getContrloByPos(appointment.x, appointment.y-1);
+                if(controlUp) {
+                    controlUp.patchValue({"hasNext": true})
+                }
             }
         });
     }
 
     appointmentRemoved(appointment: IAppointmentModel) {
-        this.getContrloByPos(appointment.x, appointment.y).patchValue({"patientID": undefined, "patientName": undefined})
+        this.getContrloByPos(appointment.x, appointment.y).patchValue({"patientID": undefined, "patientName": undefined});
+        var controlAbove = this.getContrloByPos(appointment.x, appointment.y-1);
+
+        if(controlAbove) {
+            controlAbove.patchValue({"hasNext": false});
+        }
     }
 
     private initHeaders(): void {
@@ -113,7 +131,6 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
             const nextTime = local.format("HH:mm").toString();
 
-            var appointmentsPerDay: IAppointmentModel[] = [];
             for (let i = 0; i <= this.columnsCount; i++) {
                 const appointmentData = <IAppointmentModel>{x: i, y: rowIndex, }
                 
@@ -121,11 +138,11 @@ export class ScheduleComponent implements OnInit, OnDestroy {
                 this.form.addControl(this.getControlNameByPos(i, rowIndex), control)
                 
                 this._subscription.add(control.valueChanges.subscribe(n=>{
-                    this.appointmentChanged(n);
+                    //
                 }));
             }
 
-            newRows.push({time: nextTime.endsWith("0") ? nextTime : "", forDays: appointmentsPerDay});
+            newRows.push({time: nextTime.endsWith("0") ? nextTime : "", forDays: undefined});
 
             local.add('minutes', this._perMinutes);
             rowIndex++;

@@ -27,12 +27,16 @@ export class AppointmentComponent implements ControlValueAccessor {
     @Output()
     onRemove = new EventEmitter<IAppointmentModel>();
 
+    @Output()
+    onExtend = new EventEmitter<IAppointmentModel>();
+
     form: FormGroup;
 
     hasPrev: FormControl;
     hasNext: FormControl;
     patientID: FormControl;
     patientName: FormControl;
+    color: FormControl;
 
     constructor(
         ) {
@@ -43,6 +47,7 @@ export class AppointmentComponent implements ControlValueAccessor {
                 hasNext: this.hasNext = new FormControl(false),
                 patientID: this.patientID = new FormControl(''),
                 patientName: this.patientName = new FormControl(''),
+                color: this.color = new FormControl("chartreuse")
             });
         }
 
@@ -57,14 +62,8 @@ export class AppointmentComponent implements ControlValueAccessor {
     registerOnTouched(fn: any): void {
     }
 
-    clickUp() {
-        this.hasPrev.patchValue(true);
-        this.emitValueChange();
-    }
-
     clickDown() {
-        this.hasNext.patchValue(true);
-        this.emitValueChange();
+        this.onExtend.next(this.form.value)
     }
 
     addItem($event) {

@@ -20,8 +20,12 @@
                 <tr>
                     <td>{{row.time}}</td>
                     <ng-container *ngFor="let col of cols; let i = index;">
-                        <td [ngStyle]="{'background-color': (i == 5 || i == 6) ? 'beige' : 'default'}"> 
-                            <appointment formControlName="{{j*cols.length + i}}" (onAdd)="appointmentAdded($event);" (onRemove)="appointmentRemoved($event)"></appointment>
+                        <td [ngStyle]="{'background-color': (i == 5 || i == 6) ? 'beige' : 'default'}" style="padding: 0.1em 0.1em">  
+                            <appointment formControlName="{{j*cols.length + i}}" 
+                                (onAdd)="appointmentAdded($event);" 
+                                (onRemove)="appointmentRemoved($event)"
+                                (onExtend)="appointmentExtended($event)">
+                            </appointment>
                         </td>
                     </ng-container>
                 </tr>

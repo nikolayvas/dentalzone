@@ -1,63 +1,59 @@
 <form [formGroup]="form">
-    <div id="page-wrapper">
-        <div class="col-sm-12">
-            <div class="inner-addon left-addon position-relative navbar-form pull-right p-null">
-                <i class="fa fa-search"></i>
-                <input id="search" name="search" formControlName="search"
-                        name="query" placeholder="Search" i18n-placeholder="Search|@@search" type="text"
-                        autocomplete="off" />
-            </div>
-            <h1 i18n="@@patientsList">Patients List</h1>
-            
-            <div>
-                <p-table #dt [value]="(patients$ | async)| filter: searchFor" 
-                    [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="true" 
-                    [responsive]="true" tableStyleClass="table table-list table-no-vert-border table-hover">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th i18n="@@firstName">First Name</th>
-                            <th i18n="@@lastName">Last Name</th>
-                            <th i18n="@@phoneNumber">Phone Number(s)</th>
-                            <th i18n="@@toothStatus">Tooth status</th>
-                            <th></th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-item>
-                        <tr>
-                            <td>{{item.firstName}}</td>
-                            <td>{{item.lastName}}</td>
-                            <td>{{item.phoneNumber}}</td>
-                            <td>
-                                <div class="btn-group btn-group-xs" role="group" >
-                                    <button class="btn btn-primary btn-xs" [routerLink]="['tooth-status', item.id]" style="margin-right : 0px">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-xs" role="group" >
-                                    <button class="btn btn-primary btn-xs" [routerLink]="['edit-patient-profile', item.id]" style="margin-right : 0px">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i><ng-container i18n="@@edit">Edit</ng-container>
-                                    </button>
-                                    <button class="btn btn-default btn-xs" (click)="remove(item)" style="margin-right : 0px" >
-                                        <i class="fa fa-trash-o" aria-hidden="true"></i><ng-container i18n="@@remove">Remove</ng-container>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="footer" let-columns>
-                        <tr>
-                            <td colspan="5">
-                                <button class="btn btn-primary btn-xs m-b-xs" [routerLink]="['add-patient-profile']">
-                                    <i class="icon-plus icon-constant"></i><ng-container i18n="@@addPatient">Add a patient</ng-container>
-                                </button>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
-        </div>
+    <div style="float: right;">
+        <i class="fa fa-search"></i>
+        <input id="search" name="search" formControlName="search"
+                name="query" placeholder="Search" i18n-placeholder="Search|@@search" type="text"
+                autocomplete="off" />
+    </div>
+    <h3 i18n="@@patientsList">Patients List</h3>
+    
+    <div>
+        <p-table #dt [value]="(patients$ | async)| filter: searchFor" 
+            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]" [alwaysShowPaginator]="true" 
+            [responsive]="true">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th i18n="@@firstName">First Name</th>
+                    <th i18n="@@lastName">Last Name</th>
+                    <th i18n="@@phoneNumber">Phone Number(s)</th>
+                    <th i18n="@@toothStatus">Tooth status</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td>{{item.firstName}}</td>
+                    <td>{{item.lastName}}</td>
+                    <td>{{item.phoneNumber}}</td>
+                    <td>
+                        <div class="btn-group btn-group-xs" role="group" >
+                            <button class="btn btn-primary btn-xs" [routerLink]="['tooth-status', item.id]" style="margin-right : 0px">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-xs" role="group" >
+                            <button class="btn btn-primary btn-xs" [routerLink]="['edit-patient-profile', item.id]" style="margin-right : 0px">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i><ng-container i18n="@@edit">Edit</ng-container>
+                            </button>
+                            <button class="btn btn-default btn-xs" (click)="remove(item)" style="margin-right : 0px" >
+                                <i class="fa fa-trash-o" aria-hidden="true"></i><ng-container i18n="@@remove">Remove</ng-container>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="footer" let-columns>
+                <tr>
+                    <td colspan="5">
+                        <button class="btn btn-primary btn-xs m-b-xs" [routerLink]="['add-patient-profile']">
+                            <i class="icon-plus icon-constant"></i><ng-container i18n="@@addPatient">Add a patient</ng-container>
+                        </button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
 </form>
 

@@ -5,11 +5,20 @@ export enum DayOrWeekMode {
     Week = 2,
 };
 
+export enum WeekDay{
+    Monday = 1,
+    Tuesday = 2,
+    Wednesday = 3,
+    Thursday = 4,
+    Friday = 5,
+    Saturday = 6,
+    Sunday = 7
+};
+
 export interface IScheduleRowModel {
     //day
     //hour
     time: string,
-    forDays: IAppointmentModel[]
 };
 
 export interface IDayOfWeekModel {
@@ -19,14 +28,14 @@ export interface IDayOfWeekModel {
 };
 
 export interface IPaginatorModel {
-    pageMode: number,
+    pageMode: DayOrWeekMode,
     currentDate: moment.Moment 
 };
 
 export interface IAppointmentModel {
     x: number,
     y: number,
-    hasPrev: boolean,
+    dateTime: Date,
     hasNext: boolean,
     patientID: string | null,
     patientName: string | null,

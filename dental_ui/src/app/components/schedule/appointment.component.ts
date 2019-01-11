@@ -32,7 +32,6 @@ export class AppointmentComponent implements ControlValueAccessor {
 
     form: FormGroup;
 
-    hasPrev: FormControl;
     hasNext: FormControl;
     patientID: FormControl;
     patientName: FormControl;
@@ -43,11 +42,10 @@ export class AppointmentComponent implements ControlValueAccessor {
             this.form = new FormGroup({
                 x: new FormControl(''),
                 y: new FormControl(''),
-                hasPrev: this.hasPrev = new FormControl(false),
                 hasNext: this.hasNext = new FormControl(false),
                 patientID: this.patientID = new FormControl(''),
                 patientName: this.patientName = new FormControl(''),
-                color: this.color = new FormControl("chartreuse")
+                color: this.color = new FormControl("")
             });
         }
 
@@ -72,6 +70,10 @@ export class AppointmentComponent implements ControlValueAccessor {
 
     removeItem() {
         this.onRemove.next(this.form.value)
+    }
+
+    showInfo() {
+        //TODO
     }
 
     private emitValueChange() {

@@ -39,6 +39,7 @@ import { ScheduleComponent } from './components/schedule/schedule.component';
 import { PaginatorComponent } from './components/schedule/paginator.component';
 import { AppointmentComponent } from './components/schedule/appointment.component';
 import { ChoosePatientComponent } from './components/schedule/choose-patient.component'
+import { ScheduleService } from './components/schedule/schedule.service'
 
 //prime ng
 import {
@@ -113,7 +114,8 @@ import {InputTextModule} from 'primeng/inputtext';
     ToothStatusService,
     MetaDataService,
     NotificationsManager,
-    MessageService
+    MessageService,
+    ScheduleService,
   ],
   bootstrap: [AppComponent]
 })

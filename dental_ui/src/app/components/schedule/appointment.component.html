@@ -2,13 +2,12 @@
     <div [style.background-color]="color.value">
         <input type="hidden" formControlName="x">
         <input type="hidden" formControlName="y">
-        <input type="hidden" formControlName="hasPrev">
         <input type="hidden" formControlName="hasNext">
         <input type="hidden" formControlName="patientID">
         <input type="hidden" formControlName="patientName">
     
-        <div *ngIf="patientID.value" class="borrower-selected">
-            <i class="fa fa-user"></i> {{patientName.value}}
+        <div *ngIf="patientID.value" class="borrower-selected" (dblclick)="showInfo()">
+            <i class="fa fa-user" cli></i> {{patientName.value}}
             <button pButton type="button" class="borrower-selected-remove ui-button-danger" icon="fa fa-times" (click)="removeItem()" style="float: right;"></button>
         </div>
     

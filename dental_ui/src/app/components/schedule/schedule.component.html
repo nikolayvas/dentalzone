@@ -1,6 +1,6 @@
 <div [formGroup]="form">
     <div>
-        <paginator (onPeriodChanged)="perionChanged($event)"></paginator>
+        <paginator (onPeriodChanged)="periodChanged($event)"></paginator>
         <p-table [columns]="cols" [value]="rows" [responsive]="true">
             <ng-template pTemplate="header" let-columns>
                 <tr>

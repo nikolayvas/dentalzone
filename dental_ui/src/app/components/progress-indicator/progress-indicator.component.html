@@ -1,0 +1,9 @@
+<div *ngIf="isActive || freezeUI" class="modal-backdrop fade in">
+    <div *ngIf="!infinite" class="progress progress-striped active" style="position: fixed; margin: 0 35%; top: 50%; width: 30%">
+        <p-progressBar [value]="progress" [style]="{height: '20px'}"></p-progressBar>
+    </div>
+    <div *ngIf="infinite" class="sk-spinner sk-spinner-three-bounce text-center" style="position: fixed; margin: 0 40%; top: 50%; width: 30%;">
+        <i class="fa fa-refresh fa-spin fa-5x fa-fw"></i>
+    </div>
+</div>
+    

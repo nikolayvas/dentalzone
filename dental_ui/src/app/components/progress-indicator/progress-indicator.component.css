@@ -1,0 +1,7 @@
+/* overwrite the primeng's progress bar ease-in-out interval, which is 1s (the default 1s animation cannot catch-up with the change speed of the percent value */
+:host /deep/ .ui-progressbar-determinate .ui-progressbar-value-animate {
+    -webkit-transition: width 0.1s ease-in-out;
+    -moz-transition: width 0.1s ease-in-out;
+    -o-transition: width 0.1s ease-in-out;
+    transition: width 0.1s ease-in-out;
+}

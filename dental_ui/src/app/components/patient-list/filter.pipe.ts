@@ -35,7 +35,8 @@ export class FilterPatientsListPipe implements PipeTransform {
     hasMatch(item: IPatientData, query: string): boolean {
         if (!!item) {
 
-            return (item.firstName && item.firstName.toLowerCase().includes(query)) ||
+            return (item.id && item.id.toLowerCase().includes(query)) ||
+            (item.firstName && item.firstName.toLowerCase().includes(query)) ||
             (item.firstName && item.firstName.toLowerCase().includes(query)) ||
             (item.middleName && item.middleName.toLowerCase().includes(query)) ||
             (item.lastName && item.lastName.toLowerCase().includes(query)) ||

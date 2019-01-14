@@ -1,8 +1,5 @@
-import { Component, forwardRef, Output, EventEmitter } from '@angular/core';
-import {
-    FormGroup, FormControl,
-    ControlValueAccessor, NG_VALUE_ACCESSOR
-} from '@angular/forms';
+import { Component, forwardRef, Output, EventEmitter, ElementRef, Renderer2 } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Utils } from '../../services/utils'
 import { IAppointmentModel } from './schedule.models';
 
@@ -20,6 +17,7 @@ const APPOINTMENT_CONTROL_VALUE_ACCESSOR = {
 })
 export class AppointmentComponent implements ControlValueAccessor {
     private _onChangeCallback: (_: any) => void = Utils.noop;
+    value: IAppointmentModel;
 
     @Output()
     onAdd = new EventEmitter<IAppointmentModel>();
@@ -30,27 +28,17 @@ export class AppointmentComponent implements ControlValueAccessor {
     @Output()
     onExtend = new EventEmitter<IAppointmentModel>();
 
-    form: FormGroup;
-
-    hasNext: FormControl;
-    patientID: FormControl;
-    patientName: FormControl;
-    color: FormControl;
+    @Output()
+    onShowInfo = new EventEmitter<IAppointmentModel>();
 
     constructor(
-        ) {
-            this.form = new FormGroup({
-                x: new FormControl(''),
-                y: new FormControl(''),
-                hasNext: this.hasNext = new FormControl(false),
-                patientID: this.patientID = new FormControl(''),
-                patientName: this.patientName = new FormControl(''),
-                color: this.color = new FormControl("")
-            });
-        }
+        private el: ElementRef,
+        private renderer: Renderer2
+        ) { }
 
     writeValue(appointment: IAppointmentModel): void {
-        this.form.patchValue(appointment, {emitEvent: false});
+        this.value = appointment;
+        this.setBackGroundColorToParentTableCell();
     }
 
     registerOnChange(fn: any): void {
@@ -60,23 +48,38 @@ export class AppointmentComponent implements ControlValueAccessor {
     registerOnTouched(fn: any): void {
     }
 
-    clickDown() {
-        this.onExtend.next(this.form.value)
+    extend() {
+        this.onExtend.next(this.value);
     }
 
-    addItem($event) {
-        this.onAdd.next(this.form.value)
+    add($event) {
+        this.onAdd.next(this.value);
     }
 
-    removeItem() {
-        this.onRemove.next(this.form.value)
+    remove() {
+        this.onRemove.next(this.value);
     }
 
     showInfo() {
-        //TODO
+        this.onShowInfo.next(this.value);
     }
 
     private emitValueChange() {
-        this._onChangeCallback(this.form.value);
+        this._onChangeCallback(this.value);
+    }
+
+    private setBackGroundColorToParentTableCell(): void {
+        var color: string = this.value && this.value.color;
+
+        if(!color) {
+            if(this.value && this.value.x >= 5) {
+                color = "beige";
+            }
+            else {
+                color = "white";
+            }
+        }
+
+        this.renderer.setStyle(this.el.nativeElement.parentNode, "background-color", color);
     }
 }

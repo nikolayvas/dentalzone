@@ -2,8 +2,12 @@
     <div style="float: right;">
         <i class="fa fa-search"></i>
         <input id="search" name="search" formControlName="search"
-                name="query" placeholder="Search" i18n-placeholder="Search|@@search" type="text"
-                autocomplete="off" />
+            name="query" placeholder="Search" i18n-placeholder="Search|@@search" type="text"
+            autocomplete="off" />
+        <button pButton type="button" class="ui-button-secondary" 
+            style="border-radius: 50%;"
+            icon="fa fa-times" (click)="clearSearch()">
+        </button>
     </div>
     <h3 i18n="@@patientsList">Patients List</h3>
     

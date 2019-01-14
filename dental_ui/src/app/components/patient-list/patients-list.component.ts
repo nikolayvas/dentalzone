@@ -16,18 +16,18 @@ import { Table } from 'primeng/table';
 
 export class PatientsListComponent implements OnDestroy {
 
-    form: FormGroup;
-
-    search: FormControl;
-
     private subscriptions: Subscription = new Subscription();
+
+    form: FormGroup;
+    search: FormControl;
+    
     patients$: Observable<IPatientData[]>;
     searchFor: string;
 
     @ViewChild('dt') table: Table;
 
     constructor(
-        private service: PatientService ,
+        private service: PatientService,
         private confirmationService: ConfirmationService,
     ) {
         this.form = new FormGroup({
@@ -52,6 +52,10 @@ export class PatientsListComponent implements OnDestroy {
                 this.service.removePatient(patient.id);
             }
         });
+    }
+
+    clearSearch() {
+        this.search.patchValue(undefined);
     }
 
     private initDataSubscriptions() {

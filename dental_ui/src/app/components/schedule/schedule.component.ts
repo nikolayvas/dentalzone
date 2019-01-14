@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormGroup, FormControl, AbstractControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { take,  } from 'rxjs/operators';
 
-import { IScheduleRowModel, IDayOfWeekModel, IPaginatorModel, DayOrWeekMode, IAppointmentModel, WeekDay } from './schedule.models'
+import { IScheduleRowModel, IDayOfWeekModel, IPaginatorModel, DayOrWeekMode, IAppointmentModel } from './schedule.models'
 import { IPatientData } from '../../models/patient.dto';
 import { DialogService } from 'primeng/api';
 import { ChoosePatientComponent } from './choose-patient.component';
 import { ScheduleService } from './schedule.service';
+import { PatientService } from '../../services/patient.service';
 import { Utils } from '../../services/utils'
 
 import * as moment from 'moment';
@@ -19,8 +20,7 @@ import * as moment from 'moment';
     providers: [DialogService],
   })
 
-export class ScheduleComponent implements OnInit, OnDestroy {
-    private _subscription: Subscription = new Subscription();
+export class ScheduleComponent {
     
     private _perMinutes: number = 15;
     private _startHour: number = 6;
@@ -28,11 +28,11 @@ export class ScheduleComponent implements OnInit, OnDestroy {
     private _daysInWeek: number = 7;
 
     private _currentMode: IPaginatorModel;
+    private _colorPerPatient: {[color: string]: string } = {};
+
     private get columnsCount(): number {
         return this._currentMode.pageMode == DayOrWeekMode.Week ? this._daysInWeek : 1;
     }
-
-    private _colorPerPatient: {[color: string]: string } = {};
 
     rows: IScheduleRowModel[] = [];
     cols: IDayOfWeekModel[] = [];
@@ -41,100 +41,35 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
     constructor(
         public dialogService: DialogService,
-        private _service: ScheduleService
+        private _service: ScheduleService,
+        private _pService: PatientService,
+        private router: Router,
     ) { }
-
-    ngOnInit() {
-       
-    }
-
-    ngOnDestroy() {
-        Utils.unsubscribe(this._subscription);
-    }
 
     periodChanged(data: IPaginatorModel) {
         this._currentMode = data;
 
-        this._service.getAppointmentsPerDayOrWeek$(data).subscribe(n=>this.populateGrid(n));
-    }
-
-    private populateGrid(appointments: { [day: string] : IAppointmentModel[] }): void {
-
-        this.initHeaders();
-        this.initGridRows();
-
-        for (let key in appointments) {
-
-            const appointmentsList = appointments[key];
-            for(let i=0; i<appointmentsList.length; i++){
-                const appointment = appointmentsList[i];
-
-                var hoursAfterStartTime = appointment.dateTime.getHours() - 6;
-                var minutes = appointment.dateTime.getMinutes();
-
-                const y = hoursAfterStartTime*4 + minutes/15;
-
-                appointment.x = Number(key)-1;
-                appointment.y = y;
-                appointment.color = this.getColorPerPatient(appointment.patientID);
-
-                this.getControlByPos(appointment.x, appointment.y).patchValue(appointment);
-
-                this.showExpandOfPreviousAppointment(appointment, false);
-            }
-        }
-    }
-
-    private getColorPerPatient(patientId: string): string {
-        if(!this._colorPerPatient[patientId]) {
-            this._colorPerPatient[patientId] = this.getRandomColor();
-        }
-
-        return this._colorPerPatient[patientId];
-    }
-
-    private initGridRows() {
-        Utils.unsubscribe(this._subscription);
-        
-        this.rows = [];
-        this.removeFormControls();
-        
-        var newRows: IScheduleRowModel[] = [];
-        var local = this._currentMode.currentDate.startOf('day');
-        local.add('hours', this._startHour);
-
-        var y = 0;
-        while (local.hours() <= this._endHour) {
-
-            const nextTime = local.format("HH:mm").toString();
-
-            for (let x = 0; x <= this.columnsCount; x++) {
-                const appointmentData = <IAppointmentModel>{x: x, y: y, }
-                
-                const control = new FormControl(appointmentData);
-                this.form.addControl(this.getControlNameByPos(x, y), control)
-            }
-
-            newRows.push({time: nextTime.endsWith("0") ? nextTime : ""});
-
-            local.add('minutes', this._perMinutes);
-            y++;
-        }
-
-        this.rows = newRows;
+        this._service.getAppointmentsPerDayOrWeek$(data).subscribe(n=> {
+            this.populateGrid(n);
+        });
     }
 
     appointmentExtended(appointment: IAppointmentModel)
     {
-        var controlBelow = this.getControlByPos(appointment.x, appointment.y+1);
+        var controlBelow = this.getControlByPos(appointment.x, appointment.y + 1);
+        var nextControl = this.getControlByPos(appointment.x, appointment.y + 2);
+
         controlBelow.patchValue(Object.assign({}, controlBelow.value, {
             patientID: appointment.patientID,
             patientName: appointment.patientName,
-            color: appointment.color
+            color: appointment.color,
+            hasNext: nextControl && nextControl.value.patientID,
         }));
 
         var control = this.getControlByPos(appointment.x, appointment.y);
-        control.patchValue(Object.assign({}, control.value, {"hasNext": true}));
+        control.patchValue(Object.assign({}, control.value, 
+            {hasNext: true
+        }));
     }
 
     appointmentAdded(appointment: IAppointmentModel) {
@@ -150,10 +85,10 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
                 var control = this.getControlByPos(appointment.x, appointment.y);
                 control.patchValue(Object.assign({}, appointment, {
-                    "patientID": patient.id, 
-                    "patientName": patient.firstName,
-                    "hasNext": !!controlBelow && !Utils.isBlankOrEmpty((<IAppointmentModel>controlBelow.value).patientID),
-                    "color": this.getColorPerPatient(patient.id)
+                    patientID: patient.id, 
+                    patientName: patient.firstName,
+                    hasNext: !!controlBelow && !Utils.isBlankOrEmpty((<IAppointmentModel>controlBelow.value).patientID),
+                    color: this.getColorPerPatient(patient.id)
                 }));
 
                 this.showExpandOfPreviousAppointment(appointment, false);
@@ -163,9 +98,46 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
     appointmentRemoved(appointment: IAppointmentModel) {
         var control = this.getControlByPos(appointment.x, appointment.y);
-        control.patchValue(Object.assign({}, control.value, {"patientID": undefined, "patientName": undefined}));
+        control.patchValue(Object.assign({}, control.value, {
+            patientID: undefined, 
+            patientName: undefined, 
+            hasNext: undefined,
+            color: undefined
+        }));
 
         this.showExpandOfPreviousAppointment(appointment, true);
+    }
+
+    showPatientInfo(appointment: IAppointmentModel) {
+        this._pService.changeSearchFilter(appointment.patientID);
+        this.router.navigateByUrl('app/portal/patients');
+    }
+
+    private populateGrid(appointments: { [day: string] : IAppointmentModel[] }): void {
+
+        this.initHeaders();
+        this.initGridRows();
+
+        for (let key in appointments) {
+
+            const appointmentsList = appointments[key];
+            for(let i=0; i<appointmentsList.length; i++){
+                const appointment = appointmentsList[i];
+
+                var hoursAfterStartTime = appointment.dateTime.getHours() - this._startHour;
+                var minutes = appointment.dateTime.getMinutes();
+
+                const y = hoursAfterStartTime*(60/this._perMinutes) + minutes/this._perMinutes;
+
+                appointment.x = Number(key)-1;
+                appointment.y = y;
+                appointment.color = this.getColorPerPatient(appointment.patientID);
+
+                this.getControlByPos(appointment.x, appointment.y).patchValue(appointment);
+
+                this.showExpandOfPreviousAppointment(appointment, false);
+            }
+        }
     }
 
     private initHeaders(): void {
@@ -181,6 +153,43 @@ export class ScheduleComponent implements OnInit, OnDestroy {
             const singleDay = this._currentMode.currentDate.clone();
             this.cols.push( this.getColumnHeaderDate(singleDay));
         }
+    }
+
+    private initGridRows() {
+        this.rows = [];
+        this.removeFormControls();
+        
+        var newRows: IScheduleRowModel[] = [];
+        var local = this._currentMode.currentDate.startOf('day');
+        local.add('hours', this._startHour);
+
+        var y = 0;
+        while (local.hours() <= this._endHour) {
+
+            const nextTime = local.format("HH:mm").toString();
+
+            for (let x = 0; x < this.columnsCount; x++) {
+                const appointmentData = <IAppointmentModel>{x: x, y: y, }
+                
+                const control = new FormControl(appointmentData);
+                this.form.addControl(this.getControlNameByPos(x, y), control)
+            }
+
+            newRows.push({time: nextTime.endsWith("0") ? nextTime : ""});
+
+            local.add('minutes', this._perMinutes);
+            y++;
+        }
+
+        this.rows = newRows;
+    }
+
+    private getColorPerPatient(patientId: string): string {
+        if(!this._colorPerPatient[patientId]) {
+            this._colorPerPatient[patientId] = this.getRandomColor();
+        }
+
+        return this._colorPerPatient[patientId];
     }
 
     private getControlByPos(x: number, y: number): AbstractControl {

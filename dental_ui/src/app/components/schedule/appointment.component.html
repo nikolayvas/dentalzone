@@ -1,23 +1,18 @@
-<div [formGroup]="form"  style="margin:0px;">
-    <div [style.background-color]="color.value">
-        <input type="hidden" formControlName="x">
-        <input type="hidden" formControlName="y">
-        <input type="hidden" formControlName="hasNext">
-        <input type="hidden" formControlName="patientID">
-        <input type="hidden" formControlName="patientName">
-    
-        <div *ngIf="patientID.value" class="borrower-selected" (dblclick)="showInfo()">
-            <i class="fa fa-user" cli></i> {{patientName.value}}
-            <button pButton type="button" class="borrower-selected-remove ui-button-danger" icon="fa fa-times" (click)="removeItem()" style="float: right;"></button>
+
+<div style="margin:0px;">
+    <div [style.background-color]="value.color">
+        <div *ngIf="value.patientID" class="borrower-selected" (dblclick)="showInfo()">
+            <i class="fa fa-user" cli></i> {{value.patientName}}
+            <button pButton type="button" class="borrower-selected-remove ui-button-danger" icon="fa fa-times" (click)="remove()" style="float: right;"></button>
         </div>
-    
         <div>
-            <button *ngIf="patientID.value && !hasNext.value"(click)="clickDown()" 
+            <button *ngIf="value.patientID && !value.hasNext"(click)="extend()" 
                 pButton class="ui-button-secondary circle-button" icon="fa fa-angle-down" >
             </button>
-            <button *ngIf="!patientID.value" (click)="addItem($event)" 
+            <button *ngIf="!value.patientID" (click)="add($event)" 
                 pButton class="ui-button-secondary circle-button" style="float: right;" icon="fa fa-plus-circle">
             </button>
         </div>
     </div>
 </div>
+

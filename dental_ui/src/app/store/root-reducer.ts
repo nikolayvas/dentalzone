@@ -5,6 +5,7 @@ import { metaDataReducer, IMetaDataState } from './seed-reducer';
 import { teethDataReducer, ITeethDataState } from './teeth-data.reducer';
 import { IUIStoreState, uiReducer } from './ui-reducer';
 import { progressIndicatorReducer, IProgressIndicatorState } from './progress-indicator.reducer';
+import { IScheduleState, scheduleReducer } from './schedule.reducer';
 
 /**
  * Client Portal combined state.
@@ -15,6 +16,7 @@ export interface IClientPortalStoreState {
     metaData: IMetaDataState,
     teethDataState: ITeethDataState,
     progressIndicatorState: IProgressIndicatorState,
+    scheduleState: IScheduleState,
 };
 
 /**
@@ -26,6 +28,7 @@ export const clientPortalStoreReducer = combineReducers({
     metaData: metaDataReducer,
     teethDataState: teethDataReducer,
     progressIndicatorState: progressIndicatorReducer,
+    scheduleState: scheduleReducer,
 });
 
 /**

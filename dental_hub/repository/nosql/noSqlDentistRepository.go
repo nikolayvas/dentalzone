@@ -1117,3 +1117,13 @@ func FindToothOperation(operations []*ToothOperation, recordID string) (int, *To
 
 	return -1, nil
 }
+
+// GetAppointments returns appointments for day
+func (r Repository) GetAppointments(patientID string, day time.Time) (*[]m.Appointment, error) {
+	return nil, nil
+}
+
+// UpdateAppointments updates appointments for day
+func (r Repository) UpdateAppointments(patientID string, day time.Time, appointments *[]m.Appointment) error {
+	return nil
+}

@@ -51,6 +51,10 @@ export class ChoosePatientComponent implements OnDestroy {
         this.ref.close(undefined);
     }
 
+    clearSearch() {
+        this.search.patchValue(undefined);
+    }
+
     private initDataSubscriptions() {
         this.subscriptions.add(this.search.valueChanges.subscribe(n=> {
             this.service.changeSearchFilter(n);

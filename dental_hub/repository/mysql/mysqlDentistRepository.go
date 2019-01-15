@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"dental_hub/database"
 	ex "dental_hub/exceptions"
@@ -478,4 +479,14 @@ func (r Repository) GetDentist(id string) (*m.Dentist, error) {
 		id).Scan(&dentist.Name, &dentist.Email)
 
 	return &dentist, err
+}
+
+// GetAppointments returns appointments for day
+func (r Repository) GetAppointments(patientID string, day time.Time) (*[]m.Appointment, error) {
+	return nil, nil
+}
+
+// UpdateAppointments updates appointments for day
+func (r Repository) UpdateAppointments(patientID string, day time.Time, appointments *[]m.Appointment) error {
+	return nil
 }

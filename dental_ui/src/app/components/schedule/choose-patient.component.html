@@ -3,6 +3,10 @@
         <input type="text" pInputText id="search" name="search" formControlName="search"
                 name="query" placeholder="Search" i18n-placeholder="Search|@@search" type="text"
                 autocomplete="off" />
+        <button pButton type="button" class="ui-button-secondary" 
+            style="border-radius: 50%;"
+            icon="fa fa-times" (click)="clearSearch()">
+        </button>
     </div>
     <div>
         <p-table #dt [value]="(patients$ | async)| filter: searchFor" 

@@ -6,6 +6,7 @@ import (
 	mssql "dental_hub/repository/mssql"
 	mysql "dental_hub/repository/mysql"
 	nosql "dental_hub/repository/nosql"
+	"time"
 
 	config "dental_hub/configuration"
 )
@@ -42,6 +43,9 @@ type IRepository interface {
 
 	AddToothDiagnosis(m.ToothAction) error
 	RemoveToothDiagnosis(m.ToothAction) error
+
+	GetAppointments(string, time.Time) (*[]m.Appointment, error)
+	UpdateAppointments(string, time.Time, *[]m.Appointment) error
 
 	// patient
 	RegisterPatient(string, string, []byte) (string, error)

@@ -179,6 +179,20 @@ var routes = Routes{
 		d.InvitationActivate,
 		false,
 	},
+	Route{
+		"SeedAppointments",
+		"GET",
+		"/api/appointments",
+		d.SeedAppointments,
+		false,
+	},
+	Route{
+		"UpdateAppointments",
+		"POST",
+		"/api/appointments/update",
+		d.UpdateAppointments,
+		false,
+	},
 
 	// patient
 	Route{

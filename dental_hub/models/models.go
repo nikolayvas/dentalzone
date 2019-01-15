@@ -66,3 +66,15 @@ type TeethData struct {
 	Diagnosis     []ToothAction `json:"diagnosisList"`
 	Manipulations []ToothAction `json:"manipulationList"`
 }
+
+// Appointment model
+type Appointment struct {
+	Date      time.Time `json:"day"`
+	PatientID string    `json:"patientID"`
+}
+
+// Appointments model
+type Appointments struct {
+	Date         time.Time     `json:"day"`
+	Appointments []Appointment `json:"appointments"`
+}

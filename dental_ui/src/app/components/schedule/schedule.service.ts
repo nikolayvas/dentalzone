@@ -1,60 +1,49 @@
 import { Injectable } from '@angular/core';
-import { Subscription, Observable, zip as observableZip, of as observableOf } from 'rxjs';
-import { take, filter, map,  } from 'rxjs/operators';
+import { Observable, zip as observableZip, of as observableOf } from 'rxjs';
+import { take, filter, map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 import { StoreService } from '../../services/store.service';
 import { IAppointmentModel, IPaginatorModel, DayOrWeekMode, WeekDay } from './schedule.models';
 
+import * as actions from '../../store/schedule.actions';
+
 import * as moment from 'moment';
+import { IAppointmentData, IScheduleByDayData } from '../../models/schedule-day.dto';
+import { ScheduleByDayModel } from '../../models/schedule-day.model';
 
 @Injectable()
 export class ScheduleService {
 
+    private _schedule$: Observable<ScheduleByDayModel[]>
+
+    private get schedule$(): Observable<ScheduleByDayModel[]> {
+        return this._schedule$ || (this._schedule$ = this._store.select(n=>n.data.clientPortalStore.scheduleState.perDay));
+    }
+
     constructor(
-        private store: StoreService
+        private http: HttpClient,
+        private _store: StoreService
     ) {
     }
 
     getAppointmentsPerDay$(day: moment.Moment): Observable<IAppointmentModel[]> {
 
-        var now = new Date(day.valueOf());
-        var date = new Date(now.getFullYear(), now.getMonth(), now.getDay());
-        date.setHours(date.getHours() +  6);
-
-        var time1 = new Date(date.getTime());
-        time1.setHours(time1.getHours() +  2);
-
-        var time2 = new Date(date.getTime());
-        time2.setHours(time1.getHours() +  4);
-        time2.setMinutes(time1.getMinutes() +  45);
-
-        var appointments: IAppointmentModel[] = [];
-        appointments.push({
-            x: undefined,
-            y: undefined,
-            dateTime: time1,
-            color: undefined,
-            hasNext: undefined,
-            patientID: "5c2cce35e3bf85e693044b61",
-            patientName: "ass fdfdsfdsf dfds fdsf"
+        this.appointmentsByDay$(day).pipe(take(1)).subscribe(n=> {
+            if(!n) {
+                this.seedAppointmentsPerDay(day);
+            }
         });
 
-        appointments.push({
-            x: undefined,
-            y: undefined,
-            dateTime: time2,
-            color: undefined,
-            hasNext: undefined,
-            patientID: "5c2cceb4e3bf85e693044b62",
-            patientName: "Nikolay"
-        });
-
-        return observableOf(appointments);
+        return this.appointmentsByDay$(day).pipe(filter(n=> !!n), map(n=>{
+            return n.map(p=> {
+               return <IAppointmentModel>{ patientID: p.patientID, dateTime: p.date } });
+        }));
     }
 
     getAppointmentsPerDayOrWeek$(data: IPaginatorModel): Observable<{ [day: string] : IAppointmentModel[] }> {
         if(data.pageMode == DayOrWeekMode.Day) {
-            return this.getAppointmentsPerDay$(data.currentDate.clone()).pipe(filter(n=>!!n), take(1), map(n=> {
+            return this.getAppointmentsPerDay$(data.currentDate.clone()).pipe(take(1), map(n=> {
                 var appointmentsPerDay: { [day: string] : IAppointmentModel[] } = {};
                 appointmentsPerDay[1] = n;
 
@@ -95,5 +84,40 @@ export class ScheduleService {
 
             return zip.pipe(take(1));
         }
+    }
+
+    seedAppointmentsPerDay(day: moment.Moment): void {
+        this.http.get<IAppointmentData[]>('/api/appointments', { params: { "day": day.toDate().toDateString() } }).pipe(
+            take(1))
+            .subscribe(data=> {
+                const payload: IScheduleByDayData = <IScheduleByDayData>{day: day.toDate(), appointments: data || []};
+                this._store.dispatch({ type: actions.ScheduleActions.SEED_DATA_FOR_DAY, payload: payload });
+            });
+    }
+
+    saveAppointmentsPerDay(appointments: IAppointmentData[], day: Date): void {
+
+        this.http.post('/api/appointments/update', {appointments: appointments, day: day}).pipe(
+            take(1))
+            .subscribe(
+                _=> {
+                    this._store.dispatch({ type: actions.ScheduleActions.UPDATE_DATA_FOR_DAY, payload: {appointments: appointments, day: day} });
+                },
+                err => console.log(err));
+    }
+
+    private appointmentsByDay$(day : moment.Moment): Observable<IAppointmentData[]> {
+        return this.schedule$.pipe(
+            map(n=>{
+                const dayAsDate = day.toDate();
+                return n.find(p=> 
+                    p.day.getFullYear() === dayAsDate.getFullYear() &&
+                    p.day.getMonth() === dayAsDate.getMonth() &&
+                    p.day.getDate() === dayAsDate.getDate() 
+                );
+            }), 
+            map(n=>{
+                return n && n.appointments;
+            }));
     }
 }

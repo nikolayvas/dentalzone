@@ -12,6 +12,7 @@ import { PatientService } from '../../services/patient.service';
 import { Utils } from '../../services/utils'
 
 import * as moment from 'moment';
+import { IAppointmentData } from '../../models/schedule-day.dto';
 
 @Component({
     selector: 'schedule',
@@ -60,6 +61,7 @@ export class ScheduleComponent {
         var nextControl = this.getControlByPos(appointment.x, appointment.y + 2);
 
         controlBelow.patchValue(Object.assign({}, controlBelow.value, {
+            dateTime: this.getDateTimeByPos(appointment.x, appointment.y + 1),
             patientID: appointment.patientID,
             patientName: appointment.patientName,
             color: appointment.color,
@@ -68,8 +70,9 @@ export class ScheduleComponent {
 
         var control = this.getControlByPos(appointment.x, appointment.y);
         control.patchValue(Object.assign({}, control.value, 
-            {hasNext: true
-        }));
+            { hasNext: true }));
+
+        this._service.saveAppointmentsPerDay(this.getAppointmentsPerColumn(appointment.x), this.getDatePerColumn(appointment.x));
     }
 
     appointmentAdded(appointment: IAppointmentModel) {
@@ -81,10 +84,11 @@ export class ScheduleComponent {
 
         ref.onClose.pipe(take(1)).subscribe((patient: IPatientData) => {
             if (patient) {
-                var controlBelow = this.getControlByPos(appointment.x, appointment.y+1);
+                var controlBelow = this.getControlByPos(appointment.x, appointment.y + 1);
 
                 var control = this.getControlByPos(appointment.x, appointment.y);
                 control.patchValue(Object.assign({}, appointment, {
+                    dateTime: this.getDateTimeByPos(appointment.x, appointment.y),
                     patientID: patient.id, 
                     patientName: patient.firstName,
                     hasNext: !!controlBelow && !Utils.isBlankOrEmpty((<IAppointmentModel>controlBelow.value).patientID),
@@ -92,6 +96,8 @@ export class ScheduleComponent {
                 }));
 
                 this.showExpandOfPreviousAppointment(appointment, false);
+
+                this._service.saveAppointmentsPerDay(this.getAppointmentsPerColumn(appointment.x), this.getDatePerColumn(appointment.x));
             }
         });
     }
@@ -106,6 +112,8 @@ export class ScheduleComponent {
         }));
 
         this.showExpandOfPreviousAppointment(appointment, true);
+
+        this._service.saveAppointmentsPerDay(this.getAppointmentsPerColumn(appointment.x), this.getDatePerColumn(appointment.x));
     }
 
     showPatientInfo(appointment: IAppointmentModel) {
@@ -118,10 +126,10 @@ export class ScheduleComponent {
         this.initHeaders();
         this.initGridRows();
 
-        for (let key in appointments) {
+        for (let day in appointments) {
 
-            const appointmentsList = appointments[key];
-            for(let i=0; i<appointmentsList.length; i++){
+            const appointmentsList = appointments[day];
+            for(let i = 0; i<appointmentsList.length; i++){
                 const appointment = appointmentsList[i];
 
                 var hoursAfterStartTime = appointment.dateTime.getHours() - this._startHour;
@@ -129,15 +137,38 @@ export class ScheduleComponent {
 
                 const y = hoursAfterStartTime*(60/this._perMinutes) + minutes/this._perMinutes;
 
-                appointment.x = Number(key)-1;
-                appointment.y = y;
-                appointment.color = this.getColorPerPatient(appointment.patientID);
+                this._pService.getPatient$(appointment.patientID).pipe(take(1)).subscribe(p=>{
+                    appointment.x = Number(day)-1;
+                    appointment.y = y;
+                    appointment.color = this.getColorPerPatient(appointment.patientID);
+                    appointment.patientName = p.firstName;
 
-                this.getControlByPos(appointment.x, appointment.y).patchValue(appointment);
-
-                this.showExpandOfPreviousAppointment(appointment, false);
+                    this.getControlByPos(appointment.x, appointment.y).patchValue(appointment);
+                    this.showExpandOfPreviousAppointment(appointment, false);
+                });
             }
         }
+    }
+
+    private getAppointmentsPerColumn(x: number): IAppointmentData[] {
+
+        var res: IAppointmentData[] = [];
+
+        for (let y = 0; y < this.rows.length; y++) {
+            const appointment = this.getControlByPos(x, y);
+            if(appointment && appointment.value && appointment.value.patientID) {
+                res.push(<IAppointmentData>{date: appointment.value.dateTime, patientID: appointment.value.patientID});
+            }
+        }
+
+        return res;
+    }
+
+    private getDatePerColumn(x: number): Date {
+        var columnDate = this._currentMode.currentDate.clone().weekday(1);
+        columnDate.add('day', x);
+
+        return columnDate.toDate();
     }
 
     private initHeaders(): void {
@@ -160,7 +191,7 @@ export class ScheduleComponent {
         this.removeFormControls();
         
         var newRows: IScheduleRowModel[] = [];
-        var local = this._currentMode.currentDate.startOf('day');
+        var local = this._currentMode.currentDate.clone().startOf('day');
         local.add('hours', this._startHour);
 
         var y = 0;
@@ -169,7 +200,7 @@ export class ScheduleComponent {
             const nextTime = local.format("HH:mm").toString();
 
             for (let x = 0; x < this.columnsCount; x++) {
-                const appointmentData = <IAppointmentModel>{x: x, y: y, }
+                const appointmentData = <IAppointmentModel>{x: x, y: y}
                 
                 const control = new FormControl(appointmentData);
                 this.form.addControl(this.getControlNameByPos(x, y), control)
@@ -190,6 +221,15 @@ export class ScheduleComponent {
         }
 
         return this._colorPerPatient[patientId];
+    }
+
+    private getDateTimeByPos(x: number, y: number): Date {
+        var date = this._currentMode.currentDate.clone().weekday(1).startOf('day');
+        date.add("days", x);
+        date.add("hours", this._startHour);
+        date.add("minutes", this._perMinutes*y);
+
+        return date.toDate();
     }
 
     private getControlByPos(x: number, y: number): AbstractControl {

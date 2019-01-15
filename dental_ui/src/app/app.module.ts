@@ -3,6 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
@@ -29,6 +30,7 @@ import { MessageService } from 'primeng/api';
 import { ScheduleService } from './components/schedule/schedule.service';
 import { ProgressIndicatorService } from './services/progress-indicator.service';
 
+import { environment } from '../environments/environment';
 import { appRouting } from './app.routes';
 import { StoreModule } from '@ngrx/store';
 import { rootReducer } from './store/root-reducer';
@@ -95,6 +97,9 @@ import {ProgressBarModule} from 'primeng/progressbar';
     HttpClientModule,
     ReactiveFormsModule,
     StoreModule.forRoot(rootReducer),
+    environment.production ? [] : [StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+    })],
     appRouting,
     //primeng
     ButtonModule,

@@ -87,10 +87,11 @@ export class ScheduleService {
     }
 
     seedAppointmentsPerDay(day: moment.Moment): void {
-        this.http.get<IAppointmentData[]>('/api/appointments', { params: { "day": day.toDate().toDateString() } }).pipe(
+        this.http.get<IAppointmentData[]>('/api/appointments', { params: { "day": day.toJSON()} }).pipe(
             take(1))
             .subscribe(data=> {
-                const payload: IScheduleByDayData = <IScheduleByDayData>{day: day.toDate(), appointments: data || []};
+                var parsed = data && data.map(n=> <IAppointmentData>{patientID: n.patientID, date: new Date(n.date)});
+                const payload: IScheduleByDayData = <IScheduleByDayData>{day: day.toDate(), appointments: parsed || []};
                 this._store.dispatch({ type: actions.ScheduleActions.SEED_DATA_FOR_DAY, payload: payload });
             });
     }
@@ -101,7 +102,7 @@ export class ScheduleService {
             take(1))
             .subscribe(
                 _=> {
-                    this._store.dispatch({ type: actions.ScheduleActions.UPDATE_DATA_FOR_DAY, payload: {appointments: appointments, day: day} });
+                    this._store.dispatch({ type: actions.ScheduleActions.UPDATE_DATA_FOR_DAY, payload: { appointments: appointments, day: day} });
                 },
                 err => console.log(err));
     }

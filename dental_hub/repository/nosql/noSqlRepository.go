@@ -14,6 +14,7 @@ type DbSchema struct {
 	ManipulationsCollection        string
 	ToothStatusesCollection        string
 	PatientCollection              string
+	ScheduleCollection             string
 }
 
 // MongoDbSchema specifies db schema
@@ -26,6 +27,7 @@ var MongoDbSchema = DbSchema{
 	ManipulationsCollection:        "manipulations",
 	ToothStatusesCollection:        "toothStatuses",
 	PatientCollection:              "patients",
+	ScheduleCollection:             "schedule",
 }
 
 // Repository is mongodb implementation of repository

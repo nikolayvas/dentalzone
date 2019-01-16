@@ -12,20 +12,25 @@ import (
 // SeedAppointments endpoint
 func SeedAppointments(w http.ResponseWriter, r *http.Request) error {
 
+	date := r.URL.Query().Get("day")
+	time, err := time.Parse(time.RFC3339, date)
+
+	if err != nil {
+		return err
+	}
+
 	dentistID, err := core.ExtractJwtClaim(r, "dentistId")
 	if err != nil {
 		return err
 	}
 
-	date := time.Now()
-
-	appointments, err := repo.GetAppointments(dentistID, date)
+	appointments, err := repo.GetAppointments(dentistID, time)
 
 	if err != nil {
 		return err
 	}
 
-	output, _ := json.Marshal(appointments)
+	output, _ := json.Marshal(&appointments)
 	fmt.Fprintf(w, string(output))
 
 	return nil
@@ -53,7 +58,7 @@ func UpdateAppointments(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	err = repo.UpdateAppointments(dentistID, appointments.Date, &appointments.Appointments)
+	err = repo.UpdateAppointments(dentistID, appointments.Day, &appointments.Appointments)
 
 	if err != nil {
 		return err

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo/options"
 
 	"github.com/satori/go.uuid"
 
@@ -922,7 +923,7 @@ func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(1000)
+	ctx, cancel := contextWithTimeout(10)
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -1012,7 +1013,7 @@ func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(1000)
+	ctx, cancel := contextWithTimeout(10)
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -1119,11 +1120,45 @@ func FindToothOperation(operations []*ToothOperation, recordID string) (int, *To
 }
 
 // GetAppointments returns appointments for day
-func (r Repository) GetAppointments(patientID string, day time.Time) (*[]m.Appointment, error) {
-	return nil, nil
+func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
+
+	ctx, cancel := contextWithTimeout(10)
+	defer cancel()
+
+	rounded := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+
+	scheduleCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.ScheduleCollection)
+	scheduleFilter := bson.M{"dentistID": dentistID, "day": rounded}
+
+	appointments := m.Appointments{}
+	err := scheduleCollection.FindOne(ctx, scheduleFilter).Decode(&appointments)
+
+	switch {
+	case err == mongo.ErrNoDocuments:
+		return nil, nil
+	case err != nil:
+		return nil, err
+	default:
+		return &appointments.Appointments, err
+	}
 }
 
+type result interface{}
+
 // UpdateAppointments updates appointments for day
-func (r Repository) UpdateAppointments(patientID string, day time.Time, appointments *[]m.Appointment) error {
-	return nil
+func (r Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
+
+	ctx, cancel := contextWithTimeout(10)
+	defer cancel()
+
+	rounded := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+
+	scheduleCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.ScheduleCollection)
+	scheduleFilter := bson.M{"dentistID": dentistID, "day": rounded}
+
+	t := true
+	opt := options.UpdateOptions{Upsert: &t}
+	_, err := scheduleCollection.UpdateOne(ctx, scheduleFilter, bson.M{"$set": bson.M{"appointments": *appointments}}, &opt)
+
+	return err
 }

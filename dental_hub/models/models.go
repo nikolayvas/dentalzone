@@ -69,12 +69,12 @@ type TeethData struct {
 
 // Appointment model
 type Appointment struct {
-	Date      time.Time `json:"day"`
+	Date      time.Time `json:"date"`
 	PatientID string    `json:"patientID"`
 }
 
 // Appointments model
 type Appointments struct {
-	Date         time.Time     `json:"day"`
+	Day          time.Time     `json:"day"`
 	Appointments []Appointment `json:"appointments"`
 }

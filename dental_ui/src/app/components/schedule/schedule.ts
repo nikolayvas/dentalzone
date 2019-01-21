@@ -2,11 +2,12 @@ import { AbstractControl } from '@angular/forms';
 import { IPaginatorModel, IAppointmentModel } from './schedule.models';
 import { Utils } from '../../services/utils';
 import { IAppointmentData } from '../../models/schedule-day.dto';
+import { Color } from './color';
 
 export class Schedule {
     static perMinutes: number = 15;
     static startHour: number = 6;
-    static endHour: number = 19;
+    static endHour: number = 14;
     static daysInWeek: number = 7;
 
     private _colorPerPatient: {[color: string]: string } = {};
@@ -70,7 +71,10 @@ export class Schedule {
         for (let y = 0; y <= this.rows; y++) {
             const appointment = this.getControlByPos(x, y);
             if(appointment && appointment.value && appointment.value.patientID) {
-                res.push(<IAppointmentData>{date: appointment.value.dateTime, patientID: appointment.value.patientID});
+                res.push(<IAppointmentData>{
+                    date: appointment.value.dateTime, 
+                    patientID: appointment.value.patientID
+                });
             }
         }
 
@@ -125,12 +129,21 @@ export class Schedule {
     }
 
     private getRandomColor(): string {
+
+        return "#" + Color.Colors[this.randomIntFromInterval(0, Color.Colors.length -1)];
+        /*
         const color = this.randColor();
         return '#' + color;
+        */
 
         /*
         var color = Math.floor(0x1000000 * Math.random()).toString(16);
         return '#' + ('000000' + color).slice(-6);
         */
+    }
+
+    private randomIntFromInterval(min: number, max: number): number
+    {
+        return Math.floor(Math.random()*(max-min+1)+min);
     }
 }

@@ -37,7 +37,9 @@ export class ProgressIndicatorComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this._subscriptions.push(
-            this.store.select(x => x.data.clientPortalStore.progressIndicatorState).subscribe(state => this._state = state)
+            this.store.select(x => x.data.clientPortalStore.progressIndicatorState).subscribe(state => {
+                this._state = state 
+            })
         );
     }
 

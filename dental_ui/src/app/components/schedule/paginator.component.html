@@ -5,5 +5,5 @@
 
     <span style="font-size: large; margin-right: 25px; margin-left: 25px;">{{selectedPeriod}}</span>
 
-    <p-selectButton [options]="dayAndWeek" formControlName="mode"></p-selectButton>
+    <p-selectButton *ngIf="bigScreen" [options]="dayAndWeek" formControlName="mode"></p-selectButton>
 </div>

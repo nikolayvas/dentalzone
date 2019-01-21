@@ -5,6 +5,7 @@ import (
 	ex "dental_hub/exceptions"
 	m "dental_hub/models"
 	u "dental_hub/utils"
+	"strconv"
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
@@ -58,6 +59,22 @@ type Patient struct {
 	RegistrationDate time.Time            `bson:"registrationDate"`
 	Dentists         []primitive.ObjectID `bson:"dentists"`
 	Teeth            []*Tooth             `bson:"teeth"`
+}
+
+// GetToothByNo ...
+func (p Patient) GetToothByNo(toothNo int) (*Tooth, error) {
+
+	if p.Teeth == nil {
+		return nil, nil
+	}
+
+	for _, tooth := range p.Teeth {
+		if tooth.ToothNo == strconv.Itoa(toothNo) {
+			return tooth, nil
+		}
+	}
+
+	return nil, nil
 }
 
 // SignUp dentist write model
@@ -313,118 +330,6 @@ func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 		diagnosisList = append(diagnosisList, diagnosis)
 	}
 
-	/*
-		_, err := coll.InsertMany(
-			ctx,
-			[]interface{}{
-				bson.D{
-					{"id", bsonx.Int32(1)},
-					{"diagnosisName", bsonx.String("Caries superficialis")},
-					{"changeStatus", bsonx.Int32(3)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(2)},
-					{"diagnosisName", bsonx.String("Caries media")},
-					{"changeStatus", bsonx.Int32(3)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(3)},
-					{"diagnosisName", bsonx.String("Caries profunda")},
-					{"changeStatus", bsonx.Int32(3)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(4)},
-					{"diagnosisName", bsonx.String("Pulpitis acuta serosa partialis")},
-					{"changeStatus", bsonx.Int32(4)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(5)},
-					{"diagnosisName", bsonx.String("Pulpitis acuta serosa totalis")},
-					{"changeStatus", bsonx.Int32(4)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(6)},
-					{"diagnosisName", bsonx.String("Pulpitis acuta purulenta partialis")},
-					{"changeStatus", bsonx.Int32(4)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(7)},
-					{"diagnosisName", bsonx.String("Pulpitis acuta purulenta totalis")},
-					{"changeStatus", bsonx.Int32(4)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(8)},
-					{"diagnosisName", bsonx.String("Pulpitis acuta gangraenosa")},
-					{"changeStatus", bsonx.Int32(4)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(9)},
-					{"diagnosisName", bsonx.String("Pulpitis chronica ulcerosa")},
-					{"changeStatus", bsonx.Int32(4)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(10)},
-					{"diagnosisName", bsonx.String("Pulpitis chronica granulomatosa")},
-					{"changeStatus", bsonx.Int32(4)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(11)},
-					{"diagnosisName", bsonx.String("Periodontitis acuta serosa")},
-					{"changeStatus", bsonx.Int32(5)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(12)},
-					{"diagnosisName", bsonx.String("Periodontitis acuta purulenta")},
-					{"changeStatus", bsonx.Int32(5)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(13)},
-					{"diagnosisName", bsonx.String("Periodontitis chronica fibrosa")},
-					{"changeStatus", bsonx.Int32(5)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(14)},
-					{"diagnosisName", bsonx.String("Periodontitis chronica granulomatosa progressiva (cum-sine fistula)")},
-					{"changeStatus", bsonx.Int32(5)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(15)},
-					{"diagnosisName", bsonx.String("Periodontitis chronica granulomatosa localisata")},
-					{"changeStatus", bsonx.Int32(5)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(16)},
-					{"diagnosisName", bsonx.String("Radix")},
-					{"changeStatus", bsonx.Int32(8)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(17)},
-					{"diagnosisName", bsonx.String("Extractio")},
-					{"changeStatus", bsonx.Int32(2)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(18)},
-					{"diagnosisName", bsonx.String("Building")},
-					{"changeStatus", bsonx.Int32(7)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(19)},
-					{"diagnosisName", bsonx.String("Obturatio")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(20)},
-					{"diagnosisName", bsonx.String("Corona")},
-					{"changeStatus", bsonx.Int32(9)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(21)},
-					{"diagnosisName", bsonx.String("Dens intact")},
-					{"changeStatus", bsonx.Int32(1)},
-				},
-			})
-	*/
-
 	return &diagnosisList, nil
 }
 
@@ -434,103 +339,6 @@ func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
 	defer cancel()
 
 	coll := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.ManipulationsCollection)
-
-	/*
-		_, err := coll.InsertMany(
-			ctx,
-			[]interface{}{
-				bson.D{
-					{"id", bsonx.Int32(1)},
-					{"manipulationName", bsonx.String("Caries himiopolimer")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(2)},
-					{"manipulationName", bsonx.String("Caries fotopolimer")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(3)},
-					{"manipulationName", bsonx.String("Pulpit one canal")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(4)},
-					{"manipulationName", bsonx.String("Pulpit two canalis")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(5)},
-					{"manipulationName", bsonx.String("Pulpit three canalis")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(6)},
-					{"manipulationName", bsonx.String("Periodontit one canal")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(7)},
-					{"manipulationName", bsonx.String("Periodontit two canalis")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(8)},
-					{"manipulationName", bsonx.String("Periodontit two canalis")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(9)},
-					{"manipulationName", bsonx.String("Periodontit three canalis")},
-					{"changeStatus", bsonx.Int32(6)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(10)},
-					{"manipulationName", bsonx.String("Extractio one radix")},
-					{"changeStatus", bsonx.Int32(2)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(11)},
-					{"manipulationName", bsonx.String("Extractio three radix")},
-					{"changeStatus", bsonx.Int32(2)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(12)},
-					{"manipulationName", bsonx.String("Extractio madrec")},
-					{"changeStatus", bsonx.Int32(2)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(13)},
-					{"manipulationName", bsonx.String("Anestsia")},
-					{"changeStatus", bsonx.Int32(1)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(14)},
-					{"manipulationName", bsonx.String("Building")},
-					{"changeStatus", bsonx.Int32(7)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(15)},
-					{"manipulationName", bsonx.String("Cimentirane na stara corona")},
-					{"changeStatus", bsonx.Int32(9)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(16)},
-					{"manipulationName", bsonx.String("Svaliane na stara corona")},
-					{"changeStatus", bsonx.Int32(1)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(17)},
-					{"manipulationName", bsonx.String("Korona 'Adapta'")},
-					{"changeStatus", bsonx.Int32(9)},
-				},
-				bson.D{
-					{"id", bsonx.Int32(18)},
-					{"manipulationName", bsonx.String("Korona 'Metalokeramika'")},
-					{"changeStatus", bsonx.Int32(9)},
-				},
-			})
-	*/
 
 	cursor, err := coll.Find(
 		ctx,
@@ -566,48 +374,6 @@ func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 
 	coll := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.ToothStatusesCollection)
 
-	/*
-		_, err := coll.InsertMany(
-			ctx,
-			[]interface{}{
-				bson.D{
-					{"id", bsonx.Int32(1)},
-					{"status", bsonx.String("Unchenged")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(2)},
-					{"status", bsonx.String("Extractio")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(3)},
-					{"status", bsonx.String("Caries")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(4)},
-					{"status", bsonx.String("Pulpitis")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(5)},
-					{"status", bsonx.String("Periodontitis")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(6)},
-					{"status", bsonx.String("Obturacio")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(7)},
-					{"status", bsonx.String("Building")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(8)},
-					{"status", bsonx.String("Radix")},
-				},
-				bson.D{
-					{"id", bsonx.Int32(9)},
-					{"status", bsonx.String("Corona")},
-				},
-			})
-	*/
 	cursor, err := coll.Find(
 		ctx,
 		bson.D{},
@@ -1119,7 +885,7 @@ func FindToothOperation(operations []*ToothOperation, recordID string) (int, *To
 	return -1, nil
 }
 
-// GetAppointments returns appointments for day
+// GetAppointments returns appointments per day and dentist
 func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
 
 	ctx, cancel := contextWithTimeout(10)
@@ -1145,7 +911,7 @@ func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appo
 
 type result interface{}
 
-// UpdateAppointments updates appointments for day
+// UpdateAppointments updates appointments per day and dentist
 func (r Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
 
 	ctx, cancel := contextWithTimeout(10)

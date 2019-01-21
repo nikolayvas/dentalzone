@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, OnDestroy, Output} from '@angular/core';
+import { Component, EventEmitter, HostListener, OnInit, OnDestroy, Output} from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
 import { Subscription } from 'rxjs';
@@ -17,16 +17,26 @@ import { SelectItem } from 'primeng/api';
   })
 export class PaginatorComponent implements OnInit, OnDestroy {
 
-    dayAndWeek: SelectItem[];
-
     private _current: moment.Moment;
-
     private _subscriptions: Subscription = new Subscription();
 
     @Output()
     onPeriodChanged = new EventEmitter<IPaginatorModel>();
 
+    @HostListener('window:resize', ['$event'])
+    onResize(event) {
+        if(window.innerWidth < 650) {
+            this.mode.patchValue(DayOrWeekMode.Day)
+            this.bigScreen = false;
+        } 
+        else {
+            this.bigScreen = true;
+        };
+    }
+
     selectedPeriod: string;
+    dayAndWeek: SelectItem[];
+    bigScreen: boolean;
 
     form: FormGroup;
     mode: FormControl;

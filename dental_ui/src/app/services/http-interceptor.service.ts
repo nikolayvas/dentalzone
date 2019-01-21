@@ -1,7 +1,7 @@
 
 import {throwError as observableThrowError,  Observable } from 'rxjs';
 
-import {catchError} from 'rxjs/operators';
+import {catchError, finalize} from 'rxjs/operators';
 import { Injectable, Injector } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpInterceptor, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment'
@@ -9,12 +9,16 @@ import { Router } from '@angular/router';
 
 import { TokenStorageService } from '../auth/token-storage.service'
 import { NotificationsManager } from '../services/notifications-manager'
+import { ProgressIndicatorService } from './progress-indicator.service';
 
 
 @Injectable()
 export class CustomHttpInterceptor implements HttpInterceptor {
 
-    constructor(private injector: Injector) {
+    constructor(
+        private injector: Injector,
+        private progress: ProgressIndicatorService
+        ) {
         
     }
 
@@ -40,6 +44,7 @@ export class CustomHttpInterceptor implements HttpInterceptor {
             }
         });
 
+        this.progress.set({isActive: true, infinite: true});
         return next.handle(req).pipe(
             catchError((response: any)=> {
                 if (response instanceof HttpErrorResponse) {
@@ -56,6 +61,9 @@ export class CustomHttpInterceptor implements HttpInterceptor {
                 }
         
                 return observableThrowError(response);
+        }),
+        finalize(()=> {
+            this.progress.set({isActive: false});
         }));
   }
 }

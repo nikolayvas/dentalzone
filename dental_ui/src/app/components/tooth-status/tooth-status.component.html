@@ -15,12 +15,12 @@
                             <td *ngIf="tooth.toothNo !== 0" style="padding-bottom: 10px; text-align: center">
                                 <button *ngIf="tooth.toothNo === currentToothNo" 
                                     [ngClass]="'btn btn-warning btn-xxs'" 
-                                    style="margin : 0px;" (click)="toothClick(tooth.toothNo)">
+                                    style="margin : 0px; border-radius: 50%;" (click)="toothClick(tooth.toothNo)">
                                     {{tooth.toothNo}}
                                 </button>
                                 <button *ngIf="tooth.toothNo !== currentToothNo" 
                                     [ngClass]="toothMap[tooth.toothNo].status ? 'btn btn-info btn-xxs' : 'btn btn-xxs'"
-                                    style="margin : 0px;" (click)="toothClick(tooth.toothNo)">
+                                    style="margin : 0px; border-radius: 50%;" (click)="toothClick(tooth.toothNo)">
                                     {{tooth.toothNo}}
                                 </button>
                             </td>    
@@ -33,39 +33,19 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <h4 i18n="@@diagnosises">Diagnosis</h4>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="table-responsive">
-                <tooth-action actionName="Diagnosis" i18n-actionName="Diagnosis|@@diagnosis" [actionsList]="diagnosisList" [toothActions]="toothDiagnosis" [currentToothNo]="currentToothNo"
-                    (onAdd)="addDiagnosis($event)" (onRemove)="removeDiagnosis($event)" >
-                </tooth-action>
-            </div>
-        </div> 
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <h4 i18n="@@manipulations">Manipulations</h4>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="table-responsive">
-                <tooth-action actionName="Manipulation" i18n-actionName="Manipulation|@@manipulation" [actionsList]="manipulationsList" [toothActions]="toothManipulations" [currentToothNo]="currentToothNo"
-                    (onAdd)="addManipulation($event)" (onRemove)="removeManipulation($event)" >
-                </tooth-action>
-            </div>
-        </div> 
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <button class="btn btn-default" type="button" (click)="back()" style="margin-top: 20px">
-                <i class="icon-step-backward icon-constant"></i><span class="btn-action" i18n="@@back">Back</span>
-            </button>
-        </div>
-    </div>
+    <p-accordion>
+        <p-accordionTab header="Diagnosis" i18n-header="Diagnosis|@@diagnosis" [selected]="false">
+            <tooth-action actionName="Diagnosis" i18n-actionName="Diagnosis|@@diagnosis" [actionsList]="diagnosisList" [toothActions]="toothDiagnosis" [currentToothNo]="currentToothNo"
+                (onAdd)="addDiagnosis($event)" (onRemove)="removeDiagnosis($event)" >
+            </tooth-action>
+        </p-accordionTab>
+        <p-accordionTab header="Manipulations" i18n-header="Manipulations|@@manipulations" [selected]="true">
+            <tooth-action actionName="Manipulation" i18n-actionName="Manipulation|@@manipulation" [actionsList]="manipulationsList" [toothActions]="toothManipulations" [currentToothNo]="currentToothNo"
+                (onAdd)="addManipulation($event)" (onRemove)="removeManipulation($event)" >
+            </tooth-action>
+        </p-accordionTab>
+    </p-accordion>
+    <button class="btn btn-default" type="button" (click)="back()" style="margin-top: 20px">
+        <i class="icon-step-backward icon-constant"></i><span class="btn-action" i18n="@@back">Back</span>
+    </button>
 </div>

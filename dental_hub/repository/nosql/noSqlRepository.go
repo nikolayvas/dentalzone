@@ -19,14 +19,14 @@ type DbSchema struct {
 
 // MongoDbSchema specifies db schema
 var MongoDbSchema = DbSchema{
-	DatabaseName:                   "test",
+	DatabaseName:                   "dental_hub",
 	DentistSignUpCollection:        "dentistSignUp",
-	DentistCollection:              "dentists",
+	DentistCollection:              "dentist",
 	DentistResetPasswordCollection: "dentistResetPassword",
 	DiagnosisCollection:            "diagnosis",
 	ManipulationsCollection:        "manipulations",
 	ToothStatusesCollection:        "toothStatuses",
-	PatientCollection:              "patients",
+	PatientCollection:              "patient",
 	ScheduleCollection:             "schedule",
 }
 

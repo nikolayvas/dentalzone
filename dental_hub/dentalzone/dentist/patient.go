@@ -68,9 +68,9 @@ func CreatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	output, err := json.Marshal(newParient)
+	input, err := json.Marshal(newParient)
 
-	fmt.Println(string(output))
+	fmt.Println(string(input))
 	if err != nil {
 		return err
 	}
@@ -81,11 +81,15 @@ func CreatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	newParient.RegistrationDate = time.Now()
-	err = repo.CreatePatientProfile(newParient, dentistID)
+	var patientID string
+	patientID, err = repo.CreatePatientProfile(newParient, dentistID)
 
 	if err != nil {
 		return err
 	}
+
+	output, _ := json.Marshal(patientID)
+	fmt.Fprintf(w, string(output))
 
 	return nil
 }

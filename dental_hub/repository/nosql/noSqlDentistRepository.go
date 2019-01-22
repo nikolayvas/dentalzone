@@ -181,11 +181,7 @@ func (r Repository) ActivateDentist(id string) error {
 	dentistCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
 	_, err = dentistCollection.InsertOne(ctx, doc)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // Login returns user details
@@ -215,6 +211,7 @@ func (r Repository) Login(email string) (*m.Login, error) {
 			Password: dentist.Password,
 			Name:     dentist.Name,
 		}
+
 		return &login, nil
 	}
 }
@@ -250,11 +247,8 @@ func (r Repository) AddPasswordResetConfirmationCode(email string, code string) 
 	}
 
 	_, err = dentistResetPasswordCollection.InsertOne(ctx, resetPassword)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
 // ResetPassword resets user password
@@ -290,11 +284,7 @@ func (r Repository) ResetPassword(hashedPassword []byte, email string, code stri
 	dentist.Password = hashedPassword
 	_, err = dentistCollection.UpdateOne(ctx, dentistFilter, bson.M{"$set": bson.M{"password": hashedPassword}})
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // SeedDiagnosis seeds diagnosis
@@ -403,7 +393,7 @@ func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 }
 
 // CreatePatientProfile updates patient
-func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) error {
+func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
 
 	dentist := Dentist{}
 
@@ -418,7 +408,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 	err = dentistsCollection.FindOne(ctx, dentistFilter).Decode(&dentist)
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	patientDoc := Patient{
@@ -438,7 +428,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 	patient, err := patientCollection.InsertOne(ctx, patientDoc)
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	newPatientID := patient.InsertedID.(primitive.ObjectID)
@@ -447,11 +437,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 
 	_, err = dentistsCollection.UpdateOne(ctx, dentistFilter, bson.M{"$set": bson.M{"patients": newPatientsByDentist}})
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return newPatientID.Hex(), err
 }
 
 // UpdatePatientProfile updates patient

@@ -84,11 +84,8 @@ func (r Repository) Login(email string) (*m.Login, error) {
 func (r Repository) AddPasswordResetConfirmationCode(email string, code string) error {
 
 	_, err := r.Connection.Exec("call add_password_reset_confirmation_code(?, ?)", email, code)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
 // ResetPassword resets user password
@@ -269,15 +266,11 @@ func (r Repository) UpdatePatientProfile(patient m.Patient) error {
 		patient.GeneralInfo,
 		patient.ID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
-// CreatePatientProfile updates patient
-func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) error {
+// CreatePatientProfile creates patient
+func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
 	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 			Values(?,?,?,?,?,?,?,?,?)`
 
@@ -292,11 +285,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 		newParient.GeneralInfo,
 		dentistID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return newParient.ID, err
 }
 
 // RemovePatientProfile updates patient
@@ -307,11 +296,7 @@ func (r Repository) RemovePatientProfile(patientID string, dentistID string) err
 
 	_, err := database.DBCon.Exec(sql, patientID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // GetTeethData returns teeth data per patient
@@ -380,22 +365,14 @@ func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 		manipulation.ToothNo,
 		manipulation.ActionID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // RemoveToothManipulation removes manipulation
 func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 	_, err := r.Connection.Exec("call remove_tooth_manipulation(?)", manipulation.ID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // AddToothDiagnosis adds diagnosis
@@ -406,22 +383,14 @@ func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 		diagnosis.ToothNo,
 		diagnosis.ActionID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // RemoveToothDiagnosis removes diagnosis
 func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 	_, err := r.Connection.Exec("call remove_tooth_diagnosis(?)", diagnosis.ID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // InvitePatient resets patient password

@@ -66,8 +66,9 @@ export class PatientService {
         this.http.post('/api/patients/create', payload).pipe(
         take(1))
         .subscribe(
-            data=> {
-                this.store.dispatch({ type: actions.PatientActions.CREATE_PATIENT, payload: payload });
+            patientId=> {
+                const newPayload = Object.assign({}, payload, {id: patientId});
+                this.store.dispatch({ type: actions.PatientActions.CREATE_PATIENT, payload: newPayload });
             },
             err => console.log(err));
     }

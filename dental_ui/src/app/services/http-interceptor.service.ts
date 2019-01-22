@@ -44,7 +44,10 @@ export class CustomHttpInterceptor implements HttpInterceptor {
             }
         });
 
-        this.progress.set({isActive: true, infinite: true});
+        if(req.method == "GET") {
+            this.progress.set({isActive: true, infinite: true});
+        }
+
         return next.handle(req).pipe(
             catchError((response: any)=> {
                 if (response instanceof HttpErrorResponse) {
@@ -63,7 +66,9 @@ export class CustomHttpInterceptor implements HttpInterceptor {
                 return observableThrowError(response);
         }),
         finalize(()=> {
-            this.progress.set({isActive: false});
+            if(req.method == "GET") {
+                this.progress.set({isActive: false});
+            }
         }));
   }
 }

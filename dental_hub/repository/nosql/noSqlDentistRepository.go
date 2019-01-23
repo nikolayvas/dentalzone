@@ -21,6 +21,10 @@ func contextWithTimeout(timeout int) (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 }
 
+func defaultContextWithTimeout() (context.Context, context.CancelFunc) {
+	return contextWithTimeout(10)
+}
+
 // Dentist read model
 type Dentist struct {
 	ID       primitive.ObjectID     `bson:"_id,omitempty"`
@@ -99,7 +103,7 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 
 	dentistsCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
 	filter := bson.M{"email": email}
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	// check if already have registered user with such email
@@ -152,7 +156,7 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 // ActivateDentist activates alredy registered user
 func (r Repository) ActivateDentist(id string) error {
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	signUp := SignUp{}
@@ -189,7 +193,7 @@ func (r Repository) Login(email string) (*m.Login, error) {
 
 	_, _ = r.SeedToothStatuses()
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	dentist := Dentist{}
@@ -219,7 +223,7 @@ func (r Repository) Login(email string) (*m.Login, error) {
 // AddPasswordResetConfirmationCode insertс new confirmation code in db
 func (r Repository) AddPasswordResetConfirmationCode(email string, code string) error {
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	dentistResetPasswordCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistResetPasswordCollection)
@@ -254,7 +258,7 @@ func (r Repository) AddPasswordResetConfirmationCode(email string, code string) 
 // ResetPassword resets user password
 func (r Repository) ResetPassword(hashedPassword []byte, email string, code string) error {
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	dentist := Dentist{}
@@ -290,7 +294,7 @@ func (r Repository) ResetPassword(hashedPassword []byte, email string, code stri
 // SeedDiagnosis seeds diagnosis
 func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	coll := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DiagnosisCollection)
@@ -325,7 +329,7 @@ func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 
 // SeedManipulations seeds manipulations
 func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	coll := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.ManipulationsCollection)
@@ -397,7 +401,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 
 	dentist := Dentist{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	dentistsCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
@@ -443,7 +447,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 // UpdatePatientProfile updates patient
 func (r Repository) UpdatePatientProfile(patient m.Patient) error {
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -490,7 +494,11 @@ func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
 	patientsFilter := bson.M{"_id": bson.M{"$in": dentist.Patients}}
 
-	cursor, err := patientCollection.Find(ctx, patientsFilter)
+	projection := bson.D{
+		{"dentists", 0},
+		{"teeth", 0},
+	}
+	cursor, err := patientCollection.Find(ctx, patientsFilter, options.Find().SetProjection(projection))
 
 	defer cursor.Close(ctx)
 
@@ -530,7 +538,7 @@ func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 func (r Repository) RemovePatientProfile(patientID string, dentistID string) error {
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -581,7 +589,7 @@ func (r Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -628,7 +636,7 @@ func (r Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -675,7 +683,7 @@ func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -718,7 +726,7 @@ func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -765,7 +773,7 @@ func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 	patient := Patient{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	patientCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.PatientCollection)
@@ -822,7 +830,7 @@ func (r Repository) GetDentist(dentistID string) (*m.Dentist, error) {
 
 	dentist := Dentist{}
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	dentistCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
@@ -874,7 +882,7 @@ func FindToothOperation(operations []*ToothOperation, recordID string) (int, *To
 // GetAppointments returns appointments per day and dentist
 func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	rounded := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
@@ -900,7 +908,7 @@ type result interface{}
 // UpdateAppointments updates appointments per day and dentist
 func (r Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
 
-	ctx, cancel := contextWithTimeout(10)
+	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
 	rounded := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())

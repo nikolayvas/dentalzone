@@ -8,16 +8,15 @@ import (
 	"time"
 
 	accessDBwE "github.com/bennof/accessDBwE"
-	"gopkg.in/mgo.v2/bson"
-
-	m "dental_hub/models"
-
-	config "dental_hub/configuration"
-	nosql "dental_hub/repository/nosql"
-
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/readpref"
+	"gopkg.in/mgo.v2/bson"
+
+	m "dental_hub/models"
+	nosql "dental_hub/repository/nosql"
+
+	config "dental_hub/configuration"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -26,26 +25,37 @@ import (
 
 var (
 	accessDb *sql.DB
-	mongoDb  *mongo.Client
 )
 
-// MigrateAccessDb migrates data from accessDb to MongoDb
-func MigrateAccessDb(connectionString string) error {
+// MigrateAccessDbToMongoDb migrates data from accessDb to MongoDb
+func MigrateAccessDbToMongoDb(connectionString string) error {
 
-	_ = initDbConnection()
+	err := initDbConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	/*
-		var diagnosis *[]m.Diagnosis
 		diagnosis, err := seedDiagnosis()
 		err = pushDiagnosis(diagnosis)
 
-		var manipulations *[]m.Manipulation
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		manipulations, err := seedManipulations()
 		err = pushManipulations(manipulations)
 
-		var toothstatuses *[]m.ToothStatus
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		toothstatuses, err := seedToothStatuses()
 		err = pushToothStatuses(toothstatuses)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	*/
 
 	dentistID, err := pushDentist()
@@ -73,7 +83,7 @@ func initDbConnection() error {
 		var err error
 		accessDb, err = accessDBwE.Open("adodb", "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:/Dental.mdb;")
 		if err != nil {
-			log.Fatal("Failed to start the Mongo session")
+			log.Fatal("Failed to start AccessDb session")
 		}
 	}
 
@@ -82,14 +92,14 @@ func initDbConnection() error {
 		client, err := mongo.Connect(ctx, config.GetInstance().DbConnectionString)
 
 		if err != nil {
-			log.Fatal("Failed to start the Mongo session")
+			log.Fatal("Failed to start the Mongo session 2")
 		}
 
 		defer cancel()
 		err = client.Ping(ctx, readpref.Primary())
 
 		if err != nil {
-			log.Fatal("Failed to start the Mongo session")
+			log.Fatal("Failed to start the Mongo session 3")
 		}
 
 		mongoDb = client
@@ -499,17 +509,46 @@ func pushPatients(dentistID primitive.ObjectID, patients *[]*nosql.Patient) erro
 		items = append(items, *t)
 	}
 
-	r, err := coll.InsertMany(context.Background(), items)
-	if err != nil {
-		return err
+	var divided [][]interface{}
+
+	chunkSize := (len(items)) / 8
+
+	for i := 0; i < len(items); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(items) {
+			end = len(items)
+		}
+
+		divided = append(divided, items[i:end])
 	}
 
-	ids := r.InsertedIDs
+	var allIds []interface{}
+	for _, h := range divided {
+		r, err := coll.InsertMany(context.Background(), h)
+		if err != nil {
+			return err
+		}
+
+		ids := r.InsertedIDs
+		allIds = append(allIds, ids...)
+
+		time.Sleep(2 * time.Second)
+	}
+
+	/*
+		r, err := coll.InsertMany(context.Background(), items)
+		if err != nil {
+			return err
+		}
+
+		allIds := r.InsertedIDs
+	*/
 
 	dentistsCollection := mongoDb.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.DentistCollection)
 	dentistFilter := bson.M{"_id": dentistID}
 
-	_, err = dentistsCollection.UpdateOne(context.Background(), dentistFilter, bson.M{"$set": bson.M{"patients": ids}})
+	_, err := dentistsCollection.UpdateOne(context.Background(), dentistFilter, bson.M{"$set": bson.M{"patients": allIds}})
 
 	return err
 }

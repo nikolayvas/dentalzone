@@ -11,12 +11,12 @@ import (
 	"github.com/gorilla/handlers"
 
 	sw "dental_hub/dentalzone"
-	//migrations "dental_hub/migrations"
+	//"dental_hub/migrations"
 )
 
 func main() {
 
-	//migrations.MigrateAccessDb("")
+	//migrations.MigrateAccessDbToSqlServer("")
 
 	logFile, err := os.OpenFile("log.txt", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {

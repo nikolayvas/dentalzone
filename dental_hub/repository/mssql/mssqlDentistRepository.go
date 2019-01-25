@@ -2,6 +2,7 @@ package mssql
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -207,13 +208,13 @@ func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 	rows, err := database.DBCon.Query(
 		`select 
 			cast(Id as char(36)),
-			[FirstName],
-			[MiddleName],
-			[LastName],
-			[Email],
-			[Address],
-			[PhoneNumber],
-			[GeneralInfo],
+			ISNULL([FirstName],''),
+			ISNULL([MiddleName],''),
+			ISNULL([LastName],''),
+			ISNULL([Email],''),
+			ISNULL([Address],''),
+			ISNULL([PhoneNumber],''),
+			ISNULL([GeneralInfo],''),
 			[RegistrationDate]
 		 from patientinfo where dentistId = ? and (IsDeleted = 0 OR IsDeleted is NULL) Order by [FirstName]`, dentistID)
 
@@ -458,11 +459,45 @@ func (r Repository) GetDentist(id string) (*m.Dentist, error) {
 }
 
 // GetAppointments returns appointments for day
-func (r Repository) GetAppointments(patientID string, day time.Time) (*[]m.Appointment, error) {
-	return nil, nil
+func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
+
+	day := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+	appointments := []m.Appointment{}
+
+	var strAppointment string
+
+	err := r.Connection.QueryRow("select Appointments from [dbo].[Schedule] where DentistId=? and Date=?",
+		dentistID, day).Scan(&strAppointment)
+
+	switch {
+	case err == sql.ErrNoRows:
+		return nil, nil
+	default:
+		err = json.Unmarshal([]byte(strAppointment), &appointments)
+		return &appointments, err
+	}
 }
 
 // UpdateAppointments updates appointments for day
-func (r Repository) UpdateAppointments(patientID string, day time.Time, appointments *[]m.Appointment) error {
-	return nil
+func (r Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
+
+	output, _ := json.Marshal(appointments)
+	day := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+
+	sql := `MERGE Schedule AS target  
+			USING (SELECT $1, $2, $3) AS source (DentistId, Date, Appointments)  
+			ON (target.DentistId = source.DentistId and target.Date = source.Date)  
+			WHEN MATCHED THEN   
+				UPDATE SET Appointments = source.Appointments  
+			WHEN NOT MATCHED THEN  
+				INSERT (DentistId, Date, Appointments)  
+				VALUES (source.DentistId, source.Date, source.Appointments);`
+
+	_, err := r.Connection.Exec(sql,
+		dentistID,
+		day,
+		string(output[:]),
+	)
+
+	return err
 }

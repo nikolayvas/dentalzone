@@ -4,10 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"time"
 
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 
 	config "dental_hub/configuration"
 )
@@ -25,14 +23,17 @@ var (
 //Init initialize a database handler that maintains its own pool of idle connections
 func Init() {
 	if config.GetInstance().DbDriverName == "nosql" {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		client, err := mongo.Connect(ctx, config.GetInstance().DbConnectionString)
 
-		defer cancel()
-		err = client.Ping(ctx, readpref.Primary())
+		client, err := mongo.Connect(context.Background(), config.GetInstance().DbConnectionString)
 
 		if err != nil {
-			log.Fatal("Failed to start the Mongo session")
+			log.Fatal("Failed to start the Mongo session: " + err.Error())
+		}
+
+		err = client.Ping(context.Background(), nil)
+
+		if err != nil {
+			log.Fatal("Failed to ping the Mongo server: " + err.Error())
 		}
 
 		Client = client

@@ -36,7 +36,7 @@ export class PaginatorComponent implements OnInit, OnDestroy {
 
     selectedPeriod: string;
     dayAndWeek: SelectItem[];
-    bigScreen: boolean;
+    bigScreen: boolean = true;
 
     form: FormGroup;
     mode: FormControl;

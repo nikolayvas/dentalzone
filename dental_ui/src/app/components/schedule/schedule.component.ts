@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormGroup, FormControl, AbstractControl } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { take,  } from 'rxjs/operators';
 
 import { IScheduleRowModel, IDayOfWeekModel, IPaginatorModel, DayOrWeekMode, IAppointmentModel } from './schedule.models'
@@ -152,12 +152,14 @@ export class ScheduleComponent {
                 const y = hoursAfterStartTime*(60/Schedule.perMinutes) + minutes/Schedule.perMinutes;
 
                 this._pService.getPatient$(appointment.patientID).pipe(take(1)).subscribe(p=>{
-                    appointment.x = Number(day)-1;
-                    appointment.y = y;
-                    appointment.patientID= p.id;
-                    appointment.patientName = p.firstName;
-
-                    this._schedule.addAppointment(appointment);
+                    if(p) {
+                        appointment.x = Number(day)-1;
+                        appointment.y = y;
+                        appointment.patientID= p.id;
+                        appointment.patientName = p.firstName;
+    
+                        this._schedule.addAppointment(appointment);
+                    }
                 });
             }
         }

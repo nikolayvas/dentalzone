@@ -20,7 +20,7 @@ export interface IPatientsStoreState {
 /**
  * Patients reducer.
  */
-export const patientReducer: ActionReducer<IPatientsStoreState> = (state: IPatientsStoreState = { patients: [] }, action: PayloadAction) => {
+export const patientReducer: ActionReducer<IPatientsStoreState> = (state: IPatientsStoreState = { patients: undefined }, action: PayloadAction) => {
 
     const stateManager = new StateManager<IPatientData, PatientDto, PatientModel>(PatientDto, PatientModel);
 

@@ -19,13 +19,14 @@ export class PaginatorComponent implements OnInit, OnDestroy {
 
     private _current: moment.Moment;
     private _subscriptions: Subscription = new Subscription();
+    private _smallSize: number = 650;
 
     @Output()
     onPeriodChanged = new EventEmitter<IPaginatorModel>();
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
-        if(window.innerWidth < 650) {
+        if(window.innerWidth < this._smallSize) {
             this.mode.patchValue(DayOrWeekMode.Day)
             this.bigScreen = false;
         } 
@@ -54,11 +55,15 @@ export class PaginatorComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.mode.patchValue(DayOrWeekMode.Week, {emitEvent: false});
         this.dayAndWeek = [{label:'Day', value: DayOrWeekMode.Day}, {label:'Week', value:DayOrWeekMode.Week}];
-
+        
         this._current = moment();
-        this.updateSelectedPeriod();
+        if (window.innerWidth > this._smallSize) {
+            this.mode.patchValue(DayOrWeekMode.Week);
+        }
+        else {
+            this.mode.patchValue(DayOrWeekMode.Day);
+        }
     }
 
     ngOnDestroy() {

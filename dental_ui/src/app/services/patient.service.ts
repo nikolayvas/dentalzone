@@ -1,5 +1,5 @@
 
-import {take, map} from 'rxjs/operators';
+import {take, map, filter} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -13,8 +13,10 @@ import { AuthService} from '../auth/auth.service'
 @Injectable()
 export class PatientService {
 
+    private _patients$: Observable<IPatientData[]>;
+
     get patients$() : Observable<IPatientData[]> {
-        return this.store.select(n => n.data.clientPortalStore.patientsState.patients);
+        return this._patients$ || (this._patients$ = this.store.select(n => n.data.clientPortalStore.patientsState.patients));
     }
 
     get patientSearchFilterChanged$(): Observable<string> {
@@ -46,7 +48,7 @@ export class PatientService {
     }
 
     getPatient$(id : string) : Observable<IPatientData> {
-        return this.store.select(n => n.data.clientPortalStore.patientsState.patients).pipe(map(item => item.find(n=>n.id === id)))
+        return this.patients$.pipe(filter(n=> !!n), map(item => item.find(n=>n.id === id)))
     }
 
     updatePatientProfile(patient : IPatientData) : void {

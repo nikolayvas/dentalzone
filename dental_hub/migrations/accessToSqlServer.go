@@ -67,8 +67,8 @@ func (p Patient) GetToothByNo(toothNo int) (*Tooth, error) {
 	return nil, nil
 }
 
-// newGuid generates uniqueidentifier
-func newGuid() string {
+// newGUID generates uniqueidentifier
+func newGUID() string {
 	var recordID uuid.UUID
 	recordID, _ = uuid.NewV4()
 
@@ -243,20 +243,20 @@ func pushToothStatuses(toothStatuses *[]m.ToothStatus) error {
 // pushDentist ...
 func pushDentist() (string, error) {
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("wilber"), 8)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("*****"), 8)
 	if err != nil {
 		return "", err
 	}
 
-	id := newGuid()
+	id := newGUID()
 
 	sql := `INSERT INTO Dentist (Id, UserName, Email, Password, RegistrationDate)
 			Values($1,$2,$3,$4,$5)`
 
 	_, err = db.DBCon.Exec(sql,
 		id,
-		"Margarita Tarpanova",
-		"a@a.a",
+		"*****",
+		"*****",
 		hashedPassword,
 		time.Now(),
 	)
@@ -493,7 +493,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 
 	for _, newParient := range *patients {
 
-		id := newGuid()
+		id := newGUID()
 
 		sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 		Values($1,$2,$3,$4,$5,$6,$7,$8,$9)`
@@ -514,7 +514,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 		}
 
 		for _, tooth := range newParient.Teeth {
-			toothID := newGuid()
+			toothID := newGUID()
 
 			sql := `INSERT INTO ToothCurrentStatus (ToothID, ToothNo, PatientId)
 			Values($1,$2,$3)`
@@ -529,7 +529,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 			}
 
 			for _, diagnosis := range tooth.Diagnosis {
-				diagnosisID := newGuid()
+				diagnosisID := newGUID()
 
 				sql := `INSERT INTO ToothDiagnosis (Id, DiagnosisId, Date, ToothId)
 					Values($1,$2,$3,$4)`
@@ -546,7 +546,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 			}
 
 			for _, manipulation := range tooth.Manipulations {
-				manipulationID := newGuid()
+				manipulationID := newGUID()
 
 				sql := `INSERT INTO ToothManipulation (Id, ManipulationId, Date, ToothId)
 				Values($1,$2,$3,$4)`

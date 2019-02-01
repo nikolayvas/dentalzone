@@ -9,14 +9,12 @@ import (
 
 	accessDBwE "github.com/bennof/accessDBwE"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 	"gopkg.in/mgo.v2/bson"
+
+	db "dental_hub/database"
 
 	m "dental_hub/models"
 	nosql "dental_hub/repository/nosql"
-
-	config "dental_hub/configuration"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -79,30 +77,13 @@ func MigrateAccessDbToMongoDb(connectionString string) error {
 // initDbConnection ...
 func initDbConnection() error {
 
+	db.Init()
 	if accessDb == nil {
 		var err error
 		accessDb, err = accessDBwE.Open("adodb", "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:/Dental.mdb;")
 		if err != nil {
 			log.Fatal("Failed to start AccessDb session")
 		}
-	}
-
-	if mongoDb == nil {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		client, err := mongo.Connect(ctx, config.GetInstance().DbConnectionString)
-
-		if err != nil {
-			log.Fatal("Failed to start the Mongo session 2")
-		}
-
-		defer cancel()
-		err = client.Ping(ctx, readpref.Primary())
-
-		if err != nil {
-			log.Fatal("Failed to start the Mongo session 3")
-		}
-
-		mongoDb = client
 	}
 
 	return nil
@@ -138,7 +119,7 @@ func seedDiagnosis() (*[]m.Diagnosis, error) {
 
 // pushDiagnosis ..
 func pushDiagnosis(diagnosis *[]m.Diagnosis) error {
-	coll := mongoDb.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.DiagnosisCollection)
+	coll := db.Client.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.DiagnosisCollection)
 
 	var items []interface{}
 
@@ -183,7 +164,7 @@ func seedManipulations() (*[]m.Manipulation, error) {
 
 // pushManipulations ...
 func pushManipulations(manipulations *[]m.Manipulation) error {
-	coll := mongoDb.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.ManipulationsCollection)
+	coll := db.Client.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.ManipulationsCollection)
 
 	var items []interface{}
 
@@ -226,7 +207,7 @@ func seedToothStatuses() (*[]m.ToothStatus, error) {
 
 // pushToothStatuses ...
 func pushToothStatuses(toothStatuses *[]m.ToothStatus) error {
-	coll := mongoDb.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.ToothStatusesCollection)
+	coll := db.Client.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.ToothStatusesCollection)
 
 	var items []interface{}
 
@@ -241,7 +222,7 @@ func pushToothStatuses(toothStatuses *[]m.ToothStatus) error {
 
 // pushDentist ...
 func pushDentist() (primitive.ObjectID, error) {
-	coll := mongoDb.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.DentistCollection)
+	coll := db.Client.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.DentistCollection)
 
 	err := coll.Drop(context.Background())
 
@@ -497,7 +478,7 @@ func seedPatients() (*[]*nosql.Patient, error) {
 // PushPatients ...
 func pushPatients(dentistID primitive.ObjectID, patients *[]*nosql.Patient) error {
 
-	coll := mongoDb.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.PatientCollection)
+	coll := db.Client.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.PatientCollection)
 
 	var items []interface{}
 
@@ -545,7 +526,7 @@ func pushPatients(dentistID primitive.ObjectID, patients *[]*nosql.Patient) erro
 		allIds := r.InsertedIDs
 	*/
 
-	dentistsCollection := mongoDb.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.DentistCollection)
+	dentistsCollection := db.Client.Database(nosql.MongoDbSchema.DatabaseName).Collection(nosql.MongoDbSchema.DentistCollection)
 	dentistFilter := bson.M{"_id": dentistID}
 
 	_, err := dentistsCollection.UpdateOne(context.Background(), dentistFilter, bson.M{"$set": bson.M{"patients": allIds}})

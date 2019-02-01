@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"database/sql"
+	db "dental_hub/database"
 	"log"
 	"strconv"
 	"time"
@@ -10,8 +11,6 @@ import (
 
 	m "dental_hub/models"
 
-	config "dental_hub/configuration"
-
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/satori/go.uuid"
@@ -19,7 +18,6 @@ import (
 
 var (
 	accessDb *sql.DB
-	sqlDb    *sql.DB
 )
 
 // Patient read/write model
@@ -37,22 +35,6 @@ type Patient struct {
 	Teeth            []*Tooth  `bson:"teeth"`
 }
 
-// GetToothByNo ...
-func (p Patient) GetToothByNo(toothNo int) (*Tooth, error) {
-
-	if p.Teeth == nil {
-		return nil, nil
-	}
-
-	for _, tooth := range p.Teeth {
-		if tooth.ToothNo == strconv.Itoa(toothNo) {
-			return tooth, nil
-		}
-	}
-
-	return nil, nil
-}
-
 // Tooth ...
 type Tooth struct {
 	ToothNo       string            `bson:"toothNo"`
@@ -67,6 +49,22 @@ type ToothOperation struct {
 	Date        time.Time  `bson:"date"`
 	IsDeleted   *bool      `bson:"isDeleted,omitempty"`
 	DateDeleted *time.Time `bson:"dateDeleted,omitempty"`
+}
+
+// GetToothByNo ...
+func (p Patient) GetToothByNo(toothNo int) (*Tooth, error) {
+
+	if p.Teeth == nil {
+		return nil, nil
+	}
+
+	for _, tooth := range p.Teeth {
+		if tooth.ToothNo == strconv.Itoa(toothNo) {
+			return tooth, nil
+		}
+	}
+
+	return nil, nil
 }
 
 // newGuid generates uniqueidentifier
@@ -128,6 +126,7 @@ func MigrateAccessDbToSqlServer(connectionString string) error {
 
 // initDbConnection ...
 func initDbConnection() error {
+	db.Init()
 
 	if accessDb == nil {
 		var err error
@@ -135,15 +134,6 @@ func initDbConnection() error {
 		if err != nil {
 			log.Fatal("Failed to start AccessDb session")
 		}
-	}
-
-	if sqlDb == nil {
-		db, err := sql.Open(config.GetInstance().DbDriverName, config.GetInstance().DbConnectionString)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-		sqlDb = db
 	}
 
 	return nil
@@ -253,7 +243,7 @@ func pushToothStatuses(toothStatuses *[]m.ToothStatus) error {
 // pushDentist ...
 func pushDentist() (string, error) {
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("1"), 8)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("wilber"), 8)
 	if err != nil {
 		return "", err
 	}
@@ -263,7 +253,7 @@ func pushDentist() (string, error) {
 	sql := `INSERT INTO Dentist (Id, UserName, Email, Password, RegistrationDate)
 			Values($1,$2,$3,$4,$5)`
 
-	_, err = sqlDb.Exec(sql,
+	_, err = db.DBCon.Exec(sql,
 		id,
 		"Margarita Tarpanova",
 		"a@a.a",
@@ -508,7 +498,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 		sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 		Values($1,$2,$3,$4,$5,$6,$7,$8,$9)`
 
-		_, err := sqlDb.Exec(sql,
+		_, err := db.DBCon.Exec(sql,
 			id,
 			newParient.FirstName,
 			newParient.MiddleName,
@@ -529,7 +519,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 			sql := `INSERT INTO ToothCurrentStatus (ToothID, ToothNo, PatientId)
 			Values($1,$2,$3)`
 
-			_, err = sqlDb.Exec(sql,
+			_, err = db.DBCon.Exec(sql,
 				toothID,
 				tooth.ToothNo,
 				id)
@@ -544,7 +534,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 				sql := `INSERT INTO ToothDiagnosis (Id, DiagnosisId, Date, ToothId)
 					Values($1,$2,$3,$4)`
 
-				_, err = sqlDb.Exec(sql,
+				_, err = db.DBCon.Exec(sql,
 					diagnosisID,
 					diagnosis.OperationID,
 					diagnosis.Date,
@@ -561,7 +551,7 @@ func pushPatients(dentistID string, patients *[]*Patient) error {
 				sql := `INSERT INTO ToothManipulation (Id, ManipulationId, Date, ToothId)
 				Values($1,$2,$3,$4)`
 
-				_, err = sqlDb.Exec(sql,
+				_, err = db.DBCon.Exec(sql,
 					manipulationID,
 					manipulation.OperationID,
 					manipulation.Date,

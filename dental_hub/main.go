@@ -17,6 +17,7 @@ import (
 func main() {
 
 	//migrations.MigrateAccessDbToSqlServer("")
+	//return
 
 	logFile, err := os.OpenFile("log.txt", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {

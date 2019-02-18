@@ -1,26 +1,15 @@
-import { Component, forwardRef, Output, EventEmitter, ElementRef, Renderer2 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Utils } from '../../services/utils'
+import { Component, Input, Output, EventEmitter, ElementRef, Renderer2, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
 import { IAppointmentModel } from './schedule.models';
-
-const APPOINTMENT_CONTROL_VALUE_ACCESSOR = {
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => AppointmentComponent),
-    multi: true
-};
 
 @Component({
     selector: 'appointment',
     templateUrl: './appointment.component.html',
-    providers: [APPOINTMENT_CONTROL_VALUE_ACCESSOR],
-    styleUrls: ['appointment.component.scss']
+    styleUrls: ['appointment.component.scss'],
+    //changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppointmentComponent implements ControlValueAccessor {
-    private _onChangeCallback: (_: any) => void = Utils.noop;
-    value: IAppointmentModel;
-
-    @Output()
-    onAdd = new EventEmitter<IAppointmentModel>();
+export class AppointmentComponent implements OnInit, OnDestroy {
+    @Input() 
+    appointment: IAppointmentModel;
 
     @Output()
     onRemove = new EventEmitter<IAppointmentModel>();
@@ -36,43 +25,31 @@ export class AppointmentComponent implements ControlValueAccessor {
         private renderer: Renderer2
         ) { }
 
-    writeValue(appointment: IAppointmentModel): void {
-        this.value = appointment;
+    ngOnInit() {
         this.setBackGroundColorToParentTableCell();
     }
 
-    registerOnChange(fn: any): void {
-        this._onChangeCallback = fn;
-    }
-
-    registerOnTouched(fn: any): void {
+    ngOnDestroy() {
+        this.undoBackGroundColorToParentTableCell();
     }
 
     extend() {
-        this.onExtend.next(this.value);
-    }
-
-    add($event) {
-        this.onAdd.next(this.value);
+        this.onExtend.next(this.appointment);
     }
 
     remove() {
-        this.onRemove.next(this.value);
+        this.onRemove.next(this.appointment);
     }
 
     showInfo() {
-        this.onShowInfo.next(this.value);
-    }
-
-    private emitValueChange() {
-        this._onChangeCallback(this.value);
+        this.onShowInfo.next(this.appointment);
     }
 
     private setBackGroundColorToParentTableCell(): void {
-        var color: string = this.value && this.value.color;
+        var color: string = this.appointment.color;
 
         if(!color) {
-            if(this.value && this.value.x >= 5) {
+            if(this.appointment.x >= 5) {
                 color = "beige";
             }
             else {
@@ -81,5 +58,9 @@ export class AppointmentComponent implements ControlValueAccessor {
         }
 
         this.renderer.setStyle(this.el.nativeElement.parentNode, "background-color", color);
+    }
+
+    undoBackGroundColorToParentTableCell(): void {
+        this.renderer.setStyle(this.el.nativeElement.parentNode, "background-color", "white");
     }
 }

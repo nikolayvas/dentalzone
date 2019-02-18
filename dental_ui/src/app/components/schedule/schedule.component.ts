@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { take,  } from 'rxjs/operators';
 
 import { IScheduleRowModel, IDayOfWeekModel, IPaginatorModel, DayOrWeekMode, IAppointmentModel } from './schedule.models'
@@ -18,18 +18,26 @@ import { Schedule } from './schedule';
     templateUrl: './schedule.component.html',
     styleUrls: ['./schedule.component.css'],
     providers: [DialogService],
+    //changeDetection: ChangeDetectionStrategy.OnPush
   })
 
 export class ScheduleComponent {
-    
+    counter: number = 0;
+
     private _currentMode: IPaginatorModel;
     private _schedule: Schedule;
 
-    private get columnsCount(): number {
-        return this._currentMode.pageMode == DayOrWeekMode.Week ? Schedule.daysInWeek : 1;
+    /*
+    get runChangeDetection() {
+        console.log('checking the view' + this.counter++);
+        return true;
     }
+    */
 
-    rows: IScheduleRowModel[] = [];
+    get rows(): IScheduleRowModel[] {
+        return this._schedule ? this._schedule.rows : [];
+    }
+    
     cols: IDayOfWeekModel[] = [];
 
     form: FormGroup = new FormGroup({});
@@ -46,12 +54,15 @@ export class ScheduleComponent {
 
         this._service.getAppointmentsPerDayOrWeek$(data).subscribe(appointments => {
             this.initHeaders();
-            this.initGridRows();
-            this.populateExistingsAppointments(appointments);
+            this.initAppointmentsData(appointments);
         });
     }
 
-    appointmentAdded(appointment: IAppointmentModel) {
+    getAppointment(x: number, y: number): IAppointmentModel {
+        return this._schedule.getAppointment(x, y);
+    }
+
+   addAppointment(x: number, y: number) {
         const ref = this.dialogService.open(ChoosePatientComponent, {
             header: 'Choose a patient',
             width: '70%',
@@ -59,13 +70,8 @@ export class ScheduleComponent {
 
         ref.onClose.pipe(take(1)).subscribe((patient: IPatientData) => {
             if (patient) {
-
-                appointment.patientID = patient.id;
-                appointment.patientName = patient.firstName;
-               
-                this._schedule.addAppointment(appointment);
-
-                this.saveAppointmentsPerColumn(appointment.x);
+                this._schedule.addAppointment(x, y, patient);
+                this.saveAppointmentsPerColumn(x);
             }
         });
     }
@@ -73,13 +79,11 @@ export class ScheduleComponent {
     appointmentExtended(appointment: IAppointmentModel)
     {
         this._schedule.extendAppointment(appointment);
-
         this.saveAppointmentsPerColumn(appointment.x);
     }
 
     appointmentRemoved(appointment: IAppointmentModel) {
         this._schedule.removeAppointment(appointment);
-
         this.saveAppointmentsPerColumn(appointment.x);
     }
 
@@ -100,7 +104,7 @@ export class ScheduleComponent {
 
         if(this._currentMode.pageMode == DayOrWeekMode.Week) {
             for (let i = 1; i <= Schedule.daysInWeek; i++) {
-                const dayOfWeek = this._currentMode.currentDate.clone().weekday(i);
+                const dayOfWeek = this._currentMode.currentDate.clone().isoWeekday(i);
                 this.cols.push( this.getColumnHeaderDate(dayOfWeek));
             }
         }
@@ -110,37 +114,10 @@ export class ScheduleComponent {
         }
     }
 
-    private initGridRows() {
-        this.rows = [];
-        this.removeFormControls();
-        
-        var newRows: IScheduleRowModel[] = [];
-        var local = this._currentMode.currentDate.clone().startOf('day');
-        local.add('hours', Schedule.startHour);
+    private initAppointmentsData(appointments: { [day: string] : IAppointmentModel[] }): void {
 
-        var y = 0;
-        while (local.hours() <= Schedule.endHour) {
+        this._schedule = new Schedule(this._currentMode);
 
-            const nextTime = local.format("HH:mm").toString();
-
-            for (let x = 0; x < this.columnsCount; x++) {
-                const appointmentData = <IAppointmentModel>{x: x, y: y}
-                
-                const control = new FormControl(appointmentData);
-                this.form.addControl(this.getControlNameByPos(x, y), control)
-            }
-
-            newRows.push({time: nextTime.endsWith("0") ? nextTime : ""});
-
-            local.add('minutes', Schedule.perMinutes);
-            y++;
-        }
-
-        this.rows = newRows;
-        this._schedule = new Schedule(this.form.controls, this.columnsCount, newRows.length - 1, this._currentMode);
-    }
-
-    private populateExistingsAppointments(appointments: { [day: string] : IAppointmentModel[] }): void {
         for (let day in appointments) {
             const appointmentsList = appointments[day];
             for(let i = 0; i < appointmentsList.length; i++){
@@ -153,25 +130,10 @@ export class ScheduleComponent {
 
                 this._pService.getPatient$(appointment.patientID).pipe(take(1)).subscribe(p=>{
                     if(p) {
-                        appointment.x = Number(day)-1;
-                        appointment.y = y;
-                        appointment.patientID= p.id;
-                        appointment.patientName = p.firstName;
-    
-                        this._schedule.addAppointment(appointment);
+                        this._schedule.addAppointment(Number(day)-1, y, p);
                     }
                 });
             }
-        }
-    }
-
-    private getControlNameByPos(x: number, y: number): string {
-        return (y*this.columnsCount + x).toString();
-    }
-
-    private removeFormControls() {
-        for(var c in this.form.controls) {
-            this.form.removeControl(c);
         }
     }
 

@@ -10,3 +10,12 @@
 .center {
     text-align: center;
 }
+
+.circle-button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    .ui-button-text {
+        padding: .1rem;
+    }
+}

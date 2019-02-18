@@ -2,7 +2,7 @@ import * as moment from 'moment';
 
 export enum DayOrWeekMode {
     Day = 1,
-    Week = 2,
+    Week = 7,
 };
 
 export enum WeekDay{

@@ -44,9 +44,9 @@ export class CustomHttpInterceptor implements HttpInterceptor {
             }
         });
 
-        //if(req.method == "GET") {
-        //    this.progress.set({isActive: true, infinite: true});
-        //}
+        if(req.method == "GET") {
+            this.progress.set({isActive: true, infinite: true});
+        }
 
         return next.handle(req).pipe(
             catchError((response: any)=> {
@@ -66,9 +66,9 @@ export class CustomHttpInterceptor implements HttpInterceptor {
                 return observableThrowError(response);
         }),
         finalize(()=> {
-            //if(req.method == "GET") {
-            //    this.progress.set({isActive: false});
-            //}
+            if(req.method == "GET") {
+                this.progress.set({isActive: false});
+            }
         }));
   }
 }

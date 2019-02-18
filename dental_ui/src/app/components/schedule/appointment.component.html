@@ -1,18 +1,14 @@
 
 <div style="margin:0px;">
-    <div [style.background-color]="value.color">
-        <div *ngIf="value.patientID" class="borrower-selected" (dblclick)="showInfo()">
-            <i class="fa fa-user" cli></i> {{value.patientName}}
+    <div [style.background-color]="appointment.color">
+        <div *ngIf="appointment.patientID" class="borrower-selected" (dblclick)="showInfo()">
+            <i class="fa fa-user" cli></i> {{appointment.patientName}}
             <button pButton type="button" class="borrower-selected-remove ui-button-danger" icon="fa fa-times" (click)="remove()" style="float: right;"></button>
         </div>
-        <div>
-            <button *ngIf="value.patientID && !value.hasNext"(click)="extend()" 
-                pButton class="ui-button-secondary circle-button" icon="fa fa-angle-down" >
-            </button>
-            <button *ngIf="!value.patientID" (click)="add($event)" 
-                pButton class="ui-button-secondary circle-button" style="float: right;" icon="fa fa-plus-circle">
-            </button>
-        </div>
+        
+        <button *ngIf="appointment.patientID && !appointment.hasNext"(click)="extend()" 
+            pButton class="ui-button-secondary circle-button" icon="fa fa-angle-down" >
+        </button>
     </div>
 </div>
 

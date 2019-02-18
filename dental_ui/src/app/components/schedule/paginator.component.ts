@@ -101,8 +101,8 @@ export class PaginatorComponent implements OnInit, OnDestroy {
     private updateSelectedPeriod() {
         if(this.mode.value == DayOrWeekMode.Week) {
 
-            const monday = this._current.clone().weekday(1);
-            const sunday = this._current.clone().weekday(7);
+            const monday = this._current.clone().isoWeekday(1);
+            const sunday = this._current.clone().isoWeekday(7);
 
             const month1 = monday.format("MMM");
             const day1 = monday.format("DD");
@@ -123,6 +123,6 @@ export class PaginatorComponent implements OnInit, OnDestroy {
             this.selectedPeriod = this._current.format("dddd, MMM DD, YYYY");
         }
 
-        this.onPeriodChanged.next(<IPaginatorModel>{pageMode: this.mode.value, currentDate: this._current})
+        this.onPeriodChanged.next(<IPaginatorModel>{pageMode: this.mode.value, currentDate: this._current.clone()})
     }
 }

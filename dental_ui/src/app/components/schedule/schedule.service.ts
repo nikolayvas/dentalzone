@@ -52,13 +52,13 @@ export class ScheduleService {
         }
         else {
             const zip = observableZip<{ [day: string]: IAppointmentModel[] }>(
-                this.getAppointmentsPerDay$(data.currentDate.clone().weekday(WeekDay.Monday)),
-                this.getAppointmentsPerDay$(data.currentDate.clone().weekday(WeekDay.Tuesday)),
-                this.getAppointmentsPerDay$(data.currentDate.clone().weekday(WeekDay.Wednesday)),
-                this.getAppointmentsPerDay$(data.currentDate.clone().weekday(WeekDay.Thursday)),
-                this.getAppointmentsPerDay$(data.currentDate.clone().weekday(WeekDay.Friday)),
-                this.getAppointmentsPerDay$(data.currentDate.clone().weekday(WeekDay.Saturday)),
-                this.getAppointmentsPerDay$(data.currentDate.clone().weekday(WeekDay.Sunday)),
+                this.getAppointmentsPerDay$(data.currentDate.clone().isoWeekday(WeekDay.Monday)),
+                this.getAppointmentsPerDay$(data.currentDate.clone().isoWeekday(WeekDay.Tuesday)),
+                this.getAppointmentsPerDay$(data.currentDate.clone().isoWeekday(WeekDay.Wednesday)),
+                this.getAppointmentsPerDay$(data.currentDate.clone().isoWeekday(WeekDay.Thursday)),
+                this.getAppointmentsPerDay$(data.currentDate.clone().isoWeekday(WeekDay.Friday)),
+                this.getAppointmentsPerDay$(data.currentDate.clone().isoWeekday(WeekDay.Saturday)),
+                this.getAppointmentsPerDay$(data.currentDate.clone().isoWeekday(WeekDay.Sunday)),
                 (
                     monday: IAppointmentModel[], 
                     tuesday: IAppointmentModel[], 

@@ -20,12 +20,19 @@
                 <td>{{row.time}}</td>
                 <ng-container *ngFor="let col of cols; let i = index;">
                     <td style="padding: 0.1em 0.1em;vertical-align: top;">  
-                        <appointment formControlName="{{j*cols.length + i}}" 
-                            (onAdd)="appointmentAdded($event);" 
-                            (onRemove)="appointmentRemoved($event)"
-                            (onExtend)="appointmentExtended($event)"
-                            (onShowInfo)="showPatientInfo($event)">
-                        </appointment>
+                        <div *ngIf="getAppointment(i, j);then exist else empty">here is ignored</div>    
+                        <ng-template #exist>
+                            <appointment [appointment]="getAppointment(i, j)"
+                                (onRemove)="appointmentRemoved($event)"
+                                (onExtend)="appointmentExtended($event)"
+                                (onShowInfo)="showPatientInfo($event)">
+                            </appointment>
+                        </ng-template>
+                        <ng-template #empty>
+                            <button (click)="addAppointment(i, j)" 
+                                pButton class="ui-button-secondary circle-button" style="float: right;" icon="fa fa-plus-circle">
+                            </button>
+                        </ng-template>
                     </td>
                 </ng-container>
             </tr>

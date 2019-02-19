@@ -49,7 +49,6 @@ export class PaginatorComponent implements OnInit, OnDestroy {
         });
 
         this._subscriptions.add(this.mode.valueChanges.pipe(distinctUntilChanged(R.equals)).subscribe(value=> {
-            this._current = moment();
             this.updateSelectedPeriod();
         }));
     }

@@ -13,7 +13,7 @@ import (
 )
 
 // RegisterDentist registers new user
-func (r Repository) RegisterDentist(email string, userName string, password []byte) (string, error) {
+func (r *Repository) RegisterDentist(email string, userName string, password []byte) (string, error) {
 
 	var id string
 	err := r.Connection.QueryRow("select cast(Id as char(36)) from [dbo].[Dentist] where email=?", email).Scan(&id)
@@ -49,7 +49,7 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 }
 
 // ActivateDentist activates alredy registered user
-func (r Repository) ActivateDentist(id string) error {
+func (r *Repository) ActivateDentist(id string) error {
 	res, err := r.Connection.Exec("exec [SignUpActivate] ?", id)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (r Repository) ActivateDentist(id string) error {
 }
 
 // Login returns user details
-func (r Repository) Login(email string) (*m.Login, error) {
+func (r *Repository) Login(email string) (*m.Login, error) {
 	login := m.Login{}
 
 	err := r.Connection.QueryRow("select cast(Id as char(36)), UserName, Email, Password from [dbo].[Dentist] where email=?",
@@ -81,7 +81,7 @@ func (r Repository) Login(email string) (*m.Login, error) {
 }
 
 // AddPasswordResetConfirmationCode insertс new confirmation code in db
-func (r Repository) AddPasswordResetConfirmationCode(email string, code string) error {
+func (r *Repository) AddPasswordResetConfirmationCode(email string, code string) error {
 	sql := `delete from [dbo].[ResetPassword] where DentistId in (select id from [dbo].[Dentist] where [Email] = $1)`
 
 	q, err := r.Connection.Exec(sql, email)
@@ -100,7 +100,7 @@ func (r Repository) AddPasswordResetConfirmationCode(email string, code string) 
 }
 
 // ResetPassword resets user password
-func (r Repository) ResetPassword(hashedPassword []byte, email string, code string) error {
+func (r *Repository) ResetPassword(hashedPassword []byte, email string, code string) error {
 
 	res, err := r.Connection.Exec("exec [ResetPassword_SP] ?, ?, ?", hashedPassword, email, code)
 	if err != nil {
@@ -116,7 +116,7 @@ func (r Repository) ResetPassword(hashedPassword []byte, email string, code stri
 }
 
 // SeedDiagnosis seeds diagnosis
-func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
+func (r *Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 	rows, err := r.Connection.Query(`select * from Diagnosis`)
 	if err != nil {
 		return nil, err
@@ -144,7 +144,7 @@ func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 }
 
 // SeedManipulations seeds manipulations
-func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
+func (r *Repository) SeedManipulations() (*[]m.Manipulation, error) {
 
 	rows, err := r.Connection.Query(`select * from Manipulations`)
 	if err != nil {
@@ -173,7 +173,7 @@ func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
 }
 
 // SeedToothStatuses seeds tooth statuses
-func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
+func (r *Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 
 	rows, err := r.Connection.Query(`select * from ToothStatus`)
 	if err != nil {
@@ -201,7 +201,7 @@ func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 }
 
 // GetPatients returns patients
-func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
+func (r *Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 
 	patients := make([]m.Patient, 0)
 
@@ -254,7 +254,7 @@ func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 }
 
 // UpdatePatientProfile updates patient
-func (r Repository) UpdatePatientProfile(newParient m.Patient) error {
+func (r *Repository) UpdatePatientProfile(newParient m.Patient) error {
 	sql := `UPDATE PatientInfo SET 
 				FirstName = $2,
 				MiddleName = $3,
@@ -279,7 +279,7 @@ func (r Repository) UpdatePatientProfile(newParient m.Patient) error {
 }
 
 // CreatePatientProfile creates patient
-func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
+func (r *Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
 	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 			Values($1,$2,$3,$4,$5,$6,$7,$8,$9)`
 
@@ -298,7 +298,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 }
 
 // RemovePatientProfile updates patient
-func (r Repository) RemovePatientProfile(patientID string, dentistID string) error {
+func (r *Repository) RemovePatientProfile(patientID string, dentistID string) error {
 	sql := `UPDATE PatientInfo SET 
 				IsDeleted = 1
 			WHERE Id= $1`
@@ -309,7 +309,7 @@ func (r Repository) RemovePatientProfile(patientID string, dentistID string) err
 }
 
 // GetTeethData returns teeth data per patient
-func (r Repository) GetTeethData(patientID string) (*m.TeethData, error) {
+func (r *Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 	diagnosiesList := make([]m.ToothAction, 0)
 	manipulationsList := make([]m.ToothAction, 0)
 
@@ -367,7 +367,7 @@ func (r Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 }
 
 // AddToothManipulation adds manipulation
-func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
+func (r *Repository) AddToothManipulation(manipulation m.ToothAction) error {
 	_, err := r.Connection.Exec("exec [AddManupulation] ?, ?, ?, ?",
 		manipulation.ID,
 		manipulation.PatientID,
@@ -378,14 +378,14 @@ func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 }
 
 // RemoveToothManipulation removes manipulation
-func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
+func (r *Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 	_, err := r.Connection.Exec("exec [RemoveToothManipulation] ?", manipulation.ID)
 
 	return err
 }
 
 // AddToothDiagnosis adds diagnosis
-func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
+func (r *Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 	_, err := r.Connection.Exec("exec [AddDiagnosis] ?, ?, ?, ?",
 		diagnosis.ID,
 		diagnosis.PatientID,
@@ -396,14 +396,14 @@ func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 }
 
 // RemoveToothDiagnosis removes diagnosis
-func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
+func (r *Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 	_, err := r.Connection.Exec("exec [RemoveToothDiagnosis] ?", diagnosis.ID)
 
 	return err
 }
 
 // InvitePatient resets patient password
-func (r Repository) InvitePatient(dentistID string, patientEmail string) (string, error) {
+func (r *Repository) InvitePatient(dentistID string, patientEmail string) (string, error) {
 
 	rows, err := r.Connection.Query("exec [InvitePatient] ?, ?", dentistID, patientEmail)
 	if err != nil {
@@ -433,7 +433,7 @@ func (r Repository) InvitePatient(dentistID string, patientEmail string) (string
 }
 
 // ActivateInvitation activates invitation
-func (r Repository) ActivateInvitation(activationID string) error {
+func (r *Repository) ActivateInvitation(activationID string) error {
 	res, err := r.Connection.Exec("exec [ActivateInvitation] ?", activationID)
 	if err != nil {
 		return err
@@ -448,7 +448,7 @@ func (r Repository) ActivateInvitation(activationID string) error {
 }
 
 // GetDentist returns dentist data
-func (r Repository) GetDentist(id string) (*m.Dentist, error) {
+func (r *Repository) GetDentist(id string) (*m.Dentist, error) {
 
 	var dentist m.Dentist
 
@@ -459,7 +459,7 @@ func (r Repository) GetDentist(id string) (*m.Dentist, error) {
 }
 
 // GetAppointments returns appointments for day
-func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
+func (r *Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
 
 	day := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
 	appointments := []m.Appointment{}
@@ -479,7 +479,7 @@ func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appo
 }
 
 // UpdateAppointments updates appointments for day
-func (r Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
+func (r *Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
 
 	output, _ := json.Marshal(appointments)
 	day := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())

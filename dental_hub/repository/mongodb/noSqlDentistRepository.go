@@ -1,4 +1,4 @@
-package nosql
+package mongodb
 
 import (
 	"context"
@@ -98,7 +98,7 @@ type ResetPassword struct {
 }
 
 // RegisterDentist registers new user and returns verification code
-func (r Repository) RegisterDentist(email string, userName string, password []byte) (string, error) {
+func (r *Repository) RegisterDentist(email string, userName string, password []byte) (string, error) {
 	dentist := Dentist{}
 
 	dentistsCollection := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.DentistCollection)
@@ -154,7 +154,7 @@ func (r Repository) RegisterDentist(email string, userName string, password []by
 }
 
 // ActivateDentist activates alredy registered user
-func (r Repository) ActivateDentist(id string) error {
+func (r *Repository) ActivateDentist(id string) error {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
@@ -189,7 +189,7 @@ func (r Repository) ActivateDentist(id string) error {
 }
 
 // Login returns user details
-func (r Repository) Login(email string) (*m.Login, error) {
+func (r *Repository) Login(email string) (*m.Login, error) {
 
 	_, _ = r.SeedToothStatuses()
 
@@ -221,7 +221,7 @@ func (r Repository) Login(email string) (*m.Login, error) {
 }
 
 // AddPasswordResetConfirmationCode insertс new confirmation code in db
-func (r Repository) AddPasswordResetConfirmationCode(email string, code string) error {
+func (r *Repository) AddPasswordResetConfirmationCode(email string, code string) error {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
@@ -256,7 +256,7 @@ func (r Repository) AddPasswordResetConfirmationCode(email string, code string) 
 }
 
 // ResetPassword resets user password
-func (r Repository) ResetPassword(hashedPassword []byte, email string, code string) error {
+func (r *Repository) ResetPassword(hashedPassword []byte, email string, code string) error {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
@@ -292,7 +292,7 @@ func (r Repository) ResetPassword(hashedPassword []byte, email string, code stri
 }
 
 // SeedDiagnosis seeds diagnosis
-func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
+func (r *Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
@@ -328,7 +328,7 @@ func (r Repository) SeedDiagnosis() (*[]m.Diagnosis, error) {
 }
 
 // SeedManipulations seeds manipulations
-func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
+func (r *Repository) SeedManipulations() (*[]m.Manipulation, error) {
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
@@ -363,7 +363,7 @@ func (r Repository) SeedManipulations() (*[]m.Manipulation, error) {
 }
 
 // SeedToothStatuses seeds tooth statuses
-func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
+func (r *Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 	ctx := context.Background()
 
 	coll := r.Client.Database(MongoDbSchema.DatabaseName).Collection(MongoDbSchema.ToothStatusesCollection)
@@ -397,7 +397,7 @@ func (r Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 }
 
 // CreatePatientProfile updates patient
-func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
+func (r *Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
 
 	dentist := Dentist{}
 
@@ -445,7 +445,7 @@ func (r Repository) CreatePatientProfile(newParient m.Patient, dentistID string)
 }
 
 // UpdatePatientProfile updates patient
-func (r Repository) UpdatePatientProfile(patient m.Patient) error {
+func (r *Repository) UpdatePatientProfile(patient m.Patient) error {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
@@ -470,7 +470,7 @@ func (r Repository) UpdatePatientProfile(patient m.Patient) error {
 }
 
 // GetPatients returns patients
-func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
+func (r *Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 
 	dentist := Dentist{}
 	ctx := context.Background()
@@ -535,7 +535,7 @@ func (r Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 }
 
 // RemovePatientProfile removes the patient from the list of patients for the dentist
-func (r Repository) RemovePatientProfile(patientID string, dentistID string) error {
+func (r *Repository) RemovePatientProfile(patientID string, dentistID string) error {
 	patient := Patient{}
 
 	ctx, cancel := defaultContextWithTimeout()
@@ -585,7 +585,7 @@ func (r Repository) RemovePatientProfile(patientID string, dentistID string) err
 }
 
 // GetTeethData returns teeth data per patient
-func (r Repository) GetTeethData(patientID string) (*m.TeethData, error) {
+func (r *Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 
 	patient := Patient{}
 
@@ -633,7 +633,7 @@ func (r Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 }
 
 // AddToothManipulation adds manipulation
-func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
+func (r *Repository) AddToothManipulation(manipulation m.ToothAction) error {
 	patient := Patient{}
 
 	ctx, cancel := defaultContextWithTimeout()
@@ -680,7 +680,7 @@ func (r Repository) AddToothManipulation(manipulation m.ToothAction) error {
 }
 
 // RemoveToothManipulation removes manipulation
-func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
+func (r *Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 	patient := Patient{}
 
 	ctx, cancel := defaultContextWithTimeout()
@@ -723,7 +723,7 @@ func (r Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 }
 
 // AddToothDiagnosis adds diagnosis
-func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
+func (r *Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 	patient := Patient{}
 
 	ctx, cancel := defaultContextWithTimeout()
@@ -770,7 +770,7 @@ func (r Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
 }
 
 // RemoveToothDiagnosis removes diagnosis
-func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
+func (r *Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 	patient := Patient{}
 
 	ctx, cancel := defaultContextWithTimeout()
@@ -813,7 +813,7 @@ func (r Repository) RemoveToothDiagnosis(diagnosis m.ToothAction) error {
 }
 
 // InvitePatient resets patient password
-func (r Repository) InvitePatient(dentistID string, patientEmail string) (string, error) {
+func (r *Repository) InvitePatient(dentistID string, patientEmail string) (string, error) {
 
 	return "", nil
 
@@ -821,12 +821,12 @@ func (r Repository) InvitePatient(dentistID string, patientEmail string) (string
 }
 
 // ActivateInvitation activates invitation
-func (r Repository) ActivateInvitation(activationID string) error {
+func (r *Repository) ActivateInvitation(activationID string) error {
 	return nil
 }
 
 // GetDentist returns dentist data
-func (r Repository) GetDentist(dentistID string) (*m.Dentist, error) {
+func (r *Repository) GetDentist(dentistID string) (*m.Dentist, error) {
 
 	dentist := Dentist{}
 
@@ -880,7 +880,7 @@ func FindToothOperation(operations []*ToothOperation, recordID string) (int, *To
 }
 
 // GetAppointments returns appointments per day and dentist
-func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
+func (r *Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
@@ -906,7 +906,7 @@ func (r Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appo
 type result interface{}
 
 // UpdateAppointments updates appointments per day and dentist
-func (r Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
+func (r *Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()

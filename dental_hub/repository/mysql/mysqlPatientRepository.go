@@ -8,7 +8,7 @@ import (
 )
 
 // RegisterPatient registers new patient
-func (r Repository) RegisterPatient(email string, userName string, password []byte) (string, error) {
+func (r *Repository) RegisterPatient(email string, userName string, password []byte) (string, error) {
 
 	var id string
 	err := r.Connection.QueryRow("select Id from Patient where email=?", email).Scan(&id)
@@ -44,7 +44,7 @@ func (r Repository) RegisterPatient(email string, userName string, password []by
 }
 
 // ActivatePatient activates alredy registered patient
-func (r Repository) ActivatePatient(id string) error {
+func (r *Repository) ActivatePatient(id string) error {
 	rows, err := r.Connection.Query("call signup_patient_activate(?)", id)
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func (r Repository) ActivatePatient(id string) error {
 }
 
 // LoginPatient returns patient details
-func (r Repository) LoginPatient(email string) (*m.Login, error) {
+func (r *Repository) LoginPatient(email string) (*m.Login, error) {
 	login := m.Login{}
 
 	err := r.Connection.QueryRow("select Id, UserName, Email, Password from Patient where email=?",
@@ -78,7 +78,7 @@ func (r Repository) LoginPatient(email string) (*m.Login, error) {
 }
 
 // AddPatientPasswordResetConfirmationCode inserts new confirmation code in db
-func (r Repository) AddPatientPasswordResetConfirmationCode(email string, code string) error {
+func (r *Repository) AddPatientPasswordResetConfirmationCode(email string, code string) error {
 
 	_, err := r.Connection.Exec("call add_patient_password_reset_confirmation_code(?, ?)", email, code)
 	if err != nil {
@@ -89,7 +89,7 @@ func (r Repository) AddPatientPasswordResetConfirmationCode(email string, code s
 }
 
 // ResetPatientPassword resets patient password
-func (r Repository) ResetPatientPassword(hashedPassword []byte, email string, code string) error {
+func (r *Repository) ResetPatientPassword(hashedPassword []byte, email string, code string) error {
 
 	rows, err := r.Connection.Query("call reset_password_patient_sp(?, ?, ?)", hashedPassword, email, code)
 	if err != nil {

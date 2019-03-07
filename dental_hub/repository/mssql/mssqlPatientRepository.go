@@ -9,7 +9,7 @@ import (
 )
 
 // RegisterPatient registers new patient
-func (r Repository) RegisterPatient(email string, userName string, password []byte) (string, error) {
+func (r *Repository) RegisterPatient(email string, userName string, password []byte) (string, error) {
 
 	var id string
 	err := r.Connection.QueryRow("select cast(Id as char(36)) from [dbo].[Patient] where email=?", email).Scan(&id)
@@ -45,7 +45,7 @@ func (r Repository) RegisterPatient(email string, userName string, password []by
 }
 
 // ActivatePatient activates alredy registered patient
-func (r Repository) ActivatePatient(id string) error {
+func (r *Repository) ActivatePatient(id string) error {
 	res, err := r.Connection.Exec("exec [SignUpPatientActivate] ?", id)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (r Repository) ActivatePatient(id string) error {
 }
 
 // LoginPatient returns patient details
-func (r Repository) LoginPatient(email string) (*m.Login, error) {
+func (r *Repository) LoginPatient(email string) (*m.Login, error) {
 	login := m.Login{}
 
 	err := r.Connection.QueryRow("select cast(Id as char(36)), UserName, Email, Password from [dbo].[Patient] where email=?",
@@ -77,7 +77,7 @@ func (r Repository) LoginPatient(email string) (*m.Login, error) {
 }
 
 // AddPatientPasswordResetConfirmationCode inserts new confirmation code in db
-func (r Repository) AddPatientPasswordResetConfirmationCode(email string, code string) error {
+func (r *Repository) AddPatientPasswordResetConfirmationCode(email string, code string) error {
 	sql := `delete from [dbo].[ResetPasswordPatient] where PaitentId in (select id from [dbo].[Patient] where [Email] = $1)`
 
 	q, err := r.Connection.Exec(sql, email)
@@ -100,7 +100,7 @@ func (r Repository) AddPatientPasswordResetConfirmationCode(email string, code s
 }
 
 // ResetPatientPassword resets patient password
-func (r Repository) ResetPatientPassword(hashedPassword []byte, email string, code string) error {
+func (r *Repository) ResetPatientPassword(hashedPassword []byte, email string, code string) error {
 
 	res, err := r.Connection.Exec("exec [ResetPasswordPatient_SP] ?, ?, ?", hashedPassword, email, code)
 	if err != nil {

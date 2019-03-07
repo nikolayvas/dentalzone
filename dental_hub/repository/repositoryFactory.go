@@ -3,9 +3,9 @@ package repository
 import (
 	"dental_hub/database"
 	m "dental_hub/models"
-	mssql "dental_hub/repository/mssql"
-	mysql "dental_hub/repository/mysql"
-	nosql "dental_hub/repository/nosql"
+	"dental_hub/repository/mongodb"
+	"dental_hub/repository/mssql"
+	"dental_hub/repository/mysql"
 	"time"
 
 	config "dental_hub/configuration"
@@ -67,10 +67,10 @@ func repository() IRepository {
 	database.Init()
 
 	if config.GetInstance().DbDriverName == "mssql" {
-		return mssql.Repository{Connection: database.DBCon}
+		return &mssql.Repository{Connection: database.DBCon}
 	} else if config.GetInstance().DbDriverName == "mysql" {
-		return mysql.Repository{Connection: database.DBCon}
+		return &mysql.Repository{Connection: database.DBCon}
 	}
 
-	return nosql.Repository{Client: database.Client}
+	return &mongodb.Repository{Client: database.Client}
 }

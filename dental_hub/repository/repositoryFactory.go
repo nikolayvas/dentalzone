@@ -3,9 +3,11 @@ package repository
 import (
 	"dental_hub/database"
 	m "dental_hub/models"
+	"dental_hub/repository/cassandra"
 	"dental_hub/repository/mongodb"
 	"dental_hub/repository/mssql"
 	"dental_hub/repository/mysql"
+	"log"
 	"time"
 
 	config "dental_hub/configuration"
@@ -70,7 +72,12 @@ func repository() IRepository {
 		return &mssql.Repository{Connection: database.DBCon}
 	} else if config.GetInstance().DbDriverName == "mysql" {
 		return &mysql.Repository{Connection: database.DBCon}
+	} else if config.GetInstance().DbDriverName == "cassandra" {
+		return &cassandra.Repository{Session: database.Session}
+	} else if config.GetInstance().DbDriverName == "mongoDb" {
+		return &mongodb.Repository{Client: database.Client}
+	} else {
+		log.Fatal("Unsuppoerted driver!")
+		return nil
 	}
-
-	return &mongodb.Repository{Client: database.Client}
 }

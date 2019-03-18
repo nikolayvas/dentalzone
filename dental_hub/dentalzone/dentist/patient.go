@@ -48,7 +48,7 @@ func UpdatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	err = repo.UpdatePatientProfile(newParient)
+	err = repo.UpdatePatientProfile(&newParient)
 
 	if err != nil {
 		return err
@@ -81,8 +81,8 @@ func CreatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	newParient.RegistrationDate = time.Now()
-	var patientID string
-	patientID, err = repo.CreatePatientProfile(newParient, dentistID)
+
+	patientID, err := repo.CreatePatientProfile(&newParient, dentistID)
 
 	if err != nil {
 		return err

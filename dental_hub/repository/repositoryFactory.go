@@ -34,8 +34,8 @@ type IRepository interface {
 	SeedToothStatuses() (*[]m.ToothStatus, error)
 
 	GetPatients(string) (*[]m.Patient, error)
-	CreatePatientProfile(m.Patient, string) (string, error)
-	UpdatePatientProfile(m.Patient) error
+	CreatePatientProfile(*m.Patient, string) (string, error)
+	UpdatePatientProfile(*m.Patient) error
 	RemovePatientProfile(string, string) error
 
 	GetTeethData(string) (*m.TeethData, error)

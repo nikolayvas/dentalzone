@@ -191,8 +191,6 @@ func (r *Repository) ActivateDentist(id string) error {
 // Login returns user details
 func (r *Repository) Login(email string) (*m.Login, error) {
 
-	_, _ = r.SeedToothStatuses()
-
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
 
@@ -397,7 +395,7 @@ func (r *Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 }
 
 // CreatePatientProfile updates patient
-func (r *Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
+func (r *Repository) CreatePatientProfile(newParient *m.Patient, dentistID string) (string, error) {
 
 	dentist := Dentist{}
 
@@ -445,7 +443,7 @@ func (r *Repository) CreatePatientProfile(newParient m.Patient, dentistID string
 }
 
 // UpdatePatientProfile updates patient
-func (r *Repository) UpdatePatientProfile(patient m.Patient) error {
+func (r *Repository) UpdatePatientProfile(patient *m.Patient) error {
 
 	ctx, cancel := defaultContextWithTimeout()
 	defer cancel()
@@ -849,36 +847,6 @@ func (r *Repository) GetDentist(dentistID string) (*m.Dentist, error) {
 	return &m.Dentist{Name: dentist.Name, Email: dentist.Email}, err
 }
 
-// FindTooth in the collection by toothNo
-func FindTooth(teeth []*Tooth, toothNo string) (int, *Tooth) {
-	if teeth == nil {
-		return -1, nil
-	}
-
-	for i, t := range teeth {
-		if t.ToothNo == toothNo {
-			return i, t
-		}
-	}
-
-	return -1, nil
-}
-
-// FindToothOperation in the collection by RecordNo
-func FindToothOperation(operations []*ToothOperation, recordID string) (int, *ToothOperation) {
-	if operations == nil {
-		return -1, nil
-	}
-
-	for i, o := range operations {
-		if o.RecordID == recordID {
-			return i, o
-		}
-	}
-
-	return -1, nil
-}
-
 // GetAppointments returns appointments per day and dentist
 func (r *Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
 
@@ -921,4 +889,34 @@ func (r *Repository) UpdateAppointments(dentistID string, date time.Time, appoin
 	_, err := scheduleCollection.UpdateOne(ctx, scheduleFilter, bson.M{"$set": bson.M{"appointments": *appointments}}, &opt)
 
 	return err
+}
+
+// FindTooth in the collection by toothNo
+func FindTooth(teeth []*Tooth, toothNo string) (int, *Tooth) {
+	if teeth == nil {
+		return -1, nil
+	}
+
+	for i, t := range teeth {
+		if t.ToothNo == toothNo {
+			return i, t
+		}
+	}
+
+	return -1, nil
+}
+
+// FindToothOperation in the collection by RecordNo
+func FindToothOperation(operations []*ToothOperation, recordID string) (int, *ToothOperation) {
+	if operations == nil {
+		return -1, nil
+	}
+
+	for i, o := range operations {
+		if o.RecordID == recordID {
+			return i, o
+		}
+	}
+
+	return -1, nil
 }

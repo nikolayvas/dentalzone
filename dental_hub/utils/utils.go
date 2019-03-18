@@ -21,6 +21,16 @@ func EncodeToString(max int) string {
 	return string(b)
 }
 
+// EncodingUTF8GetString converts byte array to string
+func EncodingUTF8GetString(byteArray []byte) string {
+	return string(byteArray)
+}
+
+// EncodingUTF8GetBytes converts string to byte array
+func EncodingUTF8GetBytes(str string) []byte {
+	return []byte(str)
+}
+
 // RefBool return pointer to boolean value
 func RefBool(value bool) *bool {
 	b := value

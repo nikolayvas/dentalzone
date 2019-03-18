@@ -48,8 +48,7 @@ func SignUpRegister(w http.ResponseWriter, r *http.Request) error {
 			http.Error(w, "Already have reqistered user with such email!", http.StatusNotAcceptable)
 			return nil
 		default:
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return nil
+			return err
 		}
 	}
 
@@ -62,13 +61,7 @@ func SignUpRegister(w http.ResponseWriter, r *http.Request) error {
 		Subject: "DentalZone Registration",
 		Body:    body}
 
-	err = i.SendMail(mail)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return i.SendMail(mail)
 }
 
 // SignUpActivate endpoint
@@ -83,7 +76,7 @@ func SignUpActivate(w http.ResponseWriter, r *http.Request) error {
 		case err == ex.ErrNotSuch:
 			http.Error(w, "There is not such activation code or expiration time has been reached!", http.StatusNotAcceptable)
 		default:
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return err
 		}
 	}
 

@@ -245,7 +245,7 @@ func (r *Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 }
 
 // UpdatePatientProfile updates patient
-func (r *Repository) UpdatePatientProfile(patient m.Patient) error {
+func (r *Repository) UpdatePatientProfile(patient *m.Patient) error {
 	sql := `UPDATE PatientInfo SET 
 				FirstName = ?,
 				MiddleName = ?,
@@ -259,7 +259,7 @@ func (r *Repository) UpdatePatientProfile(patient m.Patient) error {
 	_, err := database.DBCon.Exec(sql,
 		patient.FirstName,
 		patient.MiddleName,
-		patient.LastName,
+	    patient.LastName,
 		patient.Email,
 		patient.Address,
 		patient.PhoneNumber,
@@ -270,7 +270,7 @@ func (r *Repository) UpdatePatientProfile(patient m.Patient) error {
 }
 
 // CreatePatientProfile creates patient
-func (r *Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
+func (r *Repository) CreatePatientProfile(newParient *m.Patient, dentistID string) (string, error) {
 	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 			Values(?,?,?,?,?,?,?,?,?)`
 

@@ -200,6 +200,50 @@ func (r *Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 	return &statusesList, nil
 }
 
+// CreatePatientProfile creates patient
+func (r *Repository) CreatePatientProfile(newParient *m.Patient, dentistID string) (string, error) {
+	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
+			Values($1,$2,$3,$4,$5,$6,$7,$8,$9)`
+
+	_, err := database.DBCon.Exec(sql,
+		newParient.ID,
+		newParient.FirstName,
+		newParient.MiddleName,
+		newParient.LastName,
+		newParient.Email,
+		newParient.Address,
+		newParient.PhoneNumber,
+		newParient.GeneralInfo,
+		dentistID)
+
+	return newParient.ID, err
+}
+
+// UpdatePatientProfile updates patient
+func (r *Repository) UpdatePatientProfile(newParient *m.Patient) error {
+	sql := `UPDATE PatientInfo SET 
+				FirstName = $2,
+				MiddleName = $3,
+				LastName = $4,
+				Email = $5,
+				Address = $6,
+				PhoneNumber = $7,
+				GeneralInfo = $8
+			WHERE Id= $1`
+
+	_, err := database.DBCon.Exec(sql,
+		newParient.ID,
+		newParient.FirstName,
+		newParient.MiddleName,
+		newParient.LastName,
+		newParient.Email,
+		newParient.Address,
+		newParient.PhoneNumber,
+		newParient.GeneralInfo)
+
+	return err
+}
+
 // GetPatients returns patients
 func (r *Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 
@@ -251,50 +295,6 @@ func (r *Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 	}
 
 	return &patients, nil
-}
-
-// UpdatePatientProfile updates patient
-func (r *Repository) UpdatePatientProfile(newParient m.Patient) error {
-	sql := `UPDATE PatientInfo SET 
-				FirstName = $2,
-				MiddleName = $3,
-				LastName = $4,
-				Email = $5,
-				Address = $6,
-				PhoneNumber = $7,
-				GeneralInfo = $8
-			WHERE Id= $1`
-
-	_, err := database.DBCon.Exec(sql,
-		newParient.ID,
-		newParient.FirstName,
-		newParient.MiddleName,
-		newParient.LastName,
-		newParient.Email,
-		newParient.Address,
-		newParient.PhoneNumber,
-		newParient.GeneralInfo)
-
-	return err
-}
-
-// CreatePatientProfile creates patient
-func (r *Repository) CreatePatientProfile(newParient m.Patient, dentistID string) (string, error) {
-	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
-			Values($1,$2,$3,$4,$5,$6,$7,$8,$9)`
-
-	_, err := database.DBCon.Exec(sql,
-		newParient.ID,
-		newParient.FirstName,
-		newParient.MiddleName,
-		newParient.LastName,
-		newParient.Email,
-		newParient.Address,
-		newParient.PhoneNumber,
-		newParient.GeneralInfo,
-		dentistID)
-
-	return newParient.ID, err
 }
 
 // RemovePatientProfile updates patient

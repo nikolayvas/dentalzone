@@ -486,12 +486,47 @@ func (r *Repository) getPatientEmailByID(patientID string) (string, error) {
 
 // GetAppointments returns appointments per day and dentist
 func (r *Repository) GetAppointments(dentistID string, date time.Time) (*[]m.Appointment, error) {
-	return nil, nil
+
+	//return nil, nil
+
+	rounded := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+
+	justDate := rounded.Format("2006-01-02")
+	var appointmentsJSON string
+
+	if err := r.Session.Query(`SELECT appointments FROM schedule WHERE dentistemail = ? and day = ? LIMIT 1`,
+		dentistID, justDate).Consistency(gocql.One).Scan(&appointmentsJSON); err != nil {
+
+		switch {
+		case err == gocql.ErrNotFound:
+			return nil, nil
+		default:
+			return nil, err
+		}
+	}
+
+	var appointments []m.Appointment
+
+	// JSON to struct conversion
+	if appointmentsJSON != "" {
+		if err := json.Unmarshal([]byte(appointmentsJSON), &appointments); err != nil {
+			return nil, err
+		}
+	}
+
+	return &appointments, nil
 }
 
 // UpdateAppointments updates appointments per day and dentist
 func (r *Repository) UpdateAppointments(dentistID string, date time.Time, appointments *[]m.Appointment) error {
-	return nil
+
+	// struct to JSON conversion
+	appointmentsJSON, _ := json.Marshal(*appointments)
+
+	rounded := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+
+	return r.Session.Query(`UPDATE schedule SET appointments = ? WHERE dentistemail = ? and day = ?`,
+		string(appointmentsJSON), dentistID, rounded).Exec()
 }
 
 // FindTooth in the collection by toothNo

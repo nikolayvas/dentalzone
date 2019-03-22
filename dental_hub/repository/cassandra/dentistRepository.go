@@ -429,7 +429,57 @@ func (r *Repository) RemoveToothManipulation(manipulation m.ToothAction) error {
 
 // AddToothDiagnosis adds diagnosis
 func (r *Repository) AddToothDiagnosis(diagnosis m.ToothAction) error {
-	return nil
+	patientEmail, err := r.getPatientEmailByID(diagnosis.PatientID)
+
+	if err != nil {
+		return err
+	}
+
+	var teeth []Tooth
+	var teethJSON string
+
+	if err := r.Session.Query(`SELECT teeth_json FROM patients WHERE email = ? LIMIT 1`,
+		patientEmail).Consistency(gocql.One).Scan(&teethJSON); err != nil {
+		return err
+	}
+
+	// JSON to struct conversion
+	if teethJSON != "" {
+		if err := json.Unmarshal([]byte(teethJSON), teeth); err != nil {
+			return err
+		}
+	}
+
+	_, tooth := FindTooth(&teeth, diagnosis.ToothNo)
+
+	if tooth != nil {
+		var newList = append(tooth.DiagnosisList, ToothAction{
+			Date:     time.Now(),
+			RecordID: diagnosis.ID,
+			ActionID: diagnosis.ActionID,
+		})
+
+		tooth.ManipulationList = newList
+	} else {
+		tooth = &Tooth{
+			ToothNo: diagnosis.ToothNo,
+			DiagnosisList: []ToothAction{
+				ToothAction{
+					Date:     time.Now(),
+					RecordID: diagnosis.ID,
+					ActionID: diagnosis.ActionID,
+				},
+			},
+		}
+
+		teeth = append(teeth, *tooth)
+	}
+
+	// struct to JSON conversion
+	toothMarshal, _ := json.Marshal(teeth)
+
+	return r.Session.Query(`UPDATE patients SET teeth_json = ? WHERE email = ?`,
+		string(toothMarshal), patientEmail).Exec()
 }
 
 // RemoveToothDiagnosis removes diagnosis

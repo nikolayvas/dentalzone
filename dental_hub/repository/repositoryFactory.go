@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"dental_hub/database"
 	m "dental_hub/models"
 	"dental_hub/repository/cassandra"
 	"dental_hub/repository/mongodb"
@@ -65,17 +64,24 @@ type IRepository interface {
 // Repository is repo factory
 func repository() IRepository {
 
-	//if else ..
-	database.Init()
+	conf := config.GetInstance()
 
-	if config.GetInstance().DbDriverName == "mssql" {
-		return &mssql.Repository{Connection: database.DBCon}
-	} else if config.GetInstance().DbDriverName == "mysql" {
-		return &mysql.Repository{Connection: database.DBCon}
-	} else if config.GetInstance().DbDriverName == "cassandra" {
-		return &cassandra.Repository{Session: database.Session}
-	} else if config.GetInstance().DbDriverName == "mongoDb" {
-		return &mongodb.Repository{Client: database.Client}
+	if conf.DbDriverName == "mssql" {
+		repo := mssql.Repository{}
+		repo.Init(conf.DbDriverName, conf.DbConnectionString)
+		return &repo
+	} else if conf.DbDriverName == "mysql" {
+		repo := mysql.Repository{}
+		repo.Init(conf.DbDriverName, conf.DbConnectionString)
+		return &repo
+	} else if conf.DbDriverName == "cassandra" {
+		repo := cassandra.Repository{}
+		repo.Init()
+		return &repo
+	} else if conf.DbDriverName == "mongoDb" {
+		repo := mongodb.Repository{}
+		repo.Init(conf.DbConnectionString)
+		return &repo
 	} else {
 		log.Fatal("Unsuppoerted driver!")
 		return nil

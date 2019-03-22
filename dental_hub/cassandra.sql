@@ -63,29 +63,12 @@ CREATE TABLE toothstatus (
    PRIMARY KEY (partitionid,id)
 ); 
 
-CREATE TYPE appointment (
-    date timestamp,
-    dentistemail varchar
-);
-
 CREATE TABLE schedule (
    dentistemail varchar,
    day timestamp,
-   appointments list<frozen<appointment>>,
+   appointments text,
    
    PRIMARY KEY ((dentistemail, day))
-);
-
-CREATE TYPE toothaction (
-    recordid uuid,
-    operationid int,
-    date timestamp
-);
-
-CREATE TYPE tooth (
-    toothno varchar,
-    diagnosislist set<frozen<toothaction>>,
-    manipulationlist set<frozen<toothaction>>
 );
 
 CREATE TABLE patients (
@@ -99,13 +82,28 @@ CREATE TABLE patients (
    generalinfo varchar, 
    registrationdate timestamp,
    dentists list<varchar>,
-   teeth list<frozen<tooth>>,
+   teeth_json text,
    
    PRIMARY KEY (email)
 );
 
-CREATE TABLE patient_by_id (
+CREATE TABLE patients_by_id (
     id uuid PRIMARY KEY,
     email text
-)
+);
+
+INSERT INTO manipulations(partitionid, id, manipulationname, changestatus) VALUES('manipulationsKey', 1, 'Caries himiopolimer', 6);
+INSERT INTO manipulations(partitionid, id, manipulationname, changestatus) VALUES('manipulationsKey', 2, 'Caries fotopolimer', 6);
+
+INSERT INTO diagnosis(partitionid, id, diagnosisname, changestatus) VALUES('diagnosisKey', 1, 'Caries superficialis', 3);
+INSERT INTO diagnosis(partitionid, id, diagnosisname, changestatus) VALUES('diagnosisKey', 2, 'Caries media', 3);
+
+INSERT INTO toothstatus(partitionid, id, status) VALUES('toothStatusKey', 1, 'Unchenged');
+INSERT INTO toothstatus(partitionid, id, status) VALUES('toothStatusKey', 2, 'Extractio');
+INSERT INTO toothstatus(partitionid, id, status) VALUES('toothStatusKey', 3, 'Caries');
+INSERT INTO toothstatus(partitionid, id, status) VALUES('toothStatusKey', 4, 'Pulpitis');
+INSERT INTO toothstatus(partitionid, id, status) VALUES('toothStatusKey', 5, 'Periodontitis');
+INSERT INTO toothstatus(partitionid, id, status) VALUES('toothStatusKey', 6, 'Obturacio');
+
+
 

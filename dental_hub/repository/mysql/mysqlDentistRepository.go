@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"dental_hub/database"
 	ex "dental_hub/exceptions"
 	m "dental_hub/models"
 )
@@ -196,7 +195,7 @@ func (r *Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 
 	patients := make([]m.Patient, 0)
 
-	rows, err := database.DBCon.Query(
+	rows, err := r.Connection.Query(
 		`select 
 			Id,
 			FirstName,
@@ -256,10 +255,10 @@ func (r *Repository) UpdatePatientProfile(patient *m.Patient) error {
 				GeneralInfo = ?
 			WHERE Id = ?`
 
-	_, err := database.DBCon.Exec(sql,
+	_, err := r.Connection.Exec(sql,
 		patient.FirstName,
 		patient.MiddleName,
-	    patient.LastName,
+		patient.LastName,
 		patient.Email,
 		patient.Address,
 		patient.PhoneNumber,
@@ -274,7 +273,7 @@ func (r *Repository) CreatePatientProfile(newParient *m.Patient, dentistID strin
 	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 			Values(?,?,?,?,?,?,?,?,?)`
 
-	_, err := database.DBCon.Exec(sql,
+	_, err := r.Connection.Exec(sql,
 		newParient.ID,
 		newParient.FirstName,
 		newParient.MiddleName,
@@ -294,7 +293,7 @@ func (r *Repository) RemovePatientProfile(patientID string, dentistID string) er
 				IsDeleted = 1
 			WHERE Id= ?`
 
-	_, err := database.DBCon.Exec(sql, patientID)
+	_, err := r.Connection.Exec(sql, patientID)
 
 	return err
 }
@@ -304,7 +303,7 @@ func (r *Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 	diagnosiesList := make([]m.ToothAction, 0)
 	manipulationsList := make([]m.ToothAction, 0)
 
-	rows, err := database.DBCon.Query("call get_teethData(?)", patientID)
+	rows, err := r.Connection.Query("call get_teethData(?)", patientID)
 
 	if err != nil {
 		return nil, err

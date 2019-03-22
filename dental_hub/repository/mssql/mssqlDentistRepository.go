@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"dental_hub/database"
 	ex "dental_hub/exceptions"
 	m "dental_hub/models"
 )
@@ -205,7 +204,7 @@ func (r *Repository) CreatePatientProfile(newParient *m.Patient, dentistID strin
 	sql := `INSERT INTO PatientInfo (Id, FirstName, MiddleName, LastName, Email, Address, PhoneNumber, GeneralInfo, DentistId)
 			Values($1,$2,$3,$4,$5,$6,$7,$8,$9)`
 
-	_, err := database.DBCon.Exec(sql,
+	_, err := r.Connection.Exec(sql,
 		newParient.ID,
 		newParient.FirstName,
 		newParient.MiddleName,
@@ -231,7 +230,7 @@ func (r *Repository) UpdatePatientProfile(newParient *m.Patient) error {
 				GeneralInfo = $8
 			WHERE Id= $1`
 
-	_, err := database.DBCon.Exec(sql,
+	_, err := r.Connection.Exec(sql,
 		newParient.ID,
 		newParient.FirstName,
 		newParient.MiddleName,
@@ -249,7 +248,7 @@ func (r *Repository) GetPatients(dentistID string) (*[]m.Patient, error) {
 
 	patients := make([]m.Patient, 0)
 
-	rows, err := database.DBCon.Query(
+	rows, err := r.Connection.Query(
 		`select 
 			cast(Id as char(36)),
 			ISNULL([FirstName],''),
@@ -303,7 +302,7 @@ func (r *Repository) RemovePatientProfile(patientID string, dentistID string) er
 				IsDeleted = 1
 			WHERE Id= $1`
 
-	_, err := database.DBCon.Exec(sql, patientID)
+	_, err := r.Connection.Exec(sql, patientID)
 
 	return err
 }
@@ -313,7 +312,7 @@ func (r *Repository) GetTeethData(patientID string) (*m.TeethData, error) {
 	diagnosiesList := make([]m.ToothAction, 0)
 	manipulationsList := make([]m.ToothAction, 0)
 
-	rows, err := database.DBCon.Query("set nocount on; exec [GetTeethData] ?", patientID)
+	rows, err := r.Connection.Query("set nocount on; exec [GetTeethData] ?", patientID)
 
 	if err != nil {
 		return nil, err

@@ -1,6 +1,8 @@
 package cassandra
 
 import (
+	"log"
+
 	"github.com/gocql/gocql"
 )
 
@@ -12,7 +14,7 @@ type DbSchema struct {
 	ToothStatusPartitionKey   string
 }
 
-// MongoDbSchema specifies db schema
+// CassandraDbSchema specifies db schema
 var CassandraDbSchema = DbSchema{
 	DatabaseName:              "dental_hub",
 	DiagnosisPartitionKey:     "diagnosisKey",
@@ -23,4 +25,17 @@ var CassandraDbSchema = DbSchema{
 // Repository is cassandra implementation of repository
 type Repository struct {
 	Session *gocql.Session
+}
+
+// Init connction
+func (r *Repository) Init() {
+	cluster := gocql.NewCluster("localhost")
+	cluster.Keyspace = "dental_db"
+	cluster.Consistency = gocql.Quorum
+	session, err := cluster.CreateSession()
+	if err != nil {
+		log.Fatal("Failed to create cassandra session: " + err.Error())
+	}
+
+	r.Session = session
 }

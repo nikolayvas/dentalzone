@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gocql/gocql"
+	minio "github.com/minio/minio-go/v6"
 )
 
 // DbSchema stores db's objects names
@@ -24,7 +25,8 @@ var CassandraDbSchema = DbSchema{
 
 // Repository is cassandra implementation of repository
 type Repository struct {
-	Session *gocql.Session
+	Session     *gocql.Session
+	MinioClient *minio.Client
 }
 
 // Init connction
@@ -38,4 +40,20 @@ func (r *Repository) Init() {
 	}
 
 	r.Session = session
+
+	//minio setup
+	endpoint := "localhost:9000"
+	accessKeyID := "AKIAIOSFODNN7EXAMPLE"
+	secretAccessKey := "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+	useSSL := false
+
+	// Initialize minio client object.
+	minioClient, err := minio.New(endpoint, accessKeyID, secretAccessKey, useSSL)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	r.MinioClient = minioClient
+
+	log.Printf("%#v\n", minioClient) // minioClient is now setup
 }

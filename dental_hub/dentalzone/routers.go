@@ -230,4 +230,18 @@ var routes = Routes{
 		p.Login,
 		false,
 	},
+	Route{
+		"Download",
+		"GET",
+		"/api/download",
+		d.Download,
+		false,
+	},
+	Route{
+		"Upload",
+		"POST",
+		"/api/patient/upload",
+		d.Upload,
+		false,
+	},
 }

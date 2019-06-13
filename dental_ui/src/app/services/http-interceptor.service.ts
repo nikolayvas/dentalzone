@@ -1,7 +1,7 @@
 
-import {throwError as observableThrowError,  Observable } from 'rxjs';
+import { throwError as observableThrowError,  Observable } from 'rxjs';
 
-import {catchError, finalize} from 'rxjs/operators';
+import { catchError, finalize} from 'rxjs/operators';
 import { Injectable, Injector } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpInterceptor, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment'

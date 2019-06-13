@@ -29,6 +29,8 @@ import { MetaDataService } from './services/meta-data.service';
 import { MessageService } from 'primeng/api';
 import { ScheduleService } from './components/schedule/schedule.service';
 import { ProgressIndicatorService } from './services/progress-indicator.service';
+import { FileDownloader } from './services/download';
+import { FileService } from './services/file.service';
 
 import { environment } from '../environments/environment';
 import { appRouting } from './app.routes';
@@ -44,6 +46,7 @@ import { PaginatorComponent } from './components/schedule/paginator.component';
 import { AppointmentComponent } from './components/schedule/appointment.component';
 import { ChoosePatientComponent } from './components/schedule/choose-patient.component';
 import { ProgressIndicatorComponent } from './components/progress-indicator/progress-indicator.component';
+import { FileUploadComponent } from './components/patient-details/upload';
 
 
 //prime ng
@@ -51,8 +54,10 @@ import {
   ConfirmDialogModule,
   ConfirmationService,
   DropdownModule,
+  FileUploadModule,
   GrowlModule,
   PanelMenuModule,
+
 } from 'primeng/primeng';
 
 import {ButtonModule} from 'primeng/button';
@@ -87,6 +92,7 @@ import {AccordionModule} from 'primeng/accordion';
     AppointmentComponent,
     ChoosePatientComponent,
     ProgressIndicatorComponent,
+    FileUploadComponent,
   ],
   entryComponents: [
     ChoosePatientComponent
@@ -107,6 +113,7 @@ import {AccordionModule} from 'primeng/accordion';
     ConfirmDialogModule, 
     DropdownModule,
     GrowlModule, 
+    FileUploadModule,
     TableModule,
     PanelMenuModule,
     SelectButtonModule,
@@ -130,6 +137,8 @@ import {AccordionModule} from 'primeng/accordion';
     MessageService,
     ScheduleService,
     ProgressIndicatorService,
+    FileDownloader,
+    FileService,
   ],
   bootstrap: [AppComponent]
 })

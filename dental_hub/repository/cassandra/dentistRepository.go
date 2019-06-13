@@ -208,12 +208,23 @@ func (r *Repository) SeedToothStatuses() (*[]m.ToothStatus, error) {
 // CreatePatientProfile updates patient
 func (r *Repository) CreatePatientProfile(newParient *m.Patient, dentistID string) (string, error) {
 
+	var _email string
+
+	if err := r.Session.Query(`SELECT email FROM patients WHERE email = ? LIMIT 1`,
+		newParient.Email).Consistency(gocql.One).Scan(&_email); err != nil {
+		switch {
+		case err == gocql.ErrNotFound:
+			//do nothing, it is normal
+		default:
+			return "", ex.ErrAlreadyExists
+		}
+	}
+
 	id, err := gocql.RandomUUID()
 	if err != nil {
 		return "", err
 	}
 
-	//todo what if patient with such email already exists?
 	if err := r.Session.Query(`INSERT INTO patients (id, email, firstname, middlename, lastname, address, phonenumber, generalinfo, dentists, registrationdate)
 		Values(?, ?,?,?,?,?,?,?,?,?)`,
 		id,
@@ -257,7 +268,6 @@ func (r *Repository) CreatePatientProfile(newParient *m.Patient, dentistID strin
 
 // UpdatePatientProfile updates patient
 func (r *Repository) UpdatePatientProfile(patient *m.Patient) error {
-
 	return r.Session.Query(`UPDATE patients SET firstname = ?, middlename = ?, lastname = ?, address = ?, phonenumber = ?, generalinfo = ? WHERE email = ?`,
 		patient.FirstName, patient.MiddleName, patient.LastName, patient.Address, patient.PhoneNumber, patient.GeneralInfo, patient.Email).Exec()
 }

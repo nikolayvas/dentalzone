@@ -11,6 +11,8 @@ RUN go get -v -u github.com/gorilla/mux
 RUN go get -v -u gopkg.in/gomail.v2
 RUN go get -v -u github.com/mongodb/mongo-go-driver/mongo
 RUN go get -v -u github.com/satori/go.uuid
+# RUN go get github.com/minio/minio-go
+# RUN go get github.com/gocql/gocql
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
 
@@ -29,6 +31,12 @@ EXPOSE 4001
 # ----if we need to create/start it locally
 # docker build -t nikolyvas/golang_dentalzone -f golang.dockerfile .
 # docker run -p 4001:4001 nikolyvas/golang_dentalzone
+
+# --- run minio
+# docker run -p 9000:9000 --name minio1 \
+#  -e "MINIO_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE" \
+#  -e "MINIO_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
+#  minio/minio server /data
 
 # List all containers(only IDs)
 # docker ps -aq

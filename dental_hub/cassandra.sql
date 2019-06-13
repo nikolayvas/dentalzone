@@ -92,6 +92,16 @@ CREATE TABLE patients_by_id (
     email text
 );
 
+CREATE TABLE tag (
+   
+   patientid uuid ,
+   tagkey varchar,
+   tagvalue varchar,
+   imageid varchar,
+   
+   PRIMARY KEY ((patientid), tagkey, tagvalue, imageid)
+);
+
 INSERT INTO manipulations(partitionid, id, manipulationname, changestatus) VALUES('manipulationsKey', 1, 'Caries himiopolimer', 6);
 INSERT INTO manipulations(partitionid, id, manipulationname, changestatus) VALUES('manipulationsKey', 2, 'Caries fotopolimer', 6);
 

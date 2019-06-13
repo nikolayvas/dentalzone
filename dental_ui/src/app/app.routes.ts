@@ -12,6 +12,7 @@ import { PatientsListComponent } from './components/patient-list/patients-list.c
 import { PatientProfileComponent } from './components/patient-details/add-edit-patient.component'
 import { ToothStatusComponent } from './components/tooth-status/tooth-status.component'
 import { ScheduleComponent } from './components/schedule/schedule.component'
+import { FileUploadComponent } from './components/patient-details/upload';
 
 export const appRoutes: Routes = [
     { path: '', redirectTo: '/app', pathMatch: 'full' },
@@ -26,7 +27,8 @@ export const appRoutes: Routes = [
         { path: 'schedule', component: ScheduleComponent},
         { path: 'patients/edit-patient-profile/:id', component: PatientProfileComponent},
         { path: 'patients/add-patient-profile', component: PatientProfileComponent},
-        { path: 'patients/tooth-status/:id', component: ToothStatusComponent}
+        { path: 'patients/tooth-status/:id', component: ToothStatusComponent},
+        { path: 'patients/upload/:id', component: FileUploadComponent},
         ]
     }
 ]

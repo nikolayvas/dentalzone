@@ -3,7 +3,9 @@ package dentist
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"dental_hub/core"
@@ -106,6 +108,65 @@ func RemovePatientProfile(w http.ResponseWriter, r *http.Request) error {
 
 	repo := repository.Repository
 	err = repo.RemovePatientProfile(patientID, dentistID)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Download ...
+func Download(w http.ResponseWriter, r *http.Request) error {
+
+	reader, err := repo.GetImage("", "")
+	if err != nil {
+		return err
+	}
+
+	var nBytes int64
+	nBytes, err = io.Copy(w, reader)
+
+	fmt.Println("", nBytes)
+
+	return err
+}
+
+// Upload ...
+func Upload(w http.ResponseWriter, r *http.Request) error {
+
+	patientID := r.URL.Query().Get("id")
+	fmt.Println(patientID)
+
+	file, header, err := r.FormFile("fileUpload")
+	if err != nil {
+		return err
+	}
+
+	tags := r.FormValue("tags")
+
+	fmt.Println(header.Filename)
+	fmt.Println(tags)
+
+	/*
+		defer file.Close()
+
+		// copy example
+		f, err := os.OpenFile("./"+header.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			return err
+		}
+
+		defer f.Close()
+
+		io.Copy(f, file)
+		return nil
+	*/
+
+	repo := repository.Repository
+
+	tags2 := strings.Fields(tags)
+	err = repo.InsertImage(patientID, file, tags2, header.Size)
 
 	if err != nil {
 		return err

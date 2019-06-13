@@ -36,7 +36,8 @@ export class PatientProfileComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private facade: PatientService,
-        private datePipe: DatePipe
+        private datePipe: DatePipe,
+        private patientService: PatientService
     ) {
 
     }
@@ -67,6 +68,7 @@ export class PatientProfileComponent implements OnInit, OnDestroy {
         if (!this.isNew) {
             this.subscriptions.add(this.facade.getPatient$(this.patientId).subscribe(patient => {
                 if (!!patient) {
+                    this.patientService.currentPatientHasChanged(patient.id, patient.firstName);
                     const formatted = Object.assign({}, patient, {registrationDate: this.datePipe.transform(patient.registrationDate,"dd-MM-yyyy")});
                     this.patientProfileForm.patchValue(formatted);
                 }

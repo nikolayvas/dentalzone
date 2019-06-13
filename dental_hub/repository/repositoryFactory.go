@@ -6,6 +6,7 @@ import (
 	"dental_hub/repository/mongodb"
 	"dental_hub/repository/mssql"
 	"dental_hub/repository/mysql"
+	"io"
 	"log"
 	"time"
 
@@ -18,7 +19,7 @@ var Repository = repository()
 // IRepository is interface that describes db operations
 type IRepository interface {
 
-	// dentist
+	// ------------------dentist----------------------
 	RegisterDentist(string, string, []byte) (string, error)
 	ActivateDentist(string) error
 
@@ -48,7 +49,7 @@ type IRepository interface {
 	GetAppointments(string, time.Time) (*[]m.Appointment, error)
 	UpdateAppointments(string, time.Time, *[]m.Appointment) error
 
-	// patient
+	// ----------------patient---------------------
 	RegisterPatient(string, string, []byte) (string, error)
 	ActivatePatient(string) error
 
@@ -59,6 +60,17 @@ type IRepository interface {
 	// invitation
 	InvitePatient(string, string) (string, error)
 	ActivateInvitation(string) error
+
+	// ----------------imaging--------------------
+
+	// insert image and specify the tags
+	InsertImage(string /*patient*/, io.Reader /*imageFileLocation*/, []string /*tags*/, int64 /*file size*/) error
+
+	// get image id's by tags
+	GetImageIdsByTags(string /*patient*/, []string /*tags*/) ([]string /*S3/minio file id's*/, error)
+
+	// get S3/minio image by id
+	GetImage(string /*patient*/, string /*S3/minio image id*/) (io.Reader, error)
 }
 
 // Repository is repo factory

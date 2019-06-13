@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"io"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
@@ -41,4 +43,12 @@ func RefBool(value bool) *bool {
 func RefTime(value time.Time) *time.Time {
 	b := value
 	return &b
+}
+
+// UniqueID returns UID
+func UniqueID() string {
+	var uniqueID uuid.UUID
+	uniqueID, _ = uuid.NewV4()
+
+	return uniqueID.String()
 }

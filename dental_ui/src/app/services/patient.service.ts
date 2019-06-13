@@ -1,19 +1,21 @@
-
 import {take, map, filter} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { IPatientData } from '../models/patient.dto';
 import { StoreService } from './store.service'
 import { GuidService } from './guid.service'
 import * as actions from '../store/patient-actions';
 import * as uiActions from '../store/ui-actions';
 import { AuthService} from '../auth/auth.service'
+import { FileDownloader } from './download';
 
 @Injectable()
 export class PatientService {
 
     private _patients$: Observable<IPatientData[]>;
+
+    private _currentParient$: BehaviorSubject<{id: string, name: string}> = new BehaviorSubject<{id: string, name: string}>(undefined);
 
     get patients$() : Observable<IPatientData[]> {
         return this._patients$ || (this._patients$ = this.store.select(n => n.data.clientPortalStore.patientsState.patients));
@@ -23,16 +25,27 @@ export class PatientService {
         return this.store.select(n=>n.data.clientPortalStore.uiState.patients_filter);
     }
 
+    get currentParient$(): Observable<{id: string, name: string}> {
+        return this._currentParient$;
+    }
+
      constructor(
         private auth: AuthService,
         private http: HttpClient,
-        private store: StoreService
+        private store: StoreService,
+        private fileDownloader: FileDownloader
     ) {
         auth.user$.subscribe(user => { 
             if(!!user) {
                 this.seedPatientsList()
             }
         })
+    }
+
+    currentPatientHasChanged(id: string, name: string): void {
+        if(!this._currentParient$.value || (this._currentParient$.value && this._currentParient$.value.id != id)) {
+            this._currentParient$.next({id: id, name: name})
+        }
     }
 
     changeSearchFilter(filter: string): void {
@@ -52,6 +65,8 @@ export class PatientService {
     }
 
     updatePatientProfile(patient : IPatientData) : void {
+        this.fileDownloader.downloadFile();
+        
         this.http.post('/api/patients/update', patient).pipe(
             take(1))
             .subscribe(

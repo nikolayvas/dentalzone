@@ -1,7 +1,11 @@
-<p-fileUpload name="demo[]" customUpload="true" (uploadHandler)="myUploader($event)" (onUpload)="onUpload($event)"
-        multiple="multiple" accept="image/*" maxFileSize="1000000">
 
-        <ng-template pTemplate="content">
+<form [formGroup]="form">
+        <p-fileUpload #uploader name="demo[]" customUpload="true" (uploadHandler)="myUploader($event)" (onUpload)="onUpload($event)"
+                accept="image/*" maxFileSize="1000000">
 
-        </ng-template>
-</p-fileUpload>
+                <ng-template let-file pTemplate="file">
+                        <div>{{file.name}} - {{file.size}} bytes</div>
+                        Tags: <input type="text" name="tags" formControlName="tags">
+                </ng-template>
+        </p-fileUpload>
+</form>

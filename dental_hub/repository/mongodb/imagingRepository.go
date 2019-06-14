@@ -1,6 +1,9 @@
 package mongodb
 
-import "io"
+import (
+	m "dental_hub/models"
+	"io"
+)
 
 /*
 import (
@@ -16,17 +19,21 @@ import (
 */
 
 // InsertImage ...
-func (r *Repository) InsertImage(string /*patient*/, io.Reader /*imageFileLocation*/, []string /*tags*/, int64 /*file size*/) error {
+func (r *Repository) InsertImage(string /*patient*/, io.Reader /*imageFileLocation*/, []string /*tags*/, string /*file name*/, int64 /*file size*/) error {
 	return nil
 }
 
-// GetImageIdsByTags ...
-func (r *Repository) GetImageIdsByTags(string /*patient*/, []string /*tags*/) ([]string /*S3/minio file id's*/, error) {
-	var empty []string
-	return empty, nil
+// GetImagesByTags ...
+func (r *Repository) GetImagesByTags(string /*patient*/, []string /*tags*/) (*[]m.FileDetails, error) {
+	return nil, nil
 }
 
 // GetImage ...
 func (r *Repository) GetImage(string /*patient*/, string /*S3/minio image id*/) (io.Reader /*file*/, error) {
+	return nil, nil
+}
+
+// GetTagsByPatient ...
+func (r *Repository) GetTagsByPatient(string /*patient*/) ([]string, error) {
 	return nil, nil
 }

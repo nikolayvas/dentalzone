@@ -78,3 +78,10 @@ type Appointments struct {
 	Day          time.Time     `json:"day"`
 	Appointments []Appointment `json:"appointments"`
 }
+
+// FileDetails model
+type FileDetails struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Size int64  `json:"size"`
+}

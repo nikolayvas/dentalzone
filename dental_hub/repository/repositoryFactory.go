@@ -64,10 +64,12 @@ type IRepository interface {
 	// ----------------imaging--------------------
 
 	// insert image and specify the tags
-	InsertImage(string /*patient*/, io.Reader /*imageFileLocation*/, []string /*tags*/, int64 /*file size*/) error
+	InsertImage(string /*patient*/, io.Reader /*imageFileLocation*/, []string /*tags*/, string /*file name*/, int64 /*file size*/) error
 
-	// get image id's by tags
-	GetImageIdsByTags(string /*patient*/, []string /*tags*/) ([]string /*S3/minio file id's*/, error)
+	GetTagsByPatient(string /*patient*/) ([]string, error)
+
+	// get images by tags
+	GetImagesByTags(string /*patient*/, []string /*tags*/) (*[]m.FileDetails, error)
 
 	// get S3/minio image by id
 	GetImage(string /*patient*/, string /*S3/minio image id*/) (io.Reader, error)

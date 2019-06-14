@@ -98,8 +98,18 @@ CREATE TABLE tag (
    tagkey varchar,
    tagvalue varchar,
    imageid varchar,
+   filename varchar,
+   filesize bigint,
    
    PRIMARY KEY ((patientid), tagkey, tagvalue, imageid)
+);
+
+CREATE TABLE tags (
+   
+   patientid uuid ,
+   tagkey varchar,
+   
+   PRIMARY KEY ((patientid), tagkey)
 );
 
 INSERT INTO manipulations(partitionid, id, manipulationname, changestatus) VALUES('manipulationsKey', 1, 'Caries himiopolimer', 6);

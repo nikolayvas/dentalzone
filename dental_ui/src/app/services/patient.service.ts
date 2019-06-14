@@ -1,6 +1,6 @@
 import {take, map, filter} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { IPatientData } from '../models/patient.dto';
 import { StoreService } from './store.service'
@@ -8,7 +8,6 @@ import { GuidService } from './guid.service'
 import * as actions from '../store/patient-actions';
 import * as uiActions from '../store/ui-actions';
 import { AuthService} from '../auth/auth.service'
-import { FileDownloader } from './download';
 
 @Injectable()
 export class PatientService {
@@ -33,7 +32,6 @@ export class PatientService {
         private auth: AuthService,
         private http: HttpClient,
         private store: StoreService,
-        private fileDownloader: FileDownloader
     ) {
         auth.user$.subscribe(user => { 
             if(!!user) {
@@ -65,8 +63,6 @@ export class PatientService {
     }
 
     updatePatientProfile(patient : IPatientData) : void {
-        this.fileDownloader.downloadFile();
-        
         this.http.post('/api/patients/update', patient).pipe(
             take(1))
             .subscribe(
@@ -98,5 +94,11 @@ export class PatientService {
                 this.store.dispatch({ type: actions.PatientActions.REMOVE_PATIENT, payload: id });
             },
             err => console.log(err));
+    }
+
+    getTagsPerPatient(id: string): Observable<string[]> {
+
+        //return of(["one", "two", "two", "two", "two", "two", "two", "two", "two", "two", "two"]);
+        return this.http.get('/api/patient/filesTags', {params: { "id": id }}).pipe(take(1), map(n =>{ return n as string[] }));
     }
 }

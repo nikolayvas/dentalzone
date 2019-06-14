@@ -232,8 +232,8 @@ var routes = Routes{
 	},
 	Route{
 		"Download",
-		"GET",
-		"/api/download",
+		"POST",
+		"/api/patient/download",
 		d.Download,
 		false,
 	},
@@ -242,6 +242,20 @@ var routes = Routes{
 		"POST",
 		"/api/patient/upload",
 		d.Upload,
+		false,
+	},
+	Route{
+		"Tags",
+		"GET",
+		"/api/patient/filesTags",
+		d.GetTagsPerPatient,
+		false,
+	},
+	Route{
+		"Files",
+		"POST",
+		"/api/patient/files",
+		d.GetFilesPerPatientAndTags,
 		false,
 	},
 }

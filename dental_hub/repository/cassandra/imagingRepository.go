@@ -3,14 +3,16 @@ package cassandra
 import (
 	"fmt"
 	"io"
+	"sync"
 
+	m "dental_hub/models"
 	"dental_hub/utils"
 
 	"github.com/minio/minio-go/v6"
 )
 
 // InsertImage inserts image to minio/S3
-func (r *Repository) InsertImage(patientID string, file io.Reader, tags []string, size int64) error {
+func (r *Repository) InsertImage(patientID string, file io.Reader, tags []string, fileName string, fileSize int64) error {
 
 	found, err := r.MinioClient.BucketExists(patientID)
 	if err != nil {
@@ -28,7 +30,7 @@ func (r *Repository) InsertImage(patientID string, file io.Reader, tags []string
 
 	var uid = utils.UniqueID()
 
-	n, err := r.MinioClient.PutObject(patientID, uid, file, size, minio.PutObjectOptions{ContentType: "application/octet-stream"})
+	n, err := r.MinioClient.PutObject(patientID, uid, file, fileSize, minio.PutObjectOptions{ContentType: "application/octet-stream"})
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -36,11 +38,22 @@ func (r *Repository) InsertImage(patientID string, file io.Reader, tags []string
 	fmt.Println("Successfully uploaded bytes: ", n)
 
 	for _, tag := range tags {
-		if err = r.Session.Query(`INSERT INTO tag(patientid, tagkey, tagvalue, imageid) Values(?, ?, ?, ?)`,
+		if err = r.Session.Query(`INSERT INTO tags(patientid, tagkey) Values(?, ?)`,
+			patientID,
+			tag,
+		).Exec(); err != nil {
+			return err
+		}
+	}
+
+	for _, tag := range tags {
+		if err = r.Session.Query(`INSERT INTO tag(patientid, tagkey, tagvalue, imageid, filename, filesize) Values(?, ?, ?, ?, ?, ?)`,
 			patientID,
 			tag,
 			tag,
 			uid,
+			fileName,
+			fileSize,
 		).Exec(); err != nil {
 			return err
 		}
@@ -49,16 +62,76 @@ func (r *Repository) InsertImage(patientID string, file io.Reader, tags []string
 	return nil
 }
 
-// GetImageIdsByTags ...
-func (r *Repository) GetImageIdsByTags(patientID string /*patient*/, tag []string /*tags*/) ([]string /*S3/minio file id's*/, error) {
+// GetImagesByTags ...
+func (r *Repository) GetImagesByTags(patientId string, tags []string) (*[]m.FileDetails, error) {
 
-	var imageID string
+	if len(tags) == 0 {
+		return nil, nil
+	}
+
+	allFilesByTags := make([][]m.FileDetails, len(tags))
+
+	var wg sync.WaitGroup
+	wg.Add(len(tags))
+
+	for i, tag := range tags {
+		go func(i int, tag string) {
+
+			var id string
+			var name string
+			var size int64
+
+			defer wg.Done()
+
+			filesByTag := make([]m.FileDetails, 0)
+
+			iter := r.Session.Query(`SELECT imageid, filename, filesize FROM tag WHERE patientid = ? and tagkey = ?`, patientId, tag).Iter()
+
+			for iter.Scan(&id, &name, &size) {
+				filesByTag = append(filesByTag, m.FileDetails{
+					ID:   id,
+					Name: name,
+					Size: size,
+				})
+			}
+
+			allFilesByTags[i] = filesByTag
+		}(i, tag)
+	}
+
+	wg.Wait()
+
+	intersect := allFilesByTags[0]
+
+	for _, files := range allFilesByTags {
+		intersect = Intersect(intersect, files)
+	}
+
+	return &intersect, nil
+}
+
+// GetImage ...
+func (r *Repository) GetImage(patientID string, imageID string) (io.Reader /*file*/, error) {
+
+	object, err := r.MinioClient.GetObject(patientID, imageID, minio.GetObjectOptions{})
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return object, nil
+}
+
+// GetTagsByPatient ...
+func (r *Repository) GetTagsByPatient(patientID string) ([]string, error) {
+
+	var tag string
 	tags := make([]string, 0)
 
-	iter := r.Session.Query(`SELECT imageid FROM tag WHERE patientid=? and tagkey=? and tagvalue = ?`, patientID, "one", "one").Iter()
+	iter := r.Session.Query(`SELECT tagkey from tags WHERE patientid=?`, patientID).Iter()
 
-	for iter.Scan(&imageID) {
-		tags = append(tags, imageID)
+	for iter.Scan(&tag) {
+		tags = append(tags, tag)
 	}
 
 	if err := iter.Close(); err != nil {
@@ -68,14 +141,19 @@ func (r *Repository) GetImageIdsByTags(patientID string /*patient*/, tag []strin
 	return tags, nil
 }
 
-// GetImage ...
-func (r *Repository) GetImage(patientID string, imageID string) (io.Reader /*file*/, error) {
+func Intersect(a []m.FileDetails, b []m.FileDetails) []m.FileDetails {
+	set := make([]m.FileDetails, 0)
+	hash := make(map[string]bool)
 
-	object, err := r.MinioClient.GetObject( /*patientID*/ "70ba9c89-c1ff-4873-9006-ed5214828be2" /*imageID*/, "4b55f125-a3fc-477b-beff-ac0b3f4f754f", minio.GetObjectOptions{})
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
+	for _, file := range a {
+		hash[file.ID] = true
 	}
 
-	return object, nil
+	for _, file := range b {
+		if _, found := hash[file.ID]; found {
+			set = append(set, file)
+		}
+	}
+
+	return set
 }

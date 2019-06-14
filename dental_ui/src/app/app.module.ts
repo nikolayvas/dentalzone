@@ -29,7 +29,6 @@ import { MetaDataService } from './services/meta-data.service';
 import { MessageService } from 'primeng/api';
 import { ScheduleService } from './components/schedule/schedule.service';
 import { ProgressIndicatorService } from './services/progress-indicator.service';
-import { FileDownloader } from './services/download';
 import { FileService } from './services/file.service';
 
 import { environment } from '../environments/environment';
@@ -47,10 +46,12 @@ import { AppointmentComponent } from './components/schedule/appointment.componen
 import { ChoosePatientComponent } from './components/schedule/choose-patient.component';
 import { ProgressIndicatorComponent } from './components/progress-indicator/progress-indicator.component';
 import { FileUploadComponent } from './components/patient-details/upload';
+import { DownloadComponent } from './components/patient-details/download';
 
 
 //prime ng
 import {
+  CheckboxModule,
   ConfirmDialogModule,
   ConfirmationService,
   DropdownModule,
@@ -68,6 +69,7 @@ import {DynamicDialogModule} from 'primeng/dynamicdialog';
 import {InputTextModule} from 'primeng/inputtext';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {AccordionModule} from 'primeng/accordion';
+import {DataViewModule} from 'primeng/dataview';
 
 @NgModule({
   declarations: [
@@ -93,6 +95,7 @@ import {AccordionModule} from 'primeng/accordion';
     ChoosePatientComponent,
     ProgressIndicatorComponent,
     FileUploadComponent,
+    DownloadComponent,
   ],
   entryComponents: [
     ChoosePatientComponent
@@ -122,6 +125,8 @@ import {AccordionModule} from 'primeng/accordion';
     InputTextModule,
     ProgressBarModule,
     AccordionModule,
+    CheckboxModule,
+    DataViewModule,
   ],
   providers: [
     DatePipe,
@@ -137,7 +142,6 @@ import {AccordionModule} from 'primeng/accordion';
     MessageService,
     ScheduleService,
     ProgressIndicatorService,
-    FileDownloader,
     FileService,
   ],
   bootstrap: [AppComponent]

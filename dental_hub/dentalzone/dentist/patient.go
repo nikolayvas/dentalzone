@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -52,11 +53,7 @@ func UpdatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 
 	err = repo.UpdatePatientProfile(&newParient)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // CreatePatientProfile endpoint
@@ -85,7 +82,6 @@ func CreatePatientProfile(w http.ResponseWriter, r *http.Request) error {
 	newParient.RegistrationDate = time.Now()
 
 	patientID, err := repo.CreatePatientProfile(&newParient, dentistID)
-
 	if err != nil {
 		return err
 	}
@@ -109,17 +105,36 @@ func RemovePatientProfile(w http.ResponseWriter, r *http.Request) error {
 	repo := repository.Repository
 	err = repo.RemovePatientProfile(patientID, dentistID)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // Download ...
 func Download(w http.ResponseWriter, r *http.Request) error {
 
-	reader, err := repo.GetImage("", "")
+	patientID := r.URL.Query().Get("id")
+	fmt.Println(patientID)
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+
+	imageID := string(body)
+
+	/*
+		decoder := json.NewDecoder(r.Body)
+
+		var imageID string
+		err := decoder.Decode(&imageID)
+		if err != nil {
+			return err
+		}
+
+		input, err := json.Marshal(imageID)
+		fmt.Println(string(input))
+	*/
+
+	reader, err := repo.GetImage(patientID, imageID)
 	if err != nil {
 		return err
 	}
@@ -145,32 +160,51 @@ func Upload(w http.ResponseWriter, r *http.Request) error {
 
 	tags := r.FormValue("tags")
 
-	fmt.Println(header.Filename)
-	fmt.Println(tags)
-
-	/*
-		defer file.Close()
-
-		// copy example
-		f, err := os.OpenFile("./"+header.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-		if err != nil {
-			return err
-		}
-
-		defer f.Close()
-
-		io.Copy(f, file)
-		return nil
-	*/
-
-	repo := repository.Repository
-
 	tags2 := strings.Fields(tags)
-	err = repo.InsertImage(patientID, file, tags2, header.Size)
+	err = repo.InsertImage(patientID, file, tags2, header.Filename, header.Size)
 
+	return err
+}
+
+// GetTagsPerPatient ...
+func GetTagsPerPatient(w http.ResponseWriter, r *http.Request) error {
+
+	patientID := r.URL.Query().Get("id")
+
+	tags, err := repo.GetTagsByPatient(patientID)
 	if err != nil {
 		return err
 	}
+
+	output, _ := json.Marshal(tags)
+	fmt.Fprintf(w, string(output))
+
+	return nil
+}
+
+// GetFilesPerPatientAndTags ...
+func GetFilesPerPatientAndTags(w http.ResponseWriter, r *http.Request) error {
+
+	patientID := r.URL.Query().Get("id")
+
+	decoder := json.NewDecoder(r.Body)
+
+	var tags []string
+	err := decoder.Decode(&tags)
+	if err != nil {
+		return err
+	}
+
+	input, err := json.Marshal(tags)
+	fmt.Println(string(input))
+
+	files, err := repo.GetImagesByTags(patientID, tags)
+	if err != nil {
+		return err
+	}
+
+	output, _ := json.Marshal(files)
+	fmt.Fprintf(w, string(output))
 
 	return nil
 }

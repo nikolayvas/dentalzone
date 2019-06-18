@@ -32,9 +32,9 @@ export class MenuComponent implements OnInit, OnDestroy  {
             const link4 = "patients/download/" + patient.id;
 
             this.items = [
-                { label: 'Patients', icon: 'icon-user-alt', routerLink: 'patients', command: (event) => {} },
+                { label: 'Patients', icon: 'pi pi-users', routerLink: 'patients', command: (event) => {} },
                 { label: 'Schedule', icon: 'icon-calendar', routerLink: 'schedule', command: (event) => {} },
-                { label: patient.name, icon: 'icon-user', command: (event) => {} , items: [
+                { label: patient.name, icon: 'pi pi-user', command: (event) => {} , items: [
                     { label: 'Profile', routerLink: link1, command: (event) => {}  },
                     { label: 'Tooth Status', routerLink: link2, command: (event) => {} },
                     { label: 'File Upload', routerLink: link3, command: (event) => {} },
@@ -46,7 +46,7 @@ export class MenuComponent implements OnInit, OnDestroy  {
         }));
 
         this.items = [
-            { label: 'Patients', icon: 'icon-user-alt', routerLink: 'patients', command: (event) => {} /*this.disableAllBut(event.item)*/ },
+            { label: 'Patients', icon: 'pi pi-users', routerLink: 'patients', command: (event) => {} /*this.disableAllBut(event.item)*/ },
             { label: 'Schedule', icon: 'icon-calendar', routerLink: 'schedule', command: (event) => {} /*this.disableAllBut(event.item)*/ },
         ];
     }

@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	m "dental_hub/models"
 	"dental_hub/utils"
+	"math/rand"
 
 	"github.com/minio/minio-go/v6"
+	uuid "github.com/satori/go.uuid"
 )
 
 // InsertImage inserts image to minio/S3
@@ -63,49 +66,81 @@ func (r *Repository) InsertImage(patientID string, file io.Reader, tags []string
 }
 
 // GetImagesByTags ...
-func (r *Repository) GetImagesByTags(patientId string, tags []string) (*[]m.FileDetails, error) {
+func (r *Repository) GetImagesByTags(patientID string, tags []string) (*[]m.FileDetails, error) {
 
 	if len(tags) == 0 {
 		return nil, nil
 	}
 
-	allFilesByTags := make([][]m.FileDetails, len(tags))
-
-	var wg sync.WaitGroup
-	wg.Add(len(tags))
+	var intersect []m.FileDetails
 
 	for i, tag := range tags {
-		go func(i int, tag string) {
+		var id string
+		var name string
+		var size int64
 
-			var id string
-			var name string
-			var size int64
+		filesByTag := make([]m.FileDetails, 0)
 
-			defer wg.Done()
+		iter := r.Session.Query(`SELECT imageid, filename, filesize FROM tag WHERE patientid = ? and tagkey = ?`, patientID, tag).Iter()
 
-			filesByTag := make([]m.FileDetails, 0)
+		for iter.Scan(&id, &name, &size) {
+			filesByTag = append(filesByTag, m.FileDetails{
+				ID:   id,
+				Name: name,
+				Size: size,
+			})
+		}
 
-			iter := r.Session.Query(`SELECT imageid, filename, filesize FROM tag WHERE patientid = ? and tagkey = ?`, patientId, tag).Iter()
-
-			for iter.Scan(&id, &name, &size) {
-				filesByTag = append(filesByTag, m.FileDetails{
-					ID:   id,
-					Name: name,
-					Size: size,
-				})
+		if i > 0 {
+			intersect = Intersect(intersect, filesByTag)
+			if len(intersect) == 0 {
+				break
 			}
-
-			allFilesByTags[i] = filesByTag
-		}(i, tag)
+		} else {
+			intersect = filesByTag
+		}
 	}
 
-	wg.Wait()
+	/*
+		allFilesByTags := make([][]m.FileDetails, len(tags))
 
-	intersect := allFilesByTags[0]
+		var wg sync.WaitGroup
+		wg.Add(len(tags))
 
-	for _, files := range allFilesByTags {
-		intersect = Intersect(intersect, files)
-	}
+		for i, tag := range tags {
+			go func(i int, tag string) {
+
+				var id string
+				var name string
+				var size int64
+
+				defer wg.Done()
+
+				filesByTag := make([]m.FileDetails, 0)
+
+				iter := r.Session.Query(`SELECT imageid, filename, filesize FROM tag WHERE patientid = ? and tagkey = ?`, patientId, tag).Iter()
+
+				for iter.Scan(&id, &name, &size) {
+					filesByTag = append(filesByTag, m.FileDetails{
+						ID:   id,
+						Name: name,
+						Size: size,
+					})
+				}
+
+				allFilesByTags[i] = filesByTag
+			}(i, tag)
+		}
+
+		wg.Wait()
+
+		intersect := allFilesByTags[0]
+
+		for _, files := range allFilesByTags {
+			intersect = Intersect(intersect, files)
+		}
+
+	*/
 
 	return &intersect, nil
 }
@@ -156,4 +191,61 @@ func Intersect(a []m.FileDetails, b []m.FileDetails) []m.FileDetails {
 	}
 
 	return set
+}
+
+// Insert1000TestImagesWith100Tags ...
+func (r *Repository) Insert1000TestImagesWith100Tags(patientID string, tags []string) error {
+
+	fmt.Println("Insert1000TestImagesWith100Tags started: ", time.Now())
+
+	var repeat = 100
+	var randomTagsPerImage = 5
+	var wg sync.WaitGroup
+	wg.Add(repeat)
+
+	for i := 0; i < repeat; i++ {
+		go func() {
+
+			defer wg.Done()
+
+			for j := 0; j < 1000; j++ {
+
+				var id uuid.UUID
+				id, err := uuid.NewV4()
+				if err != nil {
+
+				}
+
+				fileName := id.String()
+
+				for j := 0; j < randomTagsPerImage; j++ {
+
+					var tag = tags[rand.Intn(len(tags)-1)]
+					if err := r.Session.Query(`INSERT INTO tags(patientid, tagkey) Values(?, ?)`,
+						patientID,
+						tag,
+					).Exec(); err != nil {
+						fmt.Println(err, time.Now())
+					}
+
+					if err := r.Session.Query(`INSERT INTO tag(patientid, tagkey, tagvalue, imageid, filename, filesize) Values(?, ?, ?, ?, ?, ?)`,
+						patientID,
+						tag,
+						tag,
+						fileName,
+						fileName,
+						0,
+					).Exec(); err != nil {
+						fmt.Println(err, time.Now())
+					}
+				}
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	fmt.Println("Insert1000TestImagesWith100Tags ended: ", time.Now())
+
+	return nil
 }

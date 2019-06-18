@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	minio "github.com/minio/minio-go/v6"
 	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
@@ -18,6 +19,8 @@ type DbSchema struct {
 	ToothStatusesCollection        string
 	PatientCollection              string
 	ScheduleCollection             string
+	TagsCollection                 string
+	TagCollection                  string
 }
 
 // MongoDbSchema specifies db schema
@@ -31,11 +34,14 @@ var MongoDbSchema = DbSchema{
 	ToothStatusesCollection:        "toothStatuses",
 	PatientCollection:              "patient",
 	ScheduleCollection:             "schedule",
+	TagsCollection:                 "tags",
+	TagCollection:                  "tag",
 }
 
 // Repository is mongodb implementation of repository
 type Repository struct {
-	Client *mongo.Client
+	Client      *mongo.Client
+	MinioClient *minio.Client
 }
 
 // Init connction
@@ -53,4 +59,20 @@ func (r *Repository) Init(connectionString string) {
 	}
 
 	r.Client = client
+
+	//minio setup
+	endpoint := "localhost:9000"
+	accessKeyID := "AKIAIOSFODNN7EXAMPLE"
+	secretAccessKey := "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+	useSSL := false
+
+	// Initialize minio client object.
+	minioClient, err := minio.New(endpoint, accessKeyID, secretAccessKey, useSSL)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	r.MinioClient = minioClient
+
+	log.Printf("%#v\n", minioClient) // minioClient is now setup
 }
